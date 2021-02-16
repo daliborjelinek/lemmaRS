@@ -22,7 +22,8 @@
           </template>
           <v-list>
             <v-list-item link>
-              <v-list-item-title v-text="'Log out'"></v-list-item-title>
+
+            <img width="250px" src="@/assets/dark_cs-min.png"/>
             </v-list-item>
           </v-list>
         </v-menu>
