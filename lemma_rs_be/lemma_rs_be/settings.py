@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'rs',
     #oauth
     'oauth2_provider',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,6 +58,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'lemma_rs_be.urls'
 
@@ -119,6 +128,9 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
     # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'drf_social_oauth2.authentication.SocialAuthentication',
@@ -133,8 +145,12 @@ AUTHENTICATION_BACKENDS = (
    'social_core.backends.google_openidconnect.GoogleOpenIdConnect'
 )
 
-SOCIAL_AUTH_MUNI_KEY = 'implicit-mock-client'
-SOCIAL_AUTH_MUNI_SECRET = 'client-credentials-mock-client-secret'
+#SOCIAL_AUTH_MUNI_KEY = 'implicit-mock-client'
+#SOCIAL_AUTH_MUNI_SECRET = 'client-credentials-mock-client-secret'
+
+SOCIAL_AUTH_MUNI_KEY = '68a86438-6400-4b77-8a4a-d6b3a52ac6b6'
+SOCIAL_AUTH_MUNI_SECRET = '6d41d934-0465-4e88-9093-e7e7053fff869335e9c6-b278-4b34-b706-3e9379e63046'
+SOCIAL_AUTH_MUNI_USER_FIELDS = ['username', 'email', 'fullname']
 
 SOCIAL_AUTH_DISCORD_KEY = '748884924521644033'
 SOCIAL_AUTH_DISCORD_SECRET = 'uCvQaqwgCPimiryU8EeC4laUzEkAZ22Z'
@@ -161,3 +177,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'rs.User'

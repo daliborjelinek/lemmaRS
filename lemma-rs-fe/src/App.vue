@@ -1,7 +1,9 @@
 <template>
   <v-app id="inspire">
-    
-    <navbar />
+     <v-overlay z-index="0">
+       
+     </v-overlay>
+    <navbar v-if="$route.name !== 'Login'" />
 
     <router-view/>
 
@@ -13,6 +15,9 @@ import Navbar from "./views/Navbar"
 export default {
   components:{
     Navbar
+  },
+  created(){
+    
   }
 };
 </script>
