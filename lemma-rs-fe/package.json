@@ -12,17 +12,20 @@
     "@fortawesome/fontawesome-free": "^5.8.2",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "moment": "^2.29.1",
     "node-sass": "^5.0.0",
     "portal-vue": "^2.1.7",
     "qs": "^6.9.6",
     "roboto-fontface": "*",
     "sass-loader": "^10.1.0",
     "vue": "^2.6.11",
+    "vue-momentjs": "^1.0.0",
     "vue-oidc-client": "^0.4.2",
     "vue-router": "^3.2.0",
     "vuetify": "^2.2.11",
     "vuetify-loader": "^1.6.0",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "vuex-map-fields": "^1.4.1"
   },
   "devDependencies": {
     "@mdi/font": "^5.8.55",
@@ -46,14 +49,14 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
+      "plugin:vue/base"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "vue/valid-v-slot": "off"
     }
   },
   "browserslist": [

@@ -4,10 +4,20 @@ html {
 
 .theme--dark.v-application {
     background-size: cover !important;
-    backdrop-filter: blur(10px);
    background-image: url(https://wallpaperaccess.com/full/2837862.jpg) !important; 
 }
 
+.v-application--wrap {
+  height: 100vh;
+}
+
+.v-main {
+  max-height: 100%;
+}
+
+.v-main__wrap {
+  overflow: auto;
+}
 
 /* custom scrollbar */
 ::-webkit-scrollbar {

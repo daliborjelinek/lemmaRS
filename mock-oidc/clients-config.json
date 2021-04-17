@@ -1,0 +1,21 @@
+[
+{
+    "ClientId": "implicit-mock-client",
+    "Description": "Client for implicit flow",
+    "AllowedGrantTypes": [
+        "implicit"
+    ],
+    "AllowAccessTokensViaBrowser": true,
+    "RedirectUris": [
+        "http://localhost:8080/auth/signinwin/main"
+        
+    ],
+    "AllowedScopes": [
+        "openid",
+        "profile",
+        "email"
+    ],
+    "IdentityTokenLifetime": 3600,
+    "AccessTokenLifetime": 3600
+}
+]

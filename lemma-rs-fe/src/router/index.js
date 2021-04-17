@@ -1,24 +1,56 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Reservation.vue'
-import Auth from '../views/Auth.vue'
+import Resources from '../views/Reservation.vue'
+import Projects from '../views/Projects/Projects.vue'
+import User from '../views/User.vue'
 import Login from '@/views/Login.vue'
 import qs from 'qs'
-
+import store from '@/store'
 
 
 Vue.use(VueRouter)
 
+
+const ifAuthenticated = (to, from, next) => {
+  if (store.getters.isAuthenticated) {
+    next();
+    return;
+  }
+  next("/login");
+};
+
+const ifNotAuthenticated = (to, from, next) => {
+  if (!store.getters.isAuthenticated) {
+    next();
+    return;
+  }
+  next("/");
+};
+
 const routes = [
   {
-    path: '/',
+    path: '/Login',
     name: 'Login',
-    component: Login
+    component: Login,
+    beforeEnter: ifNotAuthenticated
   },
   {
-    path: '/Resources',
-    name: 'Home',
-    component: Home
+    path: '/',
+    name: 'Resources',
+    component: Resources,
+    beforeEnter: ifAuthenticated
+  },
+  {
+    path: '/User',
+    name: 'User',
+    component: User,
+    beforeEnter: ifAuthenticated
+  },
+  {
+    path: '/Projests',
+    name: 'Projects',
+    component: Projects,
+    beforeEnter: ifAuthenticated
   },
   {
     path: '/auth/signinwin/main/',
@@ -33,10 +65,23 @@ const routes = [
   }
 ]
 
+// avoid complaining about push to same route
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => {
+
+    if ((err.name !== 'NavigationDuplicated')) {
+      throw err;
+    } else console.log(err.name)
+  })
+}
+
 const router = new VueRouter({
   mode: 'history',
   routes,
 })
+
+
 
 
 export default router

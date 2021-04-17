@@ -37,15 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'rest_framework',
     'corsheaders',
+    'django_filters',
     'rs',
     #oauth
     'oauth2_provider',
     'social_django',
     'drf_social_oauth2',
     #swagger
-    'drf_yasg'
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -128,35 +130,35 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
     # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'drf_social_oauth2.authentication.SocialAuthentication',
-    ]
+    ],
+    # swagger
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # filters
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 AUTHENTICATION_BACKENDS = (
    'drf_social_oauth2.backends.DjangoOAuth2',
    'django.contrib.auth.backends.ModelBackend',
    'lemma_rs_be.muni_auth_be.Muni',
+   'lemma_rs_be.mock_auth_be.Mock',
    'social_core.backends.discord.DiscordOAuth2',
    'social_core.backends.google_openidconnect.GoogleOpenIdConnect'
 )
-
-#SOCIAL_AUTH_MUNI_KEY = 'implicit-mock-client'
-#SOCIAL_AUTH_MUNI_SECRET = 'client-credentials-mock-client-secret'
 
 SOCIAL_AUTH_MUNI_KEY = '68a86438-6400-4b77-8a4a-d6b3a52ac6b6'
 SOCIAL_AUTH_MUNI_SECRET = '6d41d934-0465-4e88-9093-e7e7053fff869335e9c6-b278-4b34-b706-3e9379e63046'
 SOCIAL_AUTH_MUNI_USER_FIELDS = ['username', 'email', 'fullname']
 
-SOCIAL_AUTH_DISCORD_KEY = '748884924521644033'
-SOCIAL_AUTH_DISCORD_SECRET = 'uCvQaqwgCPimiryU8EeC4laUzEkAZ22Z'
-
-SOCIAL_AUTH_GOOGLE_OPENIDCONNECT_KEY = '657832004740-cq5tbp6s5023gn12cf0d4847s43tr18n.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OPENIDCONNECT_SECRET = 'AIJjDB2lF7DPgJKHBYGd7dbb'
+SOCIAL_AUTH_MOCK_KEY = 'implicit-mock-client'
+SOCIAL_AUTH_MOCK_SECRET = '6d41d934-0465-4e88-9093-e7e7053fff869335e9c6-b278-4b34-b706-3e9379e63046'
+SOCIAL_AUTH_MOCK_USER_FIELDS = ['username', 'email', 'fullname']
 
 
 # Internationalization

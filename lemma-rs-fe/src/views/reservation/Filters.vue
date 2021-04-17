@@ -1,5 +1,5 @@
 <template>
-  <v-card class="fill-height" elevation="5" rounded="0">
+  <v-card class="fill-height" elevation="5" color="#1e1e1ee6" rounded="0">
     <v-card-title>
       Filtry <v-spacer />
        <v-btn-toggle mandatory v-model="filtersData.displayStyle">
@@ -39,7 +39,7 @@
         <v-switch
           class="mt-0 py-0 d-flex align-center"
           hide-details
-          :input-value="true"
+          :input-value="false"
           label="Bez oprávnění"
         ></v-switch>
         <v-spacer /><v-btn small icon
@@ -50,7 +50,7 @@
         <v-switch
           class="mt-0 py-0 d-flex align-center"
           hide-details
-          :input-value="true"
+          :input-value="false"
           label="Neodstupné"
         ></v-switch>
         <v-spacer /><v-btn small icon

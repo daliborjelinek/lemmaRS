@@ -1,13 +1,12 @@
 <template>
-     <v-card elevation="5" class="fill-height d-flex flex-column" rounded="0">
+     <v-card elevation="5" color="#1e1e1ee6" class="fill-height d-flex flex-column" rounded="0">
         <v-card-title>
-          Nová rezervace <v-spacer />
-          <v-btn icon><v-icon>mdi-delete</v-icon> </v-btn></v-card-title
+          Rezervace <v-spacer />
+          <v-btn disabled color="primary" >odeslat </v-btn></v-card-title
         >
         <v-card-text class="flex-grow-1 d-flex flex-column">
           <div>
             <v-alert
-            
               dense
               icon="mdi-alert"
               text
@@ -31,7 +30,7 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="date" no-title range scrollable>
+              <v-date-picker v-model="date" :min="new Date().toISOString()" no-title range scrollable>
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="modal = false">
                   Cancel
@@ -78,7 +77,7 @@
 <script>
 export default {
   data: () => ({
-    date: ["2019-09-10", "2019-09-20"],
+    date: [],
     showCalendar: false
   }),
   computed: {

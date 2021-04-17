@@ -10,6 +10,8 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import PortalVue from 'portal-vue'
 import { createOidcAuth, SignInType } from 'vue-oidc-client';
 import axios from 'axios';
+import moment from "moment";
+import VueMomentJS from "vue-momentjs";
 
 
 export const HTTP = axios.create({
@@ -28,6 +30,7 @@ const appUrl = 'http://localhost:8080/';
  });
 
 Vue.use(PortalVue)
+Vue.use(VueMomentJS, moment);
 
 Vue.config.productionTip = false
 

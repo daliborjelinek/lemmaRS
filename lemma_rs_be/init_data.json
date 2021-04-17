@@ -1,0 +1,40 @@
+[
+  {
+    "model": "rs.user",
+    "pk": 1,
+    "fields": {
+      "last_login": "2021-04-04T22:44:31.862Z",
+      "is_superuser": true,
+      "email": "admin@aa.aa",
+      "username": "admin",
+      "password": "pbkdf2_sha256$216000$V4s7pumbOxDh$Y/7ge3LsU4meAyNWPrA7yvnDH5PGV6fX/EF0hfrpVIs=",
+      "fullname": "admin",
+      "phone": "",
+      "is_active": true,
+      "is_staff": true,
+      "role": "ADMIN",
+      "role_display": "ADMIN",
+      "address": "",
+      "calendar_data": {},
+      "room": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "oauth2_provider.application",
+    "pk": 1,
+    "fields": {
+      "client_id": "Ke7ZcPRrR6n0EMJ9r0cScpLCmxzFgU9IFWOi1FSk",
+      "user": 1,
+      "redirect_uris": "",
+      "client_type": "confidential",
+      "authorization_grant_type": "password",
+      "client_secret": "9mxyEy1dRxNN4RnhySpCULusSZpEY0EFeuwVMrzFgoTz3e34rr4ew5dyijLyOAQc6E778GIBU8pHpixwk0AmrZnJnlRtf6jY04pQ5dhd7SfLqo82SMnVxv9jSdUHGpSA",
+      "name": "MUNI",
+      "skip_authorization": false,
+      "created": "2021-04-04T22:46:09.277Z",
+      "updated": "2021-04-04T22:46:09.277Z"
+    }
+  }
+]

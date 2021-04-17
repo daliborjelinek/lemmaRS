@@ -1,23 +1,69 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Resource
+from .models import Resource, Project, ProjectGroup, PermissionLevel, Tag, User
 
-User = get_user_model()
 
-class ResourceSerializer(serializers.HyperlinkedModelSerializer):
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'fullname']
+
+
+class UserReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'is_active', 'fullname', 'role', 'role_display', 'email', 'phone', 'address',
+                  'calendar_data', 'room']
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room']
+
+
+class ResourceFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = ('name', 'description', 'created_at')
+
+
+class ResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        provider = SimpleUserSerializer(read_only=True)
+        fields = ('name', 'description', 'price', 'image', 'provider', 'tags')
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Resource
+        model = Tag
         fields = ('name', 'description', 'created_at')
 
 
-class UserSerializer(serializers.ModelSerializer):
+class ProjectGroupSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('email', 'fullname')
+        model = ProjectGroup
+        fields = '__all__'
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    members = UserReadSerializer(many=True, read_only=True)
+    owner = UserReadSerializer(read_only=True)
+
+    # def to_representation(self, instance):
+    #     response = super().to_representation(instance)
+    #     response['group'] = ProjectGroupSerializer(instance.group).data
+    #     return response
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+
+class PermissionLevelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PermissionLevel
+        fields = '__all__'

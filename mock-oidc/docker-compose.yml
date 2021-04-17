@@ -1,0 +1,94 @@
+version: '3'
+services:
+    oidc-server-mock:
+      container_name: oidc-server-mock
+      image: soluto/oidc-server-mock
+      ports:
+        - 4011:80
+      environment:
+        SERVER_CORS_ALLOWED_ORIGINS_INLINE: '["http://localhost:8080"]'
+        ASPNETCORE_ENVIRONMENT: Development
+        SERVER_OPTIONS_INLINE: |
+          {
+            "AccessTokenJwtType": "JWT",
+            "Discovery": {
+              "ShowKeySet": true
+            },
+            "Authentication": {
+              "CookieSameSiteMode": "Lax",
+              "CheckSessionCookieSameSiteMode": "Lax"
+            }
+          }
+        IDENTITY_RESOURCES_INLINE: |
+         [ { "Name": "uco", "ClaimTypes": ["uco"] } ]  
+        ACCOUNT_OPTIONS_INLINE: |
+          {
+            "AutomaticRedirectAfterSignOut": true
+          }
+        API_SCOPES_INLINE: |
+          [
+            {
+              "Name": "some-app-scope-1"
+            },
+            {
+              "Name": "some-app-scope-2"
+            }
+          ]
+        API_RESOURCES_INLINE: |
+          [
+            {
+              "Name": "some-app",
+              "Scopes": ["some-app-scope-1", "some-app-scope-2"]
+            }
+          ]
+        USERS_CONFIGURATION_INLINE: |
+          [
+            {
+              "SubjectId":"000000",
+              "Username":"000000",
+              "Password":"pwd",
+              "Claims": [
+                {
+                  "Type": "name",
+                  "Value": "Jarda Výdejář"
+                },
+                {
+                  "Type": "email",
+                  "Value": "jarda.vydejar@mail.muni.cz"
+                }
+              ]
+            },
+            {
+              "SubjectId":"000001",
+              "Username":"000001",
+              "Password":"pwd",
+              "Claims": [
+                {
+                  "Type": "name",
+                  "Value": "Pepa student"
+                },
+                {
+                  "Type": "email",
+                  "Value": "pepa.student@mail.muni.cz"
+                }
+              ]
+            },
+            {
+              "SubjectId":"1",
+              "Username":"1",
+              "Password":"pwd",
+              "Claims": [
+                {
+                  "Type": "name",
+                  "Value": "Petr Admin"
+                },
+                {
+                  "Type": "email",
+                  "Value": "petr.admin@mail.muni.cz"
+                }
+              ]
+            }
+          ]
+        CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
+      volumes:
+       - .:/tmp/config:ro
