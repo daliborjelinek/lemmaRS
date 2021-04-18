@@ -4,7 +4,7 @@ html {
 
 .theme--dark.v-application {
     background-size: cover !important;
-   background-image: url(https://wallpaperaccess.com/full/2837862.jpg) !important; 
+   background-image: url(https://wallpaperaccess.com/full/2837862.jpg) !important;
 }
 
 .v-application--wrap {
@@ -23,18 +23,18 @@ html {
 ::-webkit-scrollbar {
     width: 15px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background-color: transparent;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background-color: #bdbdbd;
     border-radius: 15px;
     border: 6px solid transparent;
     background-clip: content-box;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background-color: #bdbdbd;
   }
@@ -47,4 +47,7 @@ html {
 .fade-enter,
 .fade-leave-to {
     opacity: 0
+}
+.pointer{
+  cursor: pointer;
 }

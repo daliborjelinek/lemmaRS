@@ -1,45 +1,48 @@
 <template>
   <div
-    class="flex-grow-1 pa-3"
-    style="height: 0; overflow-y: auto"
-    color="primary"
+      class="flex-grow-1 pa-3"
+      style="height: 0; overflow-y: auto"
+      color="primary"
   >
     <transition mode="out-in" name="fade">
       <div key="1" v-if="displayStyle === 'cards'" id="grid">
-        <v-card :key="index" v-for="(item, index) in 20" max-width="300">
+        <v-card @click="openResource(item)" v-ripple class="pointer" :key="index" v-for="(item, index) in 20"
+                max-width="300">
           <v-img
-            height="200"
-            :src="'https://picsum.photos/300/250?random=' + index"
+              height="200"
+              :src="'https://picsum.photos/300/250?random=' + index"
           ></v-img>
 
           <v-card-title>Canon EOS 80D + 18-55mm</v-card-title>
-          <v-card-text> 
-             <div class="subtitle-1">
-        <v-icon>mdi-account-cog</v-icon> Hana Lysáková
-      </div>
-            
+          <v-card-text>
+            <div class="subtitle-1">
+              <v-icon>mdi-account-cog</v-icon>
+              Hana Lysáková
+            </div>
+
           </v-card-text>
           <v-card-actions>
-            <v-btn> Rezervovat </v-btn>
+            <v-btn> Rezervovat</v-btn>
             <v-btn @click="dialog = true" text>
-              <v-icon left v-text="'mdi-calendar'" /> kalendář
+              <v-icon left v-text="'mdi-calendar'"/>
+              kalendář
             </v-btn>
           </v-card-actions>
         </v-card>
       </div>
       <v-data-table
-        key="2"
-        v-else
-        fixed-header
-        height="calc(100vh - 90px)"
-        disable-pagination
-        hide-default-footer
-        v-model="selected"
-        :headers="headers"
-        :items="desserts"
-        item-key="name"
-        show-select
-        class="elevation-1"
+          key="2"
+          v-else
+          fixed-header
+          height="calc(100vh - 90px)"
+          disable-pagination
+          hide-default-footer
+          v-model="selected"
+          :headers="headers"
+          :items="desserts"
+          item-key="name"
+          show-select
+          class="elevation-1"
       >
       </v-data-table>
     </transition>
@@ -48,46 +51,139 @@
         <v-toolbar color="primary" dark>
           Canon EOD 500D
           <v-btn
-            icon
-            class="ma-2"
-            @click="
+              icon
+              class="ma-2"
+              @click="
               $refs.calendar.prev();
               click($refs.calendar);
             "
           >
             <v-icon>mdi-chevron-left</v-icon>
           </v-btn>
-          {{month}}
+          {{ month }}
           <v-btn icon class="ma-2" @click="$refs.calendar.next()">
             <v-icon>mdi-chevron-right</v-icon>
           </v-btn>
-        <v-spacer/>
-           <v-btn
+          <v-spacer/>
+          <v-btn
               icon
               dark
               @click="dialog = false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          
-          </v-toolbar
-        >
-       
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
 
-          <v-sheet class="pa-2" height="400">
-            <v-calendar
+        </v-toolbar
+        >
+
+
+        <v-sheet class="pa-2" height="400">
+          <v-calendar
               v-model="value"
               ref="calendar"
               color="primary"
               :events="events"
               event-color="cyan"
               type="month"
-            ></v-calendar>
-          </v-sheet>
-    
+          ></v-calendar>
+        </v-sheet>
+
 
       </v-card>
     </v-dialog>
+    <v-dialog
+        v-model="resourceDialog"
+        max-width="900"
+    >
+      <template v-slot:default="dialog">
+        <v-card>
+          <v-toolbar
+              color="primary"
+              dark
+          >Canon eos 500D
+            <v-spacer/>
+            <v-btn
+                icon
+                dark
+            >
+              <v-icon small>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn
+                icon
+                dark
+                @click="resourceDialog = false"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+
+          </v-toolbar>
+          <v-card-text>
+            <v-row>
+              <v-col>
+                <v-img class="rounded"
+                       width="300"
+                       src="https://picsum.photos/300/250"
+                ></v-img>
+              </v-col>
+              <v-col>
+                <div class="subtitle-1">
+                  <v-icon>mdi-account-cog</v-icon>
+                  Hana Lysáková
+                </div>
+                <div class="my-2">
+                  <v-icon class="mr-1">
+                    mdi-tag
+                  </v-icon>
+                  <v-chip
+                      class="mr-2"
+                      small
+                      color="pink"
+                      label
+                      text-color="white"
+                  >
+                    <v-icon small left>
+                      mdi-label
+                    </v-icon>
+                    Audio
+                  </v-chip>
+                </div>
+                <v-btn color="primary">
+                  Rezervovat
+                </v-btn>
+                <v-btn @click="dialog = true" text>
+                  <v-icon left v-text="'mdi-calendar'"/>
+                  kalendář
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <h2>Popis </h2>
+
+                <div>
+                  Nějaký interní popis
+                </div>
+              </v-col>
+              <v-col>
+                <h2>Interní poznámky</h2>
+                <div>
+                  Nějaké interní poznámky
+                </div>
+              </v-col>
+            </v-row>
+
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            <v-btn
+                text
+                @click="dialog.value = false"
+            >Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -96,14 +192,17 @@ export default {
   props: ["displayStyle"],
   computed: {
     month() {
-      console.log(new Date(this.value).toLocaleString('cs-CZ',{ month: 'long' }),)
-      return new Date(this.value).toLocaleString('cs-CZ',{ month: 'long' })
+      console.log(new Date(this.value).toLocaleString('cs-CZ', {month: 'long'}),)
+      return new Date(this.value).toLocaleString('cs-CZ', {month: 'long'})
     },
   },
   methods: {
     click(props) {
       console.log(props);
     },
+    openResource(resource) {
+
+    }
   },
   data() {
     return {
@@ -119,6 +218,8 @@ export default {
         },
       ],
       dialog: false,
+      resourceDialog: true,
+      resourceDialogEditing: true,
       headers: [
         {
           text: "Dessert (100g serving)",
@@ -126,11 +227,11 @@ export default {
           sortable: false,
           value: "name",
         },
-        { text: "Calories", value: "calories" },
-        { text: "Fat (g)", value: "fat" },
-        { text: "Carbs (g)", value: "carbs" },
-        { text: "Protein (g)", value: "protein" },
-        { text: "Iron (%)", value: "iron" },
+        {text: "Calories", value: "calories"},
+        {text: "Fat (g)", value: "fat"},
+        {text: "Carbs (g)", value: "carbs"},
+        {text: "Protein (g)", value: "protein"},
+        {text: "Iron (%)", value: "iron"},
       ],
       desserts: [
         {
