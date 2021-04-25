@@ -1,12 +1,16 @@
+from django.db.models import Q
+from django_filters import filters
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from rest_framework_api_key.permissions import HasAPIKey
 
 from . import serializers
 from .permissions import UserPermission, ProjectPermission, ProjectGroupPermission, ResourcePermission, \
-    PermissionLevelPermission, TaqPermission
+    PermissionLevelPermission, TagPermission
 from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag
 from .serializers import ProjectSerializer, ProjectGroupSerializer, ResourceSerializer, PermissionLevelSerializer, \
     TagSerializer
@@ -17,6 +21,8 @@ class UserViewSet(mixins.RetrieveModelMixin,
                   mixins.ListModelMixin, GenericViewSet):
     permission_classes = [UserPermission]
     queryset = User.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['role']
 
     def get_serializer_class(self):
         if self.action == 'update':
@@ -31,14 +37,31 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
         return super(UserViewSet, self).get_object()
 
-
+@extend_schema_view(
+    list=extend_schema(parameters=[
+        OpenApiParameter(name='uco', description='filter projects by UCO', required=False, type=str),
+    ])
+)
 class ProjectViewSet(mixins.CreateModelMixin,
                      mixins.RetrieveModelMixin,
                      mixins.UpdateModelMixin,
                      mixins.ListModelMixin, GenericViewSet):
     serializer_class = ProjectSerializer
-    permission_classes = [ProjectPermission]
+    permission_classes = [ProjectPermission | HasAPIKey]
     queryset = Project.objects.order_by('-created_at').all()
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Project.objects.all()
+        username = self.request.query_params.get('username')
+        if username is not None:
+            queryset = queryset.filter(Q(members__username=username) | Q(owner=username))
+        return queryset
+
+
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -85,8 +108,8 @@ class PermissionLevelViewSet(viewsets.ModelViewSet):
     serializer_class = PermissionLevelSerializer
 
 
-class TagSerializer(viewsets.ModelViewSet):
+class TagViewSet(viewsets.ModelViewSet):
 
     queryset = Tag.objects.all()
-    permission_classes = [TaqPermission]
+    permission_classes = [TagPermission]
     serializer_class = TagSerializer

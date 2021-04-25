@@ -45,7 +45,7 @@
     </v-data-table>
     <v-dialog v-model="projectDialog" max-width="900" >
       <v-card>
-        <v-card-title class="headline"> {{ activeProject.id ? activeProject.name : 'Nový projekt' }}</v-card-title>
+        <v-card-title class="headline"> {{ activeProject.id ? 'Projekt - '+ activeProject.name : 'Nový projekt' }}</v-card-title>
 
         <v-card-text class="secondary darken-2">
         <v-row>
@@ -226,7 +226,7 @@ export default {
         this.reloadActiveProject(newProject.id)
         await this.$store.dispatch("notify", {
           type: "success",
-          text: "Projekt vytvořena",
+          text: "Projekt vytvořen",
         });
       } catch (e) {
         console.log(e);

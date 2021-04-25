@@ -8,6 +8,7 @@ router.register('project', views.ProjectViewSet)
 router.register('project-group', views.ProjectGroupViewSet)
 router.register('resource', views.ResourceViewSet)
 router.register('permissionLevel', views.PermissionLevelViewSet)
+router.register('tag', views.TagViewSet)
 
 
 # Wire up our API using automatic URL routing.

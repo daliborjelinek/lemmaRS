@@ -56,7 +56,7 @@ class PermissionLevelPermission(permissions.BasePermission):
                                                   request.method in SAFE_METHODS)
 
 
-class TaqPermission(permissions.BasePermission):
+class TagPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and (request.user.role == Role.ADMIN or
                                                   request.user.role == Role.PROVIDER or

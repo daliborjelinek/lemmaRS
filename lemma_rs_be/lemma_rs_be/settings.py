@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'social_django',
     'drf_social_oauth2',
     #swagger
-    'drf_spectacular'
+    'drf_spectacular',
+    'rest_framework_api_key'
 ]
 
 MIDDLEWARE = [
@@ -159,6 +160,8 @@ SOCIAL_AUTH_MUNI_USER_FIELDS = ['username', 'email', 'fullname']
 SOCIAL_AUTH_MOCK_KEY = 'implicit-mock-client'
 SOCIAL_AUTH_MOCK_SECRET = '6d41d934-0465-4e88-9093-e7e7053fff869335e9c6-b278-4b34-b706-3e9379e63046'
 SOCIAL_AUTH_MOCK_USER_FIELDS = ['username', 'email', 'fullname']
+
+ACTIVATE_JWT = True
 
 
 # Internationalization

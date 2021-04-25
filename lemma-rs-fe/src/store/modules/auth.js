@@ -22,8 +22,9 @@ const getters = {
 };
 
 const actions = {
-  [AUTH_REQUEST]: async ({ commit, dispatch }, token) => {
-    const tokens = await API.convertToken(token)
+  [AUTH_REQUEST]: async ({ commit, dispatch }, {token, backend}) => {
+
+    const tokens = await API.convertToken(token,backend)
     commit(AUTH_SUCCESS,tokens)
     console.log(tokens.accessToken)
     localStorage.setItem('user-token', tokens.accessToken)

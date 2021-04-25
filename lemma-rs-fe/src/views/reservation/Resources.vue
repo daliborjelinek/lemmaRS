@@ -1,212 +1,195 @@
-<template>
-  <div
-      class="flex-grow-1 pa-3"
-      style="height: 0; overflow-y: auto"
-      color="primary"
-  >
-    <transition mode="out-in" name="fade">
-      <div key="1" v-if="displayStyle === 'cards'" id="grid">
-        <v-card @click="openResource(item)" v-ripple class="pointer" :key="index" v-for="(item, index) in 20"
-                max-width="300">
-          <v-img
-              height="200"
-              :src="'https://picsum.photos/300/250?random=' + index"
-          ></v-img>
+<template lang="pug">
+  .flex-grow-1.pa-3(style="height: 0; overflow-y: auto")
+    transition(mode="out-in", name="fade")
+      #grid(key="1", v-if="displayStyle === 'cards'")
+        v-card.pointer(
+          @click="openResource(item)",
+          v-ripple="",
+          :key="index",
+          v-for="(item, index) in 20",
+          max-width="300"
+        )
+          v-img(
+            height="200",
+            :src="'https://picsum.photos/300/250?random=' + index"
+          )
+          v-card-title Canon EOS 80D + 18-55mm
+          v-card-text.subtitle-1
+            v-icon mdi-account-cog
+            span Hana Lysáková
+          v-card-actions
+            v-btn Rezervovat
+            v-btn(@click="dialog = true", text)
+              v-icon(left) mdi-calendar
+              | Kalendář
 
-          <v-card-title>Canon EOS 80D + 18-55mm</v-card-title>
-          <v-card-text>
-            <div class="subtitle-1">
-              <v-icon>mdi-account-cog</v-icon>
-              Hana Lysáková
-            </div>
-
-          </v-card-text>
-          <v-card-actions>
-            <v-btn> Rezervovat</v-btn>
-            <v-btn @click="dialog = true" text>
-              <v-icon left v-text="'mdi-calendar'"/>
-              kalendář
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-      <v-data-table
-          key="2"
-          v-else
-          fixed-header
-          height="calc(100vh - 90px)"
-          disable-pagination
-          hide-default-footer
-          v-model="selected"
-          :headers="headers"
-          :items="desserts"
-          item-key="name"
-          show-select
-          class="elevation-1"
-      >
-      </v-data-table>
-    </transition>
-    <v-dialog v-model="dialog">
-      <v-card>
-        <v-toolbar color="primary" dark>
-          Canon EOD 500D
-          <v-btn
-              icon
-              class="ma-2"
-              @click="
-              $refs.calendar.prev();
-              click($refs.calendar);
-            "
-          >
-            <v-icon>mdi-chevron-left</v-icon>
-          </v-btn>
-          {{ month }}
-          <v-btn icon class="ma-2" @click="$refs.calendar.next()">
-            <v-icon>mdi-chevron-right</v-icon>
-          </v-btn>
-          <v-spacer/>
-          <v-btn
-              icon
-              dark
-              @click="dialog = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-
-        </v-toolbar
-        >
-
-
-        <v-sheet class="pa-2" height="400">
-          <v-calendar
-              v-model="value"
-              ref="calendar"
-              color="primary"
-              :events="events"
-              event-color="cyan"
-              type="month"
-          ></v-calendar>
-        </v-sheet>
-
-
-      </v-card>
-    </v-dialog>
-    <v-dialog
-        v-model="resourceDialog"
-        max-width="900"
-    >
-      <template v-slot:default="dialog">
-        <v-card>
-          <v-toolbar
-              color="primary"
-              dark
-          >Canon eos 500D
-            <v-spacer/>
-            <v-btn
-                icon
-                dark
-            >
-              <v-icon small>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn
-                icon
-                dark
-                @click="resourceDialog = false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-
-          </v-toolbar>
-          <v-card-text>
-            <v-row>
-              <v-col>
-                <v-img class="rounded"
-                       width="300"
-                       src="https://picsum.photos/300/250"
-                ></v-img>
-              </v-col>
-              <v-col>
-                <div class="subtitle-1">
-                  <v-icon>mdi-account-cog</v-icon>
-                  Hana Lysáková
-                </div>
-                <div class="my-2">
-                  <v-icon class="mr-1">
-                    mdi-tag
-                  </v-icon>
-                  <v-chip
-                      class="mr-2"
-                      small
-                      color="pink"
-                      label
-                      text-color="white"
-                  >
-                    <v-icon small left>
-                      mdi-label
-                    </v-icon>
-                    Audio
-                  </v-chip>
-                </div>
-                <v-btn color="primary">
-                  Rezervovat
-                </v-btn>
-                <v-btn @click="dialog = true" text>
-                  <v-icon left v-text="'mdi-calendar'"/>
-                  kalendář
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <h2>Popis </h2>
-
-                <div>
-                  Nějaký interní popis
-                </div>
-              </v-col>
-              <v-col>
-                <h2>Interní poznámky</h2>
-                <div>
-                  Nějaké interní poznámky
-                </div>
-              </v-col>
-            </v-row>
-
-          </v-card-text>
-          <v-card-actions class="justify-end">
-            <v-btn
-                text
-                @click="dialog.value = false"
-            >Close
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </template>
-    </v-dialog>
-
-  </div>
+      v-data-table.elevation-1(
+        key="2",
+        v-else,
+        fixed-header,
+        height="calc(100vh - 90px)",
+        disable-pagination,
+        hide-default-footer,
+        v-model="selected",
+        :headers="headers",
+        :items="desserts",
+        item-key="name",
+        show-select
+      )
+    v-dialog(v-model="dialog")
+      v-card
+        v-toolbar(color="primary", dark)
+          span Canon EOD 500D
+          v-btn.ma-2(
+            icon,
+            @click="$refs.calendar.prev(); click($refs.calendar); "
+          )
+            v-icon mdi-chevron-left
+            span {{ month }}
+          v-btn.ma-2(icon, @click="$refs.calendar.next()")
+            v-icon mdi-chevron-right
+          v-spacer
+            v-btn(icon, @click="dialog = false")
+              v-icon mdi-close
+        v-sheet.pa-2(height="400")
+          v-calendar(
+            v-model="value",
+            ref="calendar",
+            color="primary",
+            :events="events",
+            event-color="cyan",
+            type="month"
+          )
+    v-dialog(v-model="resourceDialog", :persistent=resourceDialogEditing, max-width="900")
+      template(v-slot:default="dialog")
+        v-card
+          v-toolbar(color="primary", dark) Zdroj {{activeResource.name}}
+            v-spacer
+            v-btn(icon, v-if="!resourceDialogEditing" @click="editResource")
+              v-icon mdi-pencil
+            v-btn(icon, title="Uložit úpravy" v-else-if="resourceDialogEditing && activeResource.id" @click="saveResource")
+              v-icon mdi-content-save
+            v-btn(icon, title="Vytvořit zdroj"  v-else @click="saveResource")
+              v-icon mdi-plus-circle
+            v-btn(icon, @click="resourceDialog = false")
+              v-icon mdi-close
+          v-card-text
+            v-row
+              v-col(style="max-width: 340px")
+                v-img.rounded(width="300", src="https://picsum.photos/300/250")
+              v-col
+                v-form#resource-form
+                  v-text-field(v-model="activeResource.name", hide-details, label="Název",prepend-icon="mdi-form-textbox", :disabled="!resourceDialogEditing")
+                  v-select(prepend-icon="mdi-account-cog",
+                    v-model="activeResource.provider"
+                    hide-details,
+                    :disabled="!resourceDialogEditing",
+                    label="Výdejář",
+                    :items="['Hana Lysáková']")
+                  v-select.mt-2(prepend-icon="mdi-shield-lock", :disabled="!resourceDialogEditing", value="LEMMA nad 100" label="Úroveň oprávnění" :items="['LEMMA nad 100']")
+                  v-autocomplete(v-model="activeResource.tags",prepend-icon="mdi-tag", class="mt-0 pt-0", :items="tags", :disabled="!resourceDialogEditing", chips, deletable-chips, small-chips, label="Štítky", multiple)
+                    template(v-slot:append-item)
+                      v-divider
+                      v-text-field.px-3(v-model="newTag", label="Nový štítek")
+                        template(slot="append")
+                          v-btn(icon, @click="createTag")
+                            v-icon mdi-plus
+                  v-text-field(v-model="activeResource.price", label="Cena",prepend-icon="mdi-cash-multiple", type="number", :disabled="!resourceDialogEditing")
+                    template(slot="append") Kč
+            v-row
+              v-col
+                h2 Popis
+                div(v-if="!resourceDialogEditing" v-html="activeResource.description")
+                v-textarea(v-else, v-model="activeResource.description")
+              v-col
+                h2 Interní poznámky
+                div(v-if="!resourceDialogEditing" v-html="activeResource.internalNotes")
+                v-textarea(v-else, v-model="activeResource.internalNotes")
+    portal(to='add-resource-btn')
+        v-btn.mb-3(color="primary", block @click="createResource") Přidat zdroj
 </template>
 
 <script>
+import API from "@/model/httpclient";
+
+
+const emptyResource = () => {
+  return {
+    name: "",
+    description: "",
+    internalNotes: "",
+    price: 0,
+    image: null,
+    tags: [],
+    provider: null,
+    requiredPermissionLevel: 0
+  };
+};
+
 export default {
   props: ["displayStyle"],
+  mounted() {
+    this.loadTags();
+    this.loadProviders();
+
+  },
   computed: {
     month() {
-      console.log(new Date(this.value).toLocaleString('cs-CZ', {month: 'long'}),)
-      return new Date(this.value).toLocaleString('cs-CZ', {month: 'long'})
+      console.log(
+          new Date(this.value).toLocaleString("cs-CZ", {month: "long"})
+      );
+      return new Date(this.value).toLocaleString("cs-CZ", {month: "long"});
     },
   },
   methods: {
     click(props) {
       console.log(props);
     },
+    createResource() {
+      this.activeResource = emptyResource()
+      this.resourceDialog = true
+    },
     openResource(resource) {
+    },
+    editResource() {
+      this.resourceDialogEditing = true;
+    },
+    saveResource() {
+      this.resourceDialogEditing = false;
+    },
+    async loadTags() {
+      this.tags = await API.getTags()
+    },
+    async loadProviders() {
+      this.providers = API.getUsers('PROVIDER')
+    },
+    async createTag() {
+      try {
+        await API.createTag(this.newTag);
+        await this.loadTags();
+        this.newTag = '';
+        await this.$store.dispatch("notify", {
+          type: "success",
+          text: "Štítek vytvořen",
+        });
+      } catch (e) {
+        console.log(e)
+        await this.$store.dispatch("notify", {
+          type: "error",
+          text: "Vytváření štítku selhalo",
+        });
+
+      }
 
     }
+
   },
   data() {
     return {
       value: new Date(),
+      tags: [],
+      newTag: '',
+      providers: [],
       selected: [],
       events: [
         {
@@ -220,6 +203,7 @@ export default {
       dialog: false,
       resourceDialog: true,
       resourceDialogEditing: true,
+      activeResource: emptyResource(),
       headers: [
         {
           text: "Dessert (100g serving)",
@@ -320,7 +304,20 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+#resource-form{
+  .v-label--is-disabled,.v-select__selection--disabled,.theme--dark.v-input--is-disabled, .v-icon--disabled, .theme--dark.v-input--is-disabled input, .v-chip__content {
+    color: white !important;
+  }
+  .v-input--is-disabled.v-select .v-input__append-inner {
+    display: none;
+  }
+  .v-chip--disabled{
+    opacity: 1;
+  }
+
+}
+
 #grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 300px);

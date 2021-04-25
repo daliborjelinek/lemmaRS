@@ -33,13 +33,18 @@ class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         provider = SimpleUserSerializer(read_only=True)
+        tags = serializers.SlugRelatedField(
+            many=True,
+            slug_field='name',
+            queryset=Tag.objects.all()
+        )
         fields = ('name', 'description', 'price', 'image', 'provider', 'tags')
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
-        fields = ('name', 'description', 'created_at')
+        fields = ['name']
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
@@ -63,7 +68,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class PermissionLevelSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = PermissionLevel
         fields = '__all__'

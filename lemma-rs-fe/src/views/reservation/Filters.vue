@@ -17,7 +17,8 @@
     </v-card-title>
 
     <v-card-text>
-      <v-btn color="primary" block class="mb-3">Přidat zdroj</v-btn>
+       <portal-target name="add-resource-btn" />
+     
       <v-text-field
         placeholder="Hledat"
         class="ma-0 pa-0"

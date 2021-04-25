@@ -44,8 +44,23 @@ services:
         USERS_CONFIGURATION_INLINE: |
           [
             {
-              "SubjectId":"000000",
-              "Username":"000000",
+              "SubjectId":"vydejar1",
+              "Username":"vydejar1",
+              "Password":"pwd",
+              "Claims": [
+                {
+                  "Type": "name",
+                  "Value": "Jarda 1 Výdejář"
+                },
+                {
+                  "Type": "email",
+                  "Value": "jarda.vydejar@mail.muni.cz"
+                }
+              ]
+            },
+            {
+              "SubjectId":"vydejar2",
+              "Username":"vydejar2",
               "Password":"pwd",
               "Claims": [
                 {
@@ -59,13 +74,28 @@ services:
               ]
             },
             {
-              "SubjectId":"000001",
-              "Username":"000001",
+              "SubjectId":"student1",
+              "Username":"student1",
               "Password":"pwd",
               "Claims": [
                 {
                   "Type": "name",
-                  "Value": "Pepa student"
+                  "Value": "Pepa 1 student"
+                },
+                {
+                  "Type": "email",
+                  "Value": "pepa.student@mail.muni.cz"
+                }
+              ]
+            },
+            {
+              "SubjectId":"student2",
+              "Username":"student2",
+              "Password":"pwd",
+              "Claims": [
+                {
+                  "Type": "name",
+                  "Value": "Pepa 1 student"
                 },
                 {
                   "Type": "email",

@@ -45,8 +45,9 @@ AXIOS.interceptors.response.use(undefined, (err) => {
 });
 
 export default {
-  async getUsers(){
-    return (await  AXIOS.get('user/')).data
+  async getUsers(role=null){
+    if(!role) return (await  AXIOS.get('user/')).data
+    return (await AXIOS.get('user/?role='+role)).data
   },
   // USER
   async getCurentUser() {
@@ -88,13 +89,21 @@ export default {
   async updateProjectGroup(projectGroup) {
     return AXIOS.put('project-group/' + projectGroup.id + '/', projectGroup)
   },
+  // TAG
+  async getTags(){
+    return (await AXIOS.get('tag/')).data.map(tag => tag.name)
+  },
+  async createTag(name){
+    return AXIOS.post('tag/',{name})
+  },
 
-  async convertToken(token) {
+
+  async convertToken(token,backend) {
     try {
       const response = await AXIOS.post("auth/convert-token", {
         grant_type: 'convert_token',
         token,
-        backend: 'mock',
+        backend,
         client_id: 'Ke7ZcPRrR6n0EMJ9r0cScpLCmxzFgU9IFWOi1FSk',
         client_secret: '9mxyEy1dRxNN4RnhySpCULusSZpEY0EFeuwVMrzFgoTz3e34rr4ew5dyijLyOAQc6E778GIBU8pHpixwk0AmrZnJnlRtf6jY04pQ5dhd7SfLqo82SMnVxv9jSdUHGpSA'
       })

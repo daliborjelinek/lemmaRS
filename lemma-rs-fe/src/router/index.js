@@ -62,7 +62,19 @@ const routes = [
       console.log(token)
       window.close();
     }
+  },
+  {
+    path: '/auth/callback/',
+    name: 'Auth',
+    async beforeEnter(to,from,next) {
+      const token = qs.parse(to.hash.slice(1)).access_token
+      window.opener.postMessage({ token }, 'http://localhost:8080')
+      //https://github.com/ljharb/qs/issues/222
+      console.log(token)
+      window.close();
+    }
   }
+
 ]
 
 // avoid complaining about push to same route
