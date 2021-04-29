@@ -11,8 +11,10 @@ router.register('permissionLevel', views.PermissionLevelViewSet)
 router.register('tag', views.TagViewSet)
 
 
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
+    path('login/', include('rest_social_auth.urls_jwt_pair')),
 ]

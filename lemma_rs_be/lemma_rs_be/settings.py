@@ -10,7 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from typing import List
+
+import environ
+
 from pathlib import Path
+
+env = environ.Env(DEBUG=(bool, False))
+env.read_env(env.str('ENV_PATH', '.env'))
+
+print(env('DATABASE_URL'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +29,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'n02#pds!dk%ozd*#$zaz$khfpdo3jxb@wvg5w%$x@0a(b4o=m3'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: env.list('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -44,8 +53,11 @@ INSTALLED_APPS = [
     'rs',
     #oauth
     'oauth2_provider',
-    'social_django',
     'drf_social_oauth2',
+    #oauth new
+    'rest_framework.authtoken',  # only if you use token authentication
+    'social_django',  # django social auth
+    'rest_social_auth',  # this package
     #swagger
     'drf_spectacular',
     'rest_framework_api_key'
@@ -62,12 +74,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
 
-]
-
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS')
 
 ROOT_URLCONF = 'lemma_rs_be.urls'
 
@@ -99,9 +108,9 @@ WSGI_APPLICATION = 'lemma_rs_be.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'NAME': 'lemmars',
+        'USER': 'lemmars',
+        'PASSWORD': 'lemmars',
         'HOST': '127.0.0.1',
         'PORT': 5433
     }
@@ -135,8 +144,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
     # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
-        'drf_social_oauth2.authentication.SocialAuthentication',
+
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     # swagger
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -153,21 +162,22 @@ AUTHENTICATION_BACKENDS = (
    'social_core.backends.google_openidconnect.GoogleOpenIdConnect'
 )
 
-SOCIAL_AUTH_MUNI_KEY = '68a86438-6400-4b77-8a4a-d6b3a52ac6b6'
-SOCIAL_AUTH_MUNI_SECRET = '6d41d934-0465-4e88-9093-e7e7053fff869335e9c6-b278-4b34-b706-3e9379e63046'
+SOCIAL_AUTH_MUNI_KEY = env('SOCIAL_AUTH_MUNI_KEY')
+SOCIAL_AUTH_MUNI_SECRET = env('SOCIAL_AUTH_MUNI_SECRET')
 SOCIAL_AUTH_MUNI_USER_FIELDS = ['username', 'email', 'fullname']
 
-SOCIAL_AUTH_MOCK_KEY = 'implicit-mock-client'
-SOCIAL_AUTH_MOCK_SECRET = '6d41d934-0465-4e88-9093-e7e7053fff869335e9c6-b278-4b34-b706-3e9379e63046'
+SOCIAL_AUTH_MOCK_KEY = 'client-credentials-mock-client'
+SOCIAL_AUTH_MOCK_SECRET = 'client-credentials-mock-client-secret'
 SOCIAL_AUTH_MOCK_USER_FIELDS = ['username', 'email', 'fullname']
 
-ACTIVATE_JWT = True
+REST_SOCIAL_OAUTH_REDIRECT_URI = env('REST_SOCIAL_OAUTH_REDIRECT_URI')
+REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = env('REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI')
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'cs-CZ'
 
 TIME_ZONE = 'UTC'
 

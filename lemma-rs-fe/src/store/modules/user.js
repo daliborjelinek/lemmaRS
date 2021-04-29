@@ -11,7 +11,7 @@ const { getUserField, updateUserField } = createHelpers({
 
 const state = { status: "",
                 profile: {},
-                tempRole: "" 
+                tempRole: ""
               };
 
 const getters = {
@@ -35,7 +35,6 @@ const actions = {
     }
   },
   [USER_UPDATE]: async ({ commit, dispatch }) => {
-    console.log('tadyyyyyy')
     try{
       const response = await API.putUser(state.profile)
       dispatch('notify',{type:'success', text: 'Uživatel uložen' })

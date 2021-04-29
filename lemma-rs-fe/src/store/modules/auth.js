@@ -22,14 +22,14 @@ const getters = {
 };
 
 const actions = {
-  [AUTH_REQUEST]: async ({ commit, dispatch }, {token, backend}) => {
+  [AUTH_REQUEST]: async ({ commit, dispatch }, {code, backend}) => {
 
-    const tokens = await API.convertToken(token,backend)
+    const tokens = await API.getJWT(code, backend)
     commit(AUTH_SUCCESS,tokens)
-    console.log(tokens.accessToken)
-    localStorage.setItem('user-token', tokens.accessToken)
-    localStorage.setItem('refresh-token', tokens.refreshToken)
-    await dispatch(USER_REQUEST)
+    console.log(tokens.token)
+    localStorage.setItem('user-token', tokens.token)
+    localStorage.setItem('refresh-token', tokens.refresh)
+    // await dispatch(USER_REQUEST)
   },
   [AUTH_LOGOUT]: ({ commit }) => {
       commit(AUTH_LOGOUT);
@@ -44,8 +44,8 @@ const mutations = {
   },
   [AUTH_SUCCESS]: (state, resp) => {
     state.status = "success";
-    state.token = resp.accessToken;
-    state.refreshToken = resp.refreshToken
+    state.token = resp.token;
+    state.refreshToken = resp.refresh
     state.hasLoadedOnce = true;
   },
   [AUTH_ERROR]: state => {

@@ -56,10 +56,11 @@ const routes = [
     path: '/auth/signinwin/main/',
     name: 'Auth',
     async beforeEnter(to,from,next) {
-      const token = qs.parse(to.hash.slice(1)).access_token
-      window.opener.postMessage({ token }, 'http://localhost:8080')
-      //https://github.com/ljharb/qs/issues/222
-      console.log(token)
+      console.log('tadyyyyyyyyyyyyyyyyyyyyyyyyy')
+      const code = to.query.code
+      console.log(code,to)
+      window.opener.postMessage({ code }, 'http://localhost:8080')
+      console.log(code)
       window.close();
     }
   },
