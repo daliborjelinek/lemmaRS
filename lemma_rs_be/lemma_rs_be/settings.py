@@ -16,10 +16,10 @@ import environ
 
 from pathlib import Path
 
-env = environ.Env(DEBUG=(bool, False))
-env.read_env(env.str('ENV_PATH', '.env'))
+root = environ.Path(__file__) - 2  # get root of the project
+env = environ.Env()
+env.read_env(env.str('ENV_PATH', '.env'))  # reading .env file
 
-print(env('DATABASE_URL'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,7 +34,14 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS: env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = ['*']
+
+FORCE_SCRIPT_NAME = '/api/'
+STATIC_URL = "/api/staticfiles/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+MEDIA_URL = "/mediafiles/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
 
 # Application definition
@@ -106,15 +113,17 @@ WSGI_APPLICATION = 'lemma_rs_be.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lemmars',
-        'USER': 'lemmars',
-        'PASSWORD': 'lemmars',
-        'HOST': '127.0.0.1',
-        'PORT': 5433
-    }
+    'default': env.db()
 }
+
+DEFAULT_RENDERER_CLASSES = (
+    'rest_framework.renderers.JSONRenderer',
+)
+
+if DEBUG:
+    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 
 
 # Password validation
@@ -190,7 +199,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'rs.User'

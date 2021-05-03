@@ -35,12 +35,15 @@ FROM python:3.8.0
 RUN mkdir -p /home/lemma_rs_be
 
 # create the app user
-RUN adduser --system --group app
+# RUN adduser --system --group lemma_rs_be
+RUN useradd --user-group --shell /bin/false lemma_rs_be  
 
 # create the appropriate directories
 ENV HOME=/home/lemma_rs_be
 ENV APP_HOME=/home/lemma_rs_be/api
 RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $APP_HOME/mediafiles
 WORKDIR $APP_HOME
 
 # install dependencies
@@ -55,7 +58,7 @@ RUN pip install --no-cache /wheels/*
 COPY . $APP_HOME
 
 # chown all the files to the app user
-RUN chown -R app:app $APP_HOME
+# RUN chown -R lemma_rs_be:lemma_rs_be $APP_HOME
 
 # change to the app user
-USER app
+# USER lemma_rs_be
