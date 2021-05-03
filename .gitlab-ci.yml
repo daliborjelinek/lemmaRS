@@ -19,10 +19,11 @@ step-deploy-prod:
   only:
     - master
   script:
-    - sudo apt-get install -y python3-pip
-    - sudo pip3 install --upgrade setuptools
-    - sudo pip3 install docker-compose
-    - sudo docker image prune -f
+    - whoami
+    - apt-get install -y python3-pip
+    - pip3 install --upgrade setuptools
+    - pip3 install docker-compose
+    - docker image prune -f
     - docker-compose -f docker-compose.prod.yml up -d --build
     - docker-compose -f docker-compose.prod.yml exec api python manage.py migrate --noinput
     - docker-compose -f docker-compose.prod.yml exec api python manage.py collectstatic --no-input --clear
