@@ -20,8 +20,9 @@ step-deploy-prod:
     - master
   script:
     - sudo docker image prune -f
-    - ls
+    - docker-compose -f docker-compose.prod.yml down
     - docker-compose -f docker-compose.prod.yml up -d --build
+    - ls
     - docker-compose -f docker-compose.prod.yml exec -t api python manage.py migrate --noinput
     - docker-compose -f docker-compose.prod.yml exec -t api python manage.py collectstatic --no-input --clear
   environment: production
