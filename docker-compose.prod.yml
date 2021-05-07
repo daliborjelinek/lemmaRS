@@ -23,6 +23,8 @@ services:
   fe:
     build:
       context: ./lemma-rs-fe
+    ports: 
+      - 8081:80
     networks: 
       - backbone 
       - default
