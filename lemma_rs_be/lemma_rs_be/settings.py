@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from typing import List
 
 import environ
@@ -32,15 +33,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
-FORCE_SCRIPT_NAME = '/api/'
-STATIC_URL = "/api/staticfiles/"
+FORCE_SCRIPT_NAME = env('FORCE_SCRIPT_NAME')
+STATIC_URL = env('STATIC_URL')
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = "/mediafiles/"
+MEDIA_URL = env('MEDIA_URL')
 MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
 
 
@@ -59,8 +60,6 @@ INSTALLED_APPS = [
     'django_filters',
     'rs',
     #oauth
-    'oauth2_provider',
-    'drf_social_oauth2',
     #oauth new
     'rest_framework.authtoken',  # only if you use token authentication
     'social_django',  # django social auth
@@ -152,8 +151,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-    # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     # swagger
@@ -163,12 +160,9 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
-   'drf_social_oauth2.backends.DjangoOAuth2',
    'django.contrib.auth.backends.ModelBackend',
    'lemma_rs_be.muni_auth_be.Muni',
    'lemma_rs_be.mock_auth_be.Mock',
-   'social_core.backends.discord.DiscordOAuth2',
-   'social_core.backends.google_openidconnect.GoogleOpenIdConnect'
 )
 
 SOCIAL_AUTH_MUNI_KEY = env('SOCIAL_AUTH_MUNI_KEY')
@@ -179,14 +173,14 @@ SOCIAL_AUTH_MOCK_KEY = 'client-credentials-mock-client'
 SOCIAL_AUTH_MOCK_SECRET = 'client-credentials-mock-client-secret'
 SOCIAL_AUTH_MOCK_USER_FIELDS = ['username', 'email', 'fullname']
 
-REST_SOCIAL_OAUTH_REDIRECT_URI = env('REST_SOCIAL_OAUTH_REDIRECT_URI')
+#REST_SOCIAL_OAUTH_REDIRECT_URI = env('REST_SOCIAL_OAUTH_REDIRECT_URI')
 REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = env('REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI')
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'cs-CZ'
+LANGUAGE_CODE = 'en-EN'
 
 TIME_ZONE = 'UTC'
 
@@ -195,9 +189,12 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 AUTH_USER_MODEL = 'rs.User'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+
+}

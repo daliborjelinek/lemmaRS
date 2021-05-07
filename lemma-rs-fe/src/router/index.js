@@ -12,7 +12,7 @@ Vue.use(VueRouter)
 
 
 const ifAuthenticated = (to, from, next) => {
-  if (store.getters.isAuthenticated) {
+  if (localStorage.getItem('user-token')) {
     next();
     return;
   }
@@ -20,7 +20,7 @@ const ifAuthenticated = (to, from, next) => {
 };
 
 const ifNotAuthenticated = (to, from, next) => {
-  if (!store.getters.isAuthenticated) {
+  if (!localStorage.getItem('user-token')) {
     next();
     return;
   }
@@ -56,21 +56,19 @@ const routes = [
     path: '/auth/signinwin/main/',
     name: 'Auth',
     async beforeEnter(to,from,next) {
-      console.log('tadyyyyyyyyyyyyyyyyyyyyyyyyy')
       const code = to.query.code
       console.log(code,to)
-      window.opener.postMessage({ code }, 'http://localhost:8080')
+      window.opener.postMessage({ code }, process.env.VUE_APP_BASE_URL)
       console.log(code)
       window.close();
     }
   },
   {
     path: '/auth/callback/',
-    name: 'Auth',
+    name: 'Auth1',
     async beforeEnter(to,from,next) {
       const token = qs.parse(to.hash.slice(1)).access_token
-      window.opener.postMessage({ token }, 'http://localhost:8080')
-      //https://github.com/ljharb/qs/issues/222
+      window.opener.postMessage({ token }, process.env.VUE_APP_BASE_URL)
       console.log(token)
       window.close();
     }

@@ -16,15 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView
-
-
-
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('drf_social_oauth2.urls', namespace='drf')),
-    path('api-auth/', include('rest_framework.urls')),
-    path("o/", include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', include('rs.urls')),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:

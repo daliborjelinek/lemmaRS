@@ -8,15 +8,12 @@ services:
     command: gunicorn lemma_rs_be.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/lemma_rs_be/api/staticfiles
-    ports:
-      - 8000:8000
     expose:
       - 8000
     depends_on:
       - db
   db:
     image: postgres:13-alpine
-    tty: true
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -26,8 +23,9 @@ services:
   fe:
     build:
       context: ./lemma-rs-fe
-    ports: 
-      - 8080:8080
+    networks: 
+      - backbone 
+      - default
   apisrv:
     build: ./lemma_rs_be/apiserver
     volumes:
@@ -35,12 +33,13 @@ services:
       - media_volume:/home/lemma_rs_be/api/mediafiles
     depends_on:
       - api
-    
+    networks: 
+      - backbone
+      - default
 volumes:
   postgres_data:
   static_volume:
   media_volume:
 networks:
-  default:
-    external:
-      name: backbone
+    backbone:
+      external: true    

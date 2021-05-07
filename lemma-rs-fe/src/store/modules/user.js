@@ -38,7 +38,6 @@ const actions = {
     try{
       const response = await API.putUser(state.profile)
       dispatch('notify',{type:'success', text: 'Uživatel uložen' })
-      console.log(response)
     } catch(e) {
       commit(USER_ERROR);
       dispatch('notify',{type:'error', text: 'Ukládání uživatele se nezdařilo'})

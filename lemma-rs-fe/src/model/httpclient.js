@@ -1,11 +1,11 @@
 import axios from 'axios'
 import store from '@/store'
-import router from '@/router'
+import { isJwtExpired } from 'jwt-check-expiration';
 import {AUTH_LOGOUT} from "@/store/actions/auth";
-
+import router from '@/router';
 
 export const AXIOS = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: process.env.VUE_APP_API_URL,
     headers: {}
 })
 
@@ -16,7 +16,6 @@ AXIOS.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = 'Bearer ' + token;
         }
-        // config.headers['Content-Type'] = 'application/json';
         return config;
     },
     error => {
@@ -27,17 +26,24 @@ AXIOS.interceptors.request.use(
 //Add a response interceptor
 
 
-AXIOS.interceptors.response.use(undefined, (err) => {
-    return new Promise(function (resolve, reject) {
+AXIOS.interceptors.response.use(undefined, async (err) => {
 
-        if (err.response.status === 401) {
+    if (err.response?.status === 401) {
+        const accessToken = localStorage.getItem('user-token');
+        const refreshToken = localStorage.getItem('refresh-token')
+        if (accessToken && refreshToken && isJwtExpired(accessToken) && !isJwtExpired(refreshToken)){
+                console.log('refreshing token...')
+                const newAccesToken = await store.dispatch('getNewAccessToken');
+                localStorage.setItem('user-token',newAccesToken)
+                return AXIOS(err.config);
 
-            // if you ever get an unauthorized, logout the user
-            store.dispatch(AUTH_LOGOUT)
-            router.push({name: 'Login'})
         }
-        throw err;
-    });
+        store.dispatch(AUTH_LOGOUT)
+        router.push({name: 'Login'})
+
+    }
+    return Promise.reject(err);
+
 });
 
 export default {
@@ -114,11 +120,10 @@ export default {
     },
     async getJWT(code, provider) {
         try {
-            const response = await AXIOS.post("/login/social/jwt-pair-user/", {
+            const response = await AXIOS.post("/login/social/jwt-pair/", {
                 provider,
                 code
             })
-            console.log(response.data)
             return response.data
         } catch (e) {
             console.log("Token conversion FAILED")
@@ -126,4 +131,16 @@ export default {
         }
 
     },
+    async refreshToken(refresh) {
+        try {
+            const response = await AXIOS.post("/token/refresh/", {
+                refresh
+            })
+            return response.data
+        } catch (e) {
+            console.log("Token refresh FAILED")
+            console.log(e)
+        }
+
+    }
 }

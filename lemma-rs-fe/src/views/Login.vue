@@ -9,8 +9,7 @@
             <p class="display-1">RS lemma</p>
             <div @click="loginMuni" class="munibtn" v-ripple></div>
           </div>
-           <div>
-
+           <div v-if="mode === 'development'">
             <v-btn class="mt-2" @click="loginMock" >Mock login</v-btn>
           </div>
         </v-card-text>
@@ -37,11 +36,14 @@ export default {
   },
   methods: {
     loginMuni() {
+      console.log(process.env.VUE_APP_BASE_URL)
+      const clientId='68a86438-6400-4b77-8a4a-d6b3a52ac6b6'
+      const redirectUri= process.env.VUE_APP_BASE_URL + '/auth/signinwin/main'
       this.auth_backend = 'muni';
       this.$store.commit(AUTH_REQUEST);
-         const url =
+         const url =`https://oidc.muni.cz/oidc/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=openid profile email&response_type=code`
          //"https://oidc.muni.cz/oidc/authorize?client_id=68a86438-6400-4b77-8a4a-d6b3a52ac6b6&redirect_uri=http://localhost:8080/auth/signinwin/main&scope=openid profile email&response_type=token id_token&response_mode=form_post";
-         "https://oidc.muni.cz/oidc/authorize?client_id=68a86438-6400-4b77-8a4a-d6b3a52ac6b6&redirect_uri=http://localhost:8080/auth/signinwin/main&scope=openid profile email&response_type=code"
+         //  "https://oidc.muni.cz/oidc/authorize?client_id=68a86438-6400-4b77-8a4a-d6b3a52ac6b6&redirect_uri=http://localhost:8080/auth/signinwin/main&scope=openid profile email&response_type=code"
           window.open(url, "popup", "height=600,width=500");
     },
     loginMock() {
@@ -53,10 +55,15 @@ export default {
       window.open(url, "popup", "height=600,width=500");
     },
     async authCallback(event) {
-      if ((event.origin !== 'http://localhost:8080') || (event.source.name !== 'popup')) return;
+      if ((event.origin !== process.env.VUE_APP_BASE_URL) || (event.source.name !== 'popup')) return;
       console.log(event.data)
-      await this.$store.dispatch(AUTH_REQUEST,{code: event.data.code, backend: this.auth_backend})
-      this.$router.push('/');
+      try{
+        await this.$store.dispatch(AUTH_REQUEST,{code: event.data.code, backend: this.auth_backend})
+        this.$router.push('/');
+      }catch (e){
+        this.$store.dispatch('notify',{type:'error', text: 'Přihlášení selhalo'})
+      }
+
     },
   },
   created() {
@@ -64,6 +71,9 @@ export default {
   },
   destroyed() {
       window.removeEventListener("message", this.authCallback);
+  },
+  computed:{
+    mode: () => process.env.NODE_ENV
   }
 };
 </script>
