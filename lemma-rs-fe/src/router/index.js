@@ -58,7 +58,7 @@ const routes = [
     async beforeEnter(to,from,next) {
       const code = to.query.code
       console.log(code,to)
-      window.opener.postMessage({ code }, process.env.VUE_APP_BASE_URL)
+      window.opener.postMessage({ code }, window.location.origin)
       console.log(code)
       window.close();
     }
@@ -68,7 +68,7 @@ const routes = [
     name: 'Auth1',
     async beforeEnter(to,from,next) {
       const token = qs.parse(to.hash.slice(1)).access_token
-      window.opener.postMessage({ token }, process.env.VUE_APP_BASE_URL)
+      window.opener.postMessage({ token }, window.location.origin)
       console.log(token)
       window.close();
     }

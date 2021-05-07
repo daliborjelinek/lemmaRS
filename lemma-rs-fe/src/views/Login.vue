@@ -36,9 +36,9 @@ export default {
   },
   methods: {
     loginMuni() {
-      console.log(process.env.VUE_APP_BASE_URL)
+      console.log(window.location.origin)
       const clientId='68a86438-6400-4b77-8a4a-d6b3a52ac6b6'
-      const redirectUri= process.env.VUE_APP_BASE_URL + '/auth/signinwin/main'
+      const redirectUri= window.location.origin + '/auth/signinwin/main'
       this.auth_backend = 'muni';
       this.$store.commit(AUTH_REQUEST);
          const url =`https://oidc.muni.cz/oidc/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=openid profile email&response_type=code`
@@ -55,7 +55,7 @@ export default {
       window.open(url, "popup", "height=600,width=500");
     },
     async authCallback(event) {
-      if ((event.origin !== process.env.VUE_APP_BASE_URL) || (event.source.name !== 'popup')) return;
+      if ((event.origin !== window.location.origin) || (event.source.name !== 'popup')) return;
       console.log(event.data)
       try{
         await this.$store.dispatch(AUTH_REQUEST,{code: event.data.code, backend: this.auth_backend})
