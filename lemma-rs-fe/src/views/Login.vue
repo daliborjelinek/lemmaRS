@@ -36,7 +36,6 @@ export default {
   },
   methods: {
     loginMuni() {
-      console.log(window.location.origin)
       const clientId='68a86438-6400-4b77-8a4a-d6b3a52ac6b6'
       const redirectUri= window.location.origin + '/auth/signinwin/main'
       this.auth_backend = 'muni';
@@ -47,11 +46,15 @@ export default {
           window.open(url, "popup", "height=600,width=500");
     },
     loginMock() {
+      const clientId='client-credentials-mock-client'
+      const redirectUri= window.location.origin + '/#/auth/signinwin/main'
       this.auth_backend = 'mock';
       this.$store.commit(AUTH_REQUEST);
-         const url =
+      // const url =
         //"http://localhost:4011/connect/authorize?client_id=implicit-mock-client&redirect_uri=http://localhost:8080/auth/signinwin/main&scope=openid profile email&response_type=token id_token&nonce=cppd09c80j9"
-        "http://localhost:4011/connect/authorize?client_id=client-credentials-mock-client&redirect_uri=http://localhost:8080/auth/signinwin/main&scope=openid profile email&response_type=code"
+      //  "http://localhost:4011/connect/authorize?client_id=client-credentials-mock-client&redirect_uri=http://localhost:8080/auth/signinwin/main&scope=openid profile email&response_type=code"
+      const url =`http://localhost:4011/connect/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=openid profile email&response_type=code`
+
       window.open(url, "popup", "height=600,width=500");
     },
     async authCallback(event) {
