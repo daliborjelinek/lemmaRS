@@ -24,11 +24,11 @@ services:
     build:
       context: ./lemma-rs-fe
     networks: 
-      - backbone 
-      - default
+      backbone:
+        aliases:
+          - rs-fe
+      default:
   apisrv:
-    ports: 
-      - 8081:80
     build: ./lemma_rs_be/apiserver
     volumes:
       - static_volume:/home/lemma_rs_be/api/staticfiles
@@ -36,8 +36,10 @@ services:
     depends_on:
       - api
     networks: 
-      - backbone
-      - default
+      backbone:
+        aliases:
+          - rs-api
+      default:
 volumes:
   postgres_data:
   static_volume:
