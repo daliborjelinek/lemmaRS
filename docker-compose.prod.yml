@@ -23,12 +23,12 @@ services:
   fe:
     build:
       context: ./lemma-rs-fe
-    ports: 
-      - 8081:80
     networks: 
       - backbone 
       - default
   apisrv:
+    ports: 
+      - 8081:80
     build: ./lemma_rs_be/apiserver
     volumes:
       - static_volume:/home/lemma_rs_be/api/staticfiles
