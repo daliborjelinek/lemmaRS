@@ -66,12 +66,14 @@ INSTALLED_APPS = [
     'rest_social_auth',  # this package
     #swagger
     'drf_spectacular',
-    'rest_framework_api_key'
+    'rest_framework_api_key',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,6 +85,19 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
 
 CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS')
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Content-Disposition'
+]
 
 ROOT_URLCONF = 'lemma_rs_be.urls'
 
@@ -165,6 +180,19 @@ AUTHENTICATION_BACKENDS = (
    'lemma_rs_be.mock_auth_be.Mock',
 )
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',  # <--- enable this one
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
 SOCIAL_AUTH_MUNI_KEY = env('SOCIAL_AUTH_MUNI_KEY')
 SOCIAL_AUTH_MUNI_SECRET = env('SOCIAL_AUTH_MUNI_SECRET')
 SOCIAL_AUTH_MUNI_USER_FIELDS = ['username', 'email', 'fullname']
@@ -194,7 +222,6 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 AUTH_USER_MODEL = 'rs.User'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
-
 }

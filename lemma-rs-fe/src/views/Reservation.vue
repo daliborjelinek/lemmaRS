@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <v-main class="d-flex">
     <div id="filter-sidebar" :class="{ show: $vuetify.breakpoint.mdAndUp }">
       <filters :filtersData="filtersData" />
     </div>
@@ -16,7 +16,7 @@
       <resources :displayStyle="filtersData.displayStyle" />
     </div>
     <v-navigation-drawer floating v-model="drawer" temporary app>
-      
+
       <reservation-sidebar v-if="drawerContent === 'reservation'" />
       <filters :filtersData="filtersData" v-if="drawerContent === 'filters'" />
     </v-navigation-drawer>
@@ -38,6 +38,7 @@
    position: fixed;
   width: 280px;
   height: 100%;
+  padding-bottom: 64px;
 }
 
 #filter-sidebar.show,
@@ -70,6 +71,7 @@ import ReservationSidebar from "./reservation/ReservationSidebar";
 import Resources from "./reservation/Resources"
 export default {
   data: () => ({
+    selectedResources:[],
     drawer: false,
     drawerContent: null,
     filtersData: {

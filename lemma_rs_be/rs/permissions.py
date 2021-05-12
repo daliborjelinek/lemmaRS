@@ -35,6 +35,18 @@ class ProjectPermission(permissions.BasePermission):
             return request.user.is_authenticated
 
 
+class CommonReadAdminAndProviderAll(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and (request.user.role == Role.ADMIN or
+                                                  request.user.role == Role.PROVIDER or
+                                                  request.method in SAFE_METHODS)
+
+
+class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and (request.user.role == Role.ADMIN)
+
+
 class ProjectGroupPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and (request.user.role == Role.ADMIN or

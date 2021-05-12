@@ -1,7 +1,7 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Resource, Project, ProjectGroup, PermissionLevel, Tag, User
+from .models import Resource, Project, ProjectGroup, PermissionLevel, Tag, User, PermissionRequest, Reservation, \
+    ReservedResource
 
 
 class SimpleUserSerializer(serializers.ModelSerializer):
@@ -13,8 +13,8 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 class UserReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'is_active', 'fullname', 'role', 'role_display', 'email', 'phone', 'address',
-                  'calendar_data', 'room']
+        fields = ['id', 'username', 'is_active', 'fullname', 'permission_level', 'role', 'role_display', 'email',
+                  'phone', 'address', 'calendar_data', 'room']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -23,28 +23,24 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room']
 
 
-class ResourceFullSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Resource
-        fields = ('name', 'description', 'created_at')
-
-
-class ResourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Resource
-        provider = SimpleUserSerializer(read_only=True)
-        tags = serializers.SlugRelatedField(
-            many=True,
-            slug_field='name',
-            queryset=Tag.objects.all()
-        )
-        fields = ('name', 'description', 'price', 'image', 'provider', 'tags')
-
-
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
-        fields = ['name']
+        fields = ['id', 'name']
+
+
+class ResourceSerializer(serializers.ModelSerializer):
+    # tag_str = serializers.CharField(source='tags', read_only=True)
+    tags_str = serializers.StringRelatedField(source='tags', many=True, read_only=True)
+    required_permission_level_str = serializers.StringRelatedField(source='required_permission_level', read_only=True)
+    provider_str = serializers.StringRelatedField(source='provider', read_only=True)
+
+    class Meta:
+        model = Resource
+        provider = SimpleUserSerializer(read_only=True)
+        fields = (
+            'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider', 'provider_str',
+            'tags', 'tags_str', 'required_permission_level', 'required_permission_level_str')
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
@@ -71,3 +67,46 @@ class PermissionLevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = PermissionLevel
         fields = '__all__'
+
+
+# PERMISSION REQUESTS
+class PermissionRequestCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PermissionRequest
+        fields = ('requested_level', 'reason')
+
+
+class PermissionRequestResolveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PermissionRequest
+        fields = ('expiration_date', 'approved', 'response')
+
+
+class PermissionRequestFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PermissionRequest
+        fields = '__all__'
+
+
+class ReservedResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReservedResource
+        fields = ('real_return_date', 'real_pickup_date', 'comment', 'resource')
+
+
+class ReservationSerializer(serializers.ModelSerializer):
+    resources = ReservedResourceSerializer(many=True)
+
+    class Meta:
+        model = Reservation
+        fields = ('pickup_date_time', 'return_date_time', 'picked_up', 'applicant', 'approved', 'approved_by','resources')
+
+
+class ReservationCreateSerializer(serializers.ModelSerializer):
+    resources = serializers.ListField(
+        child=serializers.IntegerField()
+    )
+
+    class Meta:
+        model = Reservation
+        fields = ('pickup_date_time', 'return_date_time', 'resources')

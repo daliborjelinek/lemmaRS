@@ -1,8 +1,8 @@
 <template>
   <v-app>
-     <v-overlay z-index="0">
-       
-     </v-overlay>
+    <lazy-background style="position: fixed;" src="https://wallpaperaccess.com/full/2837862.jpg" />
+    <v-overlay z-index="0"/>
+
     <navbar v-if="$route.name !== 'Login'" />
     <transition
       mode="out-in"
@@ -17,7 +17,6 @@
 <script>
 import Navbar from "./views/Navbar"
 import Toaster from "./components/Toaster"
-import httpclient from '@/model/httpclient.js'
 import { USER_REQUEST } from "@/store/actions/user";
 export default {
   components:{

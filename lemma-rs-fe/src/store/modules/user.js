@@ -17,7 +17,7 @@ const state = { status: "",
 const getters = {
   getProfile: state => state.profile,
   getRole: state => state.profile.role,
-  isProfileLoaded: state => !!state.profile.fullname,
+  getDisplayRole: state => state.profile.role_display,
   getUserField
 };
 
@@ -61,9 +61,6 @@ const mutations = {
   },
   [AUTH_LOGOUT]: state => {
     state.profile = {};
-  },
-  [USER_SET_ROLE]: (state,role) => {
-    state.profile.role = role;
   }
 };
 

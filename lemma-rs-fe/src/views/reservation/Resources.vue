@@ -3,39 +3,56 @@
     transition(mode="out-in", name="fade")
       #grid(key="1", v-if="displayStyle === 'cards'")
         v-card.pointer(
-          @click="openResource(item)",
-          v-ripple="",
-          :key="index",
-          v-for="(item, index) in 20",
+          ripple=false
+          @click="openResource(resource)",
+          :key="resource.id",
+          v-for="(resource, index) in filteredResources",
           max-width="300"
+          color="#0000008c"
+          class="d-flex flex-column"
         )
-          v-img(
-            height="200",
-            :src="'https://picsum.photos/300/250?random=' + index"
-          )
-          v-card-title Canon EOS 80D + 18-55mm
-          v-card-text.subtitle-1
-            v-icon mdi-account-cog
-            span Hana Lysáková
+
+          div(style="height: 200px")
+            v-img.rounded-t(height="100%" v-if="resource.image_url" :src="apiUrl + resource.image_url")
+            v-img.rounded-t(height="100%" v-else src='@/assets/placeholder.jpg' )
+          v-card-title.py-1(style="word-break: break-word;") {{resource.name}}
+          v-spacer
+
+          v-card-text.subtitle-1.py-1
+            v-icon mdi-tag
+            tags(:tags="resource.tags_str")
+            div
+              v-icon mdi-account-cog
+              span.ml-1 {{resource.provider_str}}
           v-card-actions
-            v-btn Rezervovat
-            v-btn(@click="dialog = true", text)
+            v-btn(@click.stop="addReservationItem(resource)" )
+              v-icon(left) mdi-cart-arrow-down
+              span(v-if="!resource.selected") Rezervovat
+              span(v-else) Odebrat
+            v-btn(color=red, @click.stop="dialog = true", text )
               v-icon(left) mdi-calendar
               | Kalendář
-
       v-data-table.elevation-1(
         key="2",
         v-else,
         fixed-header,
         height="calc(100vh - 90px)",
         disable-pagination,
+        :value="selectedResources"
         hide-default-footer,
-        v-model="selected",
         :headers="headers",
-        :items="desserts",
-        item-key="name",
-        show-select
-      )
+        @click:row="rowClick"
+        :items="filteredResources",
+        item-key="id")
+        template(v-slot:item.provider="{ item }") {{providers.find(x => x.id === item.provider).fullname}}
+        template(v-slot:item.tags="{ item }")
+          tags(:tags="item.tags_str")
+        template(v-slot:item.actions="{ item }")
+          v-btn(@click.stop="dialog = true", text )
+            v-icon(left) mdi-calendar
+
+
+
     v-dialog(v-model="dialog")
       v-card
         v-toolbar(color="primary", dark)
@@ -65,72 +82,136 @@
         v-card
           v-toolbar(color="primary", dark) Zdroj {{activeResource.name}}
             v-spacer
-            v-btn(icon, v-if="!resourceDialogEditing" @click="editResource")
-              v-icon mdi-pencil
-            v-btn(icon, title="Uložit úpravy" v-else-if="resourceDialogEditing && activeResource.id" @click="saveResource")
-              v-icon mdi-content-save
-            v-btn(icon, title="Vytvořit zdroj"  v-else @click="saveResource")
-              v-icon mdi-plus-circle
-            v-btn(icon, @click="resourceDialog = false")
+            div(v-if="userRole !== 'COMMON'")
+              v-btn(icon, v-if="!resourceDialogEditing" @click="editResource")
+                v-icon mdi-pencil
+              v-btn(icon, :loading="saveResourceLoading" title="Uložit úpravy" v-else-if="resourceDialogEditing && activeResource.id" @click="saveResource")
+                v-icon mdi-content-save
+              v-btn(icon, :loading="saveResourceLoading" title="Vytvořit zdroj"  v-else @click="createResource")
+                v-icon mdi-plus-circle
+            v-btn(icon, @click="resourceDialog = false; resourceDialogEditing = false")
               v-icon mdi-close
           v-card-text
             v-row
-              v-col(style="max-width: 340px")
-                v-img.rounded(width="300", src="https://picsum.photos/300/250")
+              v-col()
+                input(id="image-upload" accept="image/x-png,image/jpeg" :disabled="!resourceDialogEditing" @change="(evt) =>loadImage(evt.target.files)" type="file" style="display: none")
+                label(for="image-upload")
+                  div(style="position: relative")
+                    v-img.rounded( v-if="activeResource.image_url" :style="resourceDialogEditing? 'cursor: pointer' : ''" :src="apiUrl + activeResource.image_url")
+                    v-img.rounded( v-else :style="resourceDialogEditing? 'cursor: pointer' : ''" src='@/assets/placeholder.jpg' )
+                    div(v-if="resourceDialogEditing" style="position: absolute; right:10px; bottom:10px")
+                      v-btn.mr-2(small fab @click="pasterActive = true" )
+                        v-icon(small) mdi-content-paste
+                      v-btn(fab small @click="activeResource.image_url = ''")
+                        v-icon(small) mdi-image-remove
               v-col
                 v-form#resource-form
-                  v-text-field(v-model="activeResource.name", hide-details, label="Název",prepend-icon="mdi-form-textbox", :disabled="!resourceDialogEditing")
+                  v-text-field(v-model="activeResource.name",
+                    hide-details,
+                    label="Název"
+                    :rules="[(v) => !!v || 'Vyplňte jméno zdroje']"
+                    prepend-icon="mdi-form-textbox",
+                    :disabled="!resourceDialogEditing")
                   v-select(prepend-icon="mdi-account-cog",
                     v-model="activeResource.provider"
                     hide-details,
                     :disabled="!resourceDialogEditing",
                     label="Výdejář",
-                    :items="['Hana Lysáková']")
-                  v-select.mt-2(prepend-icon="mdi-shield-lock", :disabled="!resourceDialogEditing", value="LEMMA nad 100" label="Úroveň oprávnění" :items="['LEMMA nad 100']")
-                  v-autocomplete(v-model="activeResource.tags",prepend-icon="mdi-tag", class="mt-0 pt-0", :items="tags", :disabled="!resourceDialogEditing", chips, deletable-chips, small-chips, label="Štítky", multiple)
+                    :item-value="(itm)=> itm.id" ,
+                    :item-text="(itm)=> itm.fullname"
+                    :items="providers")
+                  v-select.mt-2(prepend-icon="mdi-shield-lock",
+                    v-model="activeResource.required_permission_level"
+                    :disabled="!resourceDialogEditing",
+                    label="Úroveň oprávnění"
+                    :item-text="(itm) => itm.name"
+                    :item-value="(itm) => itm.level"
+                    :items="permissionLevels")
+                  v-autocomplete(
+                    v-model="activeResource.tags"
+                    prepend-icon="mdi-tag", class="mt-0 pt-0",
+                    :items="tags",
+                    :disabled="!resourceDialogEditing",
+                    chips,
+                    deletable-chips,
+                    small-chips,
+                    hide-details,
+                    label="Štítky",
+                    multiple,
+                    :item-value="(itm) => itm.id",
+                    :item-text="(itm) => itm.name")
                     template(v-slot:append-item)
                       v-divider
                       v-text-field.px-3(v-model="newTag", label="Nový štítek")
                         template(slot="append")
                           v-btn(icon, @click="createTag")
                             v-icon mdi-plus
-                  v-text-field(v-model="activeResource.price", label="Cena",prepend-icon="mdi-cash-multiple", type="number", :disabled="!resourceDialogEditing")
+                  v-text-field(v-model="activeResource.cost",
+                    label="Cena",
+                    prepend-icon="mdi-cash-multiple",
+                    type="number",
+                    :disabled="!resourceDialogEditing")
                     template(slot="append") Kč
+                  v-checkbox(prepend-icon="mdi-check-all"
+                    class="mt-0"
+                    :disabled="!resourceDialogEditing"
+                    v-model="activeResource.active"
+                    label="Zdroj je k dispozici")
+
+            v-divider
             v-row
-              v-col
-                h2 Popis
-                div(v-if="!resourceDialogEditing" v-html="activeResource.description")
-                v-textarea(v-else, v-model="activeResource.description")
-              v-col
-                h2 Interní poznámky
-                div(v-if="!resourceDialogEditing" v-html="activeResource.internalNotes")
-                v-textarea(v-else, v-model="activeResource.internalNotes")
+
+              v-col(class="pt-0")
+                v-tabs(v-model="resourceDetailTab" class="mb-3")
+                  v-tab Popis
+                  v-tab(v-if="userRole !== 'COMMON'") Interní poznámky
+                v-tabs-items(v-model="resourceDetailTab")
+                  v-tab-item
+                    div(v-if="!resourceDialogEditing" v-html="activeResource.description")
+                    vue-editor(v-else v-model="activeResource.description" :editor-toolbar="toolbarOptions")
+                  v-tab-item
+                    div(v-if="!resourceDialogEditing" v-html="activeResource.internal_notes")
+                    vue-editor(v-else v-model="activeResource.internal_notes" :editor-toolbar="toolbarOptions")
+
+    paster(:enable="pasterActive" @close="handlePaste")
     portal(to='add-resource-btn')
-        v-btn.mb-3(color="primary", block @click="createResource") Přidat zdroj
+      v-btn.mb-3(color="primary", block @click="createResourceDialog") Přidat zdroj
 </template>
 
 <script>
 import API from "@/model/httpclient";
-
+import {VueEditor} from "vue2-editor";
+import Tags from "@/components/Tags"
+import Paster from "@/components/Paster";
 
 const emptyResource = () => {
   return {
     name: "",
     description: "",
-    internalNotes: "",
-    price: 0,
-    image: null,
+    internal_notes: "",
+    cost: 0,
+    image_url: null,
     tags: [],
     provider: null,
-    requiredPermissionLevel: 0
+    required_permission_level: 1
   };
 };
 
 export default {
   props: ["displayStyle"],
-  mounted() {
-    this.loadTags();
-    this.loadProviders();
+  components: {
+    Tags,
+    VueEditor,
+    Paster
+  },
+  async mounted() {
+
+    await this.loadTags()
+    await this.loadProviders()
+    await this.loadPermissionLevels()
+    await this.$store.dispatch('getProjects')
+    await this.$store.dispatch('getResources')
+
 
   },
   computed: {
@@ -140,28 +221,108 @@ export default {
       );
       return new Date(this.value).toLocaleString("cs-CZ", {month: "long"});
     },
+    userRole() {
+      return this.$store.getters.getDisplayRole
+    },
+    filteredResources() {
+      return this.$store.getters.filteredResources
+    },
+    selectedResources() {
+      return this.$store.state.reservation.selectedResources
+    },
+    apiUrl() {
+      return process.env.VUE_APP_API_URL
+    },
   },
   methods: {
     click(props) {
       console.log(props);
     },
-    createResource() {
+    addReservationItem(item){
+      this.$store.commit('toggleSelectedItem',item)
+    },
+    rowClick(item, row) {
+
+      this.activeResource = {...item};
+      this.resourceDialog = true
+
+    },
+    createResourceDialog() {
       this.activeResource = emptyResource()
+      this.resourceDialogEditing = true
       this.resourceDialog = true
     },
     openResource(resource) {
+      this.activeResource = {...resource};
+      this.resourceDialog = true
     },
     editResource() {
       this.resourceDialogEditing = true;
     },
-    saveResource() {
-      this.resourceDialogEditing = false;
+    async loadImage(files) {
+      const file = files[0]
+      if(!file) return;
+      //this.activeResource.image = evt.target.files[0]
+      const formData = new FormData();
+      formData.append('file', file);
+      const url = await API.uploadImage(formData, file.name)
+      this.activeResource.image_url = url
+
+    },
+    handlePaste(files){
+      this.pasterActive = false;
+      this.loadImage(files)
     },
     async loadTags() {
       this.tags = await API.getTags()
     },
     async loadProviders() {
-      this.providers = API.getUsers('PROVIDER')
+      this.providers = await API.getUsers('PROVIDER,ADMIN')
+    },
+
+    async loadPermissionLevels() {
+      this.permissionLevels = await API.getPermissionLevels()
+      console.log(this.permissionLevels)
+    },
+    async createResource() {
+      try {
+        this.saveResourceLoading = true
+        this.activeResource = await API.createResource(this.activeResource);
+        await this.$store.dispatch('getResources')
+        await this.$store.dispatch("notify", {
+          type: "success",
+          text: "Zdroj vytvořen",
+        });
+      } catch (e) {
+        console.log(e)
+        await this.$store.dispatch("notify", {
+          type: "error",
+          text: "Vytváření zdroje selhalo",
+        });
+
+      }
+      this.saveResourceLoading = false
+    },
+    async saveResource() {
+      this.saveResourceLoading = true
+      try {
+
+        await API.updateResource(this.activeResource);
+        await this.$store.dispatch('getResources')
+        this.resourceDialogEditing = false
+        await this.$store.dispatch("notify", {
+          type: "success",
+          text: "Zdroj uložen",
+        });
+      } catch (e) {
+        console.log(e)
+        await this.$store.dispatch("notify", {
+          type: "error",
+          text: "Ukládání zdroje selhalo",
+        });
+
+      }
+      this.saveResourceLoading = false
     },
     async createTag() {
       try {
@@ -187,10 +348,11 @@ export default {
   data() {
     return {
       value: new Date(),
+      resourceDetailTab: 0,
       tags: [],
       newTag: '',
       providers: [],
-      selected: [],
+      permissionLevels: [],
       events: [
         {
           color: "cyan",
@@ -201,121 +363,52 @@ export default {
         },
       ],
       dialog: false,
-      resourceDialog: true,
-      resourceDialogEditing: true,
+      resourceDialog: false,
+      resourceDialogEditing: false,
       activeResource: emptyResource(),
       headers: [
-        {
-          text: "Dessert (100g serving)",
-          align: "start",
-          sortable: false,
-          value: "name",
-        },
-        {text: "Calories", value: "calories"},
-        {text: "Fat (g)", value: "fat"},
-        {text: "Carbs (g)", value: "carbs"},
-        {text: "Protein (g)", value: "protein"},
-        {text: "Iron (%)", value: "iron"},
+        {text: "Jméno", value: "name"},
+        {text: "Výdejář", value: "provider"},
+        {text: "Oprávnění", value: "required_permission_level_str"},
+        {text: "Tagy", value: "tags"},
+        {text: "Dostupné", value: "active"},
+        {text: "Akce", value: "actions", sortable: false},
       ],
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: "1%",
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: "1%",
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: "7%",
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: "8%",
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: "16%",
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: "0%",
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: "2%",
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: "45%",
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: "22%",
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: "6%",
-        },
-      ],
+      saveResourceLoading: false,
+      pasterActive:false,
+      toolbarOptions: [
+        [{'header': [1, 2, 3, 4, 5, 6, false]}],  // custom dropdown
+        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        [{'list': 'ordered'}, {'list': 'bullet'}],
+        ['clean']                                         // remove formatting button
+      ]
     };
   },
 };
 </script>
 
 <style lang="scss">
-#resource-form{
-  .v-label--is-disabled,.v-select__selection--disabled,.theme--dark.v-input--is-disabled, .v-icon--disabled, .theme--dark.v-input--is-disabled input, .v-chip__content {
+#resource-form {
+  .v-select__selection--disabled, .theme--dark.v-input--is-disabled, .v-icon--disabled, .theme--dark.v-input--is-disabled input, .v-icon, .v-chip__content {
     color: white !important;
   }
+
+  .v-label--is-disabled {
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
   .v-input--is-disabled.v-select .v-input__append-inner {
     display: none;
   }
-  .v-chip--disabled{
+
+  .v-chip--disabled {
     opacity: 1;
   }
 
+}
+
+.ql-toolbar.ql-snow, ql-container.ql-snow {
+  border: none;
 }
 
 #grid {
@@ -324,5 +417,10 @@ export default {
   grid-gap: 16px;
   justify-content: center;
   width: 100%;
+}
+#reservation-items{
+  th {
+    white-space: nowrap !important;
+  }
 }
 </style>

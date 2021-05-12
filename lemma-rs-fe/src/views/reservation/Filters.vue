@@ -1,5 +1,5 @@
 <template>
-  <v-card class="fill-height" elevation="5" color="#1e1e1ee6" rounded="0">
+  <v-card class="flex-grow-1 d-flex flex-column fill-height"  elevation="5" color="#1e1e1ee6" rounded="0">
     <v-card-title>
       Filtry <v-spacer />
        <v-btn-toggle mandatory v-model="filtersData.displayStyle">
@@ -18,11 +18,12 @@
 
     <v-card-text>
        <portal-target name="add-resource-btn" />
-     
       <v-text-field
+          v-debounce:300ms="search"
         placeholder="Hledat"
         class="ma-0 pa-0"
-        hide-details
+        persistent-hint
+        :hint="'Zobrazeno '+ $store.getters.filteredResourcesCount + ' výsledků'"
         append-icon="mdi-magnify"
       ></v-text-field>
 
@@ -62,7 +63,10 @@
       <v-divider class="mt-2"></v-divider>
     </v-card-text>
 
-    <v-list-item-group>
+    <v-list-item-group
+        class="flex-grow-1"
+        @change="filterTagChanged"
+        style="height: 200px; overflow-y: auto">
       <template v-for="(item, i) in items">
         <v-list-item dense :key="`item-${i}`" :value="item">
           <v-list-item-icon>
@@ -78,40 +82,66 @@
 </template>
 
 <script>
+import {createHelpers} from "vuex-map-fields";
+
+const { mapFields } = createHelpers({
+  getterType: "getResField",
+  mutationType: "updateResField",
+});
 export default {
   props: ['filtersData'],
+  computed:{
+    ...mapFields([
+
+    ]),
+    filters(){
+      return this.$store.state.reservation.search
+    }
+  },
+  methods:{
+    search(e){
+      this.$store.commit('setSearch',e)
+      console.log(e)
+    },
+    filterTagChanged(tag){
+
+      this.$store.commit('setTagFilter',tag?.value)
+    }
+  },
   data: function () {
     return {
       toggl: 'cards',
       items: [
         {
+          value: 1,
           name: "AUDIO",
           icon: "mdi-microphone-variant",
         },
         {
+          value: 2,
           name: "VIDEO",
           icon: "mdi-video-vintage",
         },
         {
+          value: 3,
           name: "OBJEKTIVY",
           icon: "mdi-camera-iris",
         },
         {
+          value: 4,
           name: "STABILIZACE",
           icon: "mdi-video-stabilization",
         },
         {
+          value: 5,
           name: "SVĚTLA",
           icon: "mdi-spotlight-beam",
         },
         {
+          value: 6,
           name: "PŘÍSLUŠENSTVÍ",
           icon: "mdi-battery-charging-high",
-        },
-        {
-          name: "POČÍTAČE",
-          icon: "mdi-desktop-classic",
-        },
+        }
       ],
     };
   },

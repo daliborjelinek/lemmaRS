@@ -4,8 +4,11 @@ import Resources from '../views/Reservation.vue'
 import Projects from '../views/Projects/Projects.vue'
 import User from '../views/User.vue'
 import Login from '@/views/Login.vue'
+import Test from '@/views/Test.vue'
 import qs from 'qs'
 import store from '@/store'
+import Reservations from "@/views/Reservations";
+import Permissions from "@/views/Permissions";
 
 
 Vue.use(VueRouter)
@@ -51,6 +54,23 @@ const routes = [
     name: 'Projects',
     component: Projects,
     beforeEnter: ifAuthenticated
+  },
+  {
+    path: '/Reservations',
+    name: 'Reservations',
+    component: Reservations,
+    beforeEnter: ifAuthenticated
+  },
+  {
+    path: '/Permissions',
+    name: 'Permissions',
+    component: Permissions,
+    beforeEnter: ifAuthenticated
+  },
+  {
+    path: '/Test',
+    name: 'Test',
+    component: Test,
   },
   {
     path: '/auth/signinwin/main/',

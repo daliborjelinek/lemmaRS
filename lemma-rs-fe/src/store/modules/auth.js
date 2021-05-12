@@ -7,6 +7,7 @@ import {
 } from "../actions/auth";
 import { USER_REQUEST } from "../actions/user";
 import API from "@/model/httpclient.js"
+import router from "@/router";
 
 
 const state = {
@@ -59,6 +60,7 @@ const mutations = {
   },
   [AUTH_LOGOUT]: state => {
     state.tokenProvided = false;
+    router.push('Login')
   }
 };
 

@@ -5,6 +5,14 @@ import cs from 'vuetify/es5/locale/cs';
 Vue.use(Vuetify);
 
 export default new Vuetify({
+  // breakpoint: {
+  //   thresholds: {
+  //     xs: 340,
+  //     sm: 1540,
+  //     md: 1600,
+  //     lg: 1700,
+  //   },
+  // },
   theme: {
     options: {
       customProperties: true,

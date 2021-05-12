@@ -7,11 +7,13 @@
         <v-card-text class="flex-grow-1 d-flex flex-column">
           <div>
             <v-alert
+              class="mb-0"
               dense
               icon="mdi-alert"
               text
               type="warning"
             >Vyžadováno schválení</v-alert>
+
 
             <v-dialog
               ref="dialog"
@@ -23,6 +25,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   v-model="dateRangeText"
+                  hide-details
                   label="Termín rezervace"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -30,7 +33,7 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="date" :min="new Date().toISOString()" no-title range scrollable>
+              <v-date-picker format="24hr" v-model="date" :min="new Date().toISOString()" no-title range scrollable>
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="modal = false">
                   Cancel
@@ -40,16 +43,18 @@
                 </v-btn>
               </v-date-picker>
             </v-dialog>
+            <div class="d-flex">
+              <Timepicker icon="true" class="pr-2" label="Začatek"/><Timepicker label="Konec"/>
+            </div>
             <v-autocomplete
               :items="[]"
               :loading="false"
               color="white"
-              hide-no-data
               hide-selected
+              hide-details
               item-text="Description"
               item-value="API"
               label="Projekt"
-              placeholder="Název projektu"
               prepend-icon="mdi-database-search"
               return-object
             ></v-autocomplete>
@@ -59,13 +64,13 @@
             class="flex-grow-1"
             style="height: 200px; overflow-y: auto"
           >
-            <v-list-item dense v-for="(item, i) in 15" :key="i">
+            <v-list-item dense v-for="(resource, i) in selectedResources" :key="resource.id">
               <v-list-item-content>
-                <v-list-item-title>Canon 550D + 18 - 55mm</v-list-item-title>
+                <v-list-item-title>{{resource.name}}</v-list-item-title>
               </v-list-item-content>
               <v-list-item-action>
-                <v-btn x-small icon>
-                  <v-icon color="grey lighten-1">mdi-delete</v-icon>
+                <v-btn @click="removeResource(resource)" x-small icon>
+                  <v-icon small color="grey lighten-1">mdi-delete</v-icon>
                 </v-btn>
               </v-list-item-action>
             </v-list-item>
@@ -75,7 +80,9 @@
 </template>
 
 <script>
+import Timepicker from "@/components/Timepicker";
 export default {
+  components: {Timepicker},
   data: () => ({
     date: [],
     showCalendar: false
@@ -84,6 +91,14 @@ export default {
     dateRangeText() {
       return this.date.join(" ~ ");
     },
+    selectedResources() {
+      return this.$store.state.reservation.selectedResources
+    }
   },
+  methods: {
+    removeResource(res) {
+      this.$store.commit('removeSelectedItem',res)
+    }
+  }
 };
 </script>

@@ -17,12 +17,15 @@
       <div class="d-md-none">
         <portal-target class="d-inline" name="responsive-buttons" />
 
-        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+
       </div>
+      <v-btn icon>
+        <v-icon>mdi-help-circle-outline</v-icon>
+      </v-btn>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" icon>
-            <v-icon>fas fa-user</v-icon>
+            <v-icon>mdi-account</v-icon>
           </v-btn>
         </template>
         <v-list>
@@ -34,6 +37,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer"></v-app-bar-nav-icon>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" right temporary app>
       <v-list>
@@ -65,14 +69,6 @@ export default {
       drawer: false,
       items: [
         {
-          text: "Rezervace",
-          action: () => {}
-        },
-        {
-          text: "Registrace",
-          action: () => {}
-        },
-        {
           text: "Zdroje",
           action: () => this.$router.push({name: 'Resources'})
         },
@@ -81,8 +77,12 @@ export default {
           action: () => this.$router.push({name: 'Projects'})
         },
         {
-          text: "Osoby",
-          action: () => {}
+          text: "Rezervace",
+          action: () => this.$router.push({name: 'Reservations'})
+        },
+        {
+          text: "Oprávnění",
+          action: () => this.$router.push({name: 'Permissions'})
         },
       ],
     };

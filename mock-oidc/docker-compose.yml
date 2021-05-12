@@ -44,77 +44,77 @@ services:
         USERS_CONFIGURATION_INLINE: |
           [
             {
-              "SubjectId":"vydejar1",
-              "Username":"vydejar1",
+              "SubjectId":"000000",
+              "Username":"000000",
               "Password":"pwd",
               "Claims": [
                 {
                   "Type": "name",
-                  "Value": "Jarda 1 Výdejář"
+                  "Value": "Petr Sojka"
                 },
                 {
                   "Type": "email",
-                  "Value": "jarda.vydejar@mail.muni.cz"
+                  "Value": "sojka@mail.muni.cz"
                 }
               ]
             },
             {
-              "SubjectId":"vydejar2",
-              "Username":"vydejar2",
+              "SubjectId":"000001",
+              "Username":"000001",
               "Password":"pwd",
               "Claims": [
                 {
                   "Type": "name",
-                  "Value": "Jarda Výdejář"
+                  "Value": "Hana Lysáková"
                 },
                 {
                   "Type": "email",
-                  "Value": "jarda.vydejar@mail.muni.cz"
+                  "Value": "lysakova@mail.muni.cz"
                 }
               ]
             },
             {
-              "SubjectId":"student1",
-              "Username":"student1",
+              "SubjectId":"100000",
+              "Username":"100000",
               "Password":"pwd",
               "Claims": [
                 {
                   "Type": "name",
-                  "Value": "Pepa 1 student"
+                  "Value": "John První"
                 },
                 {
                   "Type": "email",
-                  "Value": "pepa.student@mail.muni.cz"
+                  "Value": "john1@mail.muni.cz"
                 }
               ]
             },
             {
-              "SubjectId":"student2",
-              "Username":"student2",
+              "SubjectId":"200000",
+              "Username":"200000",
               "Password":"pwd",
               "Claims": [
                 {
                   "Type": "name",
-                  "Value": "Pepa 1 student"
+                  "Value": "James Druhý"
                 },
                 {
                   "Type": "email",
-                  "Value": "pepa.student@mail.muni.cz"
+                  "Value": "james2@mail.muni.cz"
                 }
               ]
             },
             {
-              "SubjectId":"1",
-              "Username":"1",
+              "SubjectId":"300000",
+              "Username":"300000",
               "Password":"pwd",
               "Claims": [
                 {
                   "Type": "name",
-                  "Value": "Petr Admin"
+                  "Value": "Jim Třetí Zodpovědný"
                 },
                 {
                   "Type": "email",
-                  "Value": "petr.admin@mail.muni.cz"
+                  "Value": "jim3@mail.muni.cz"
                 }
               ]
             }

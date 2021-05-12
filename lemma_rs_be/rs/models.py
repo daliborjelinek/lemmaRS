@@ -1,24 +1,36 @@
+from datetime import timedelta
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 
 # Create your models here.
+from django.db.models import Max, Value
+from django.db.models.functions import Coalesce
+from django.utils import timezone
+
 
 class Role(models.TextChoices):
     ADMIN = 'ADMIN'
     PROVIDER = 'PROVIDER'
     COMMON = 'COMMON'
 
+
+class Image(models.Model):
+    file = models.ImageField(upload_to='uploads/images/')
+
+
 class Resource(models.Model):
     name = models.CharField(max_length=160)
-    description = models.CharField(max_length=5000, default='')
-    internalNotes = models.CharField(max_length=5000, default='')
-    price = models.IntegerField(default=0)
-    image = models.ImageField(upload_to='uploads/resources/', blank=True)
-    provider = models.ForeignKey('Provider', on_delete=models.RESTRICT)
+    description = models.CharField(max_length=105000, default='', blank=True)
+    internal_notes = models.CharField(max_length=105000, default='', blank=True)
+    cost = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+    image_url = models.CharField(max_length=160, default='', blank=True)
+    provider = models.ForeignKey('User', on_delete=models.RESTRICT)
     tags = models.ManyToManyField('Tag', related_name='tags', blank=True)
-    requiredPermissionLevel = models.ForeignKey('PermissionLevel',on_delete=models.RESTRICT)
+    required_permission_level = models.ForeignKey('PermissionLevel', on_delete=models.RESTRICT)
 
     def __str__(self):
         return self.name
@@ -30,11 +42,13 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
 class PermissionLevel(models.Model):
     name = models.CharField(max_length=160, unique=True)
+    level = models.IntegerField(default=0, primary_key=True)
 
-def __str__(self):
-    return self.name
+    def __str__(self):
+        return self.name
 
 
 class AccountManager(BaseUserManager):
@@ -77,7 +91,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
 
     def __str__(self):
-        return self.username
+        return self.fullname
+
+    @property
+    def permission_level(self):
+        return self.my_permission_requests.filter(expiration_date__gte=timezone.now()).filter(approved=True).aggregate(
+            max_level=Coalesce(Max('requested_level'), Value(0))
+        )['max_level']
+        # self.my_permission_requests.aggregate(Max('requested_level')).filter(expiration_date__gte=datetime.now())
 
     class Meta:
         constraints = [
@@ -91,7 +112,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Provider(User):
     class ProviderObjects(models.Manager):
         def get_queryset(self, *args, **kwargs):
-            return super().get_queryset(*args, **kwargs).filter(role=User.Role.PROVIDER)
+            return super().get_queryset(*args, **kwargs).filter(role=Role.PROVIDER)
 
     objects = ProviderObjects()
 
@@ -102,7 +123,7 @@ class Provider(User):
 class CommonUser(User):
     class CommonUserObjects(models.Manager):
         def get_queryset(self, *args, **kwargs):
-            return super().get_queryset(*args, **kwargs).filter(role=User.Role.COMMON)
+            return super().get_queryset(*args, **kwargs).filter(role=Role.COMMON)
 
     objects = CommonUserObjects()
 
@@ -136,5 +157,41 @@ class ProjectGroup(models.Model):
     description = models.CharField(max_length=10000, blank=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class PermissionRequest(models.Model):
+    reason = models.CharField(max_length=10000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    applicant = models.ForeignKey('User', related_name='my_permission_requests', on_delete=models.PROTECT)
+    approved = models.BooleanField(default=None, null=True)
+    expiration_date = models.DateTimeField(default=timezone.now() + timedelta(days=365))
+    approved_by = models.ForeignKey('User', null=True, default=None, related_name='approved_permission_request', on_delete=models.PROTECT)
+    response = models.CharField(max_length=10000)
+    requested_level = models.ForeignKey('PermissionLevel', on_delete=models.PROTECT)
+
+
+class Reservation(models.Model):
+    pickup_date_time = models.DateTimeField()
+    return_date_time = models.DateTimeField()
+    picked_up = models.BooleanField(default=False)
+    applicant = models.ForeignKey('User', on_delete=models.PROTECT)
+    approved = models.BooleanField(default=False)
+    approved_by = models.ForeignKey('User', related_name='reservation_approved_by', on_delete=models.PROTECT)
+
+
+class ReservedResource(models.Model):
+    resource = models.ForeignKey('User', on_delete=models.PROTECT)
+    reservation = models.ForeignKey('Reservation', related_name='resources', on_delete=models.PROTECT)
+    real_return_date = models.DateTimeField(blank=True)
+    comment = models.CharField(max_length=10000, default="")
+    real_pickup_date = models.DateTimeField(blank=True)
+
+
+
+
+
+
+
+
 
 

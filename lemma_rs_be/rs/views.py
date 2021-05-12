@@ -1,28 +1,31 @@
 from django.db.models import Q
-from django_filters import filters
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_api_key.permissions import HasAPIKey
+from url_filter.integrations.drf import DjangoFilterBackend
 
 from . import serializers
+from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation
 from .permissions import UserPermission, ProjectPermission, ProjectGroupPermission, ResourcePermission, \
-    PermissionLevelPermission, TagPermission
-from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag
+    PermissionLevelPermission, TagPermission, CommonReadAdminAndProviderAll, IsAdmin
 from .serializers import ProjectSerializer, ProjectGroupSerializer, ResourceSerializer, PermissionLevelSerializer, \
-    TagSerializer
+    TagSerializer, PermissionRequestFullSerializer, PermissionRequestCreateSerializer, \
+    PermissionRequestResolveSerializer, ReservationSerializer, ReservationCreateSerializer
 
 
 class UserViewSet(mixins.RetrieveModelMixin,
                   mixins.UpdateModelMixin,
                   mixins.ListModelMixin, GenericViewSet):
-    permission_classes = [UserPermission]
+    permission_classes = [UserPermission | HasAPIKey]
     queryset = User.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['role']
+    filter_fields = ['role']
 
     def get_serializer_class(self):
         if self.action == 'update':
@@ -36,6 +39,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
             return self.request.user
 
         return super(UserViewSet, self).get_object()
+
 
 @extend_schema_view(
     list=extend_schema(parameters=[
@@ -60,8 +64,6 @@ class ProjectViewSet(mixins.CreateModelMixin,
         if username is not None:
             queryset = queryset.filter(Q(members__username=username) | Q(owner=username))
         return queryset
-
-
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -97,8 +99,8 @@ class ProjectGroupViewSet(viewsets.ModelViewSet):
 
 
 class ResourceViewSet(viewsets.ModelViewSet):
-    queryset = Resource.objects.all()
-    permission_classes = [ResourcePermission]
+    queryset = Resource.objects.order_by('name').all()
+    permission_classes = [ResourcePermission | HasAPIKey]
     serializer_class = ResourceSerializer
 
 
@@ -109,7 +111,82 @@ class PermissionLevelViewSet(viewsets.ModelViewSet):
 
 
 class TagViewSet(viewsets.ModelViewSet):
-
     queryset = Tag.objects.all()
     permission_classes = [TagPermission]
     serializer_class = TagSerializer
+
+
+class PermissionRequestViewSet(viewsets.ModelViewSet):
+    queryset = PermissionRequest.objects.all()
+    permission_classes = [CommonReadAdminAndProviderAll]
+    serializer_class = PermissionRequestFullSerializer
+
+    @extend_schema(
+        request=PermissionRequestCreateSerializer,
+        responses={204: None}
+    )
+    @action(methods=['PUT'], detail=False, name='Send request for higher permissions')
+    def send_request(self, request):
+        serializer = PermissionRequestCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            reason = serializer.validated_data.get('reason')
+            applicant = request.user
+            requested_level = PermissionLevel.objects.get(pk=serializer.validated_data.get('requested_level'))
+            PermissionRequest.objects.create(reason=reason, applicant=applicant, requested_level=requested_level)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        request=PermissionRequestResolveSerializer,
+        responses={204: None}
+    )
+    @action(methods=['PUT'], detail=False, name='Send result of permission request', permission_classes=[IsAdmin])
+    def resolve_request(self, request):
+        serializer = PermissionRequestResolveSerializer(data=request.data)
+        if serializer.is_valid():
+            approved = serializer.validated_data.get('approved')
+            approved_by = request.user
+            response = serializer.validated_data.get('response')
+            expiration_date = serializer.validated_data.get('expiration_date')
+            PermissionRequest.objects.update(approved=approved, approved_by=approved_by, response=response,
+                                             expiration_date=expiration_date)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReservationViewSet(viewsets.ModelViewSet):
+    # todo: exlude porvider from
+    queryset = Reservation.objects.all()
+    permission_classes = [CommonReadAdminAndProviderAll]
+    serializer_class = ReservationSerializer
+
+    @extend_schema(
+        request=ReservationCreateSerializer,
+        responses={204: None}
+    )
+    @action(methods=['PUT'], detail=False, name='CreateReservation')
+    def create_reservation(self, request):
+        serializer = ReservationCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            pickup_date_time = serializer.validated_data.get('pickup_date_time')
+            return_date_time = serializer.validated_data.get('pickup_date_time')
+            applicant = request.user
+
+            Reservation.objects.update(pickup_date_time=pickup_date_time, return_date_time=return_date_time,
+                                       applicant=applicant)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FileUploadView(APIView):
+    permission_classes = [IsAuthenticated | HasAPIKey]
+    parser_classes = (MultiPartParser,)
+
+    def post(self, request, ):
+        file = request.data['file']
+        image = Image.objects.create(file=file)
+        print(image.file.url)
+        return Response(image.file.url, status=200)

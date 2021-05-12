@@ -1,55 +1,61 @@
 import axios from 'axios'
 import store from '@/store'
-import { isJwtExpired } from 'jwt-check-expiration';
 import {AUTH_LOGOUT} from "@/store/actions/auth";
 import router from '@/router';
+import jwt_decode from "jwt-decode";
+
 
 export const AXIOS = axios.create({
     baseURL: process.env.VUE_APP_API_URL,
     headers: {}
 })
 
-// Add a request interceptor
-AXIOS.interceptors.request.use(
-    config => {
-        const token = localStorage.getItem('user-token');
-        if (token) {
-            config.headers['Authorization'] = 'Bearer ' + token;
+AXIOS.interceptors.request.use(async (config) => {
+    let accessToken = localStorage.getItem('user-token');
+    const refreshToken = localStorage.getItem('refresh-token')
+    if (accessToken && refreshToken) {
+        const atExpiration = jwt_decode(accessToken).exp
+        const rtExpiration = jwt_decode(refreshToken).exp
+        const currentTime = new Date().getTime() / 1000;
+        if ((atExpiration < currentTime) && (rtExpiration > currentTime)) {
+            console.log("obtain new token")
+            const response = await axios.post(process.env.VUE_APP_API_URL + "/token/refresh/", {
+                refresh: refreshToken
+            })
+            console.log(response)
+            accessToken = response.data.access
+            localStorage.setItem('user-token', accessToken)
         }
-        return config;
-    },
-    error => {
-        Promise.reject(error)
-    });
+        config.headers['Authorization'] = 'Bearer ' + accessToken;
+    }
 
-
-//Add a response interceptor
+    return config
+})
 
 
 AXIOS.interceptors.response.use(undefined, async (err) => {
 
     if (err.response?.status === 401) {
-        const accessToken = localStorage.getItem('user-token');
-        const refreshToken = localStorage.getItem('refresh-token')
-        if (accessToken && refreshToken && isJwtExpired(accessToken) && !isJwtExpired(refreshToken)){
-                console.log('refreshing token...')
-                const newAccesToken = await store.dispatch('getNewAccessToken');
-                localStorage.setItem('user-token',newAccesToken)
-                return AXIOS(err.config);
 
-        }
         store.dispatch(AUTH_LOGOUT)
         router.push({name: 'Login'})
+        localStorage.removeItem('user-token');
+        localStorage.removeItem('refresh-token');
 
     }
     return Promise.reject(err);
 
 });
 
+
+//Add a response interceptor
+
+
 export default {
-    async getUsers(role = null) {
-        if (!role) return (await AXIOS.get('user/')).data
-        return (await AXIOS.get('user/?role=' + role)).data
+    async getUsers(roles = null) {
+        const q = 'user/' + (roles ? '?role__in=' + roles : '')
+        console.log(q)
+        return (await AXIOS.get(q)).data
     },
     // USER
     async getCurentUser() {
@@ -93,10 +99,20 @@ export default {
     },
     // TAG
     async getTags() {
-        return (await AXIOS.get('tag/')).data.map(tag => tag.name)
+        return (await AXIOS.get('tag/')).data
     },
     async createTag(name) {
         return AXIOS.post('tag/', {name})
+    },
+    // RESOURCE
+    async createResource(resource) {
+        return (await AXIOS.post('resource/', resource)).data
+    },
+    async getResources() {
+        return (await AXIOS.get('resource/')).data
+    },
+    async updateResource(resource) {
+        return await AXIOS.put('resource/' + resource.id + '/', resource)
     },
     async convertToken(token, backend) {
         try {
@@ -117,6 +133,17 @@ export default {
             console.log(e)
         }
 
+    },
+    async uploadImage(formData, filename) {
+        return (await AXIOS.post("image/", formData, {
+            headers: {
+                'Content-Disposition': 'filename="' + filename + '"',
+                'Content-Type': 'multipart/form-data'
+            }
+        })).data
+    },
+    async getPermissionLevels() {
+        return (await AXIOS.get('permission-level')).data
     },
     async getJWT(code, provider) {
         try {

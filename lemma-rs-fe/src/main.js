@@ -12,6 +12,9 @@ import { createOidcAuth, SignInType } from 'vue-oidc-client';
 import axios from 'axios';
 import moment from "moment";
 import VueMomentJS from "vue-momentjs";
+import vueDebounce from "vue-debounce"
+import VueLazyImageLoading from 'vue-lazy-image-loading'
+
 
 
 console.log(process.env.NODE_ENV)
@@ -33,7 +36,9 @@ export const HTTP = axios.create({
 //  });
 
 Vue.use(PortalVue)
+Vue.use(vueDebounce)
 Vue.use(VueMomentJS, moment);
+Vue.use(VueLazyImageLoading)
 
 Vue.config.productionTip = false
 
