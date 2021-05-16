@@ -1,9 +1,9 @@
 html {
-    overflow: hidden !important;
+  overflow: hidden !important;
 }
 
 .theme--dark.v-application {
-    background-size: cover !important;
+  background-size: cover !important;
   // background-image: url(https://wallpaperaccess.com/full/2837862.jpg) !important;
 }
 
@@ -19,36 +19,41 @@ html {
   overflow: auto;
 }
 
+.pointer-rows tr {
+  cursor: pointer;
+}
+
 /* custom scrollbar */
 ::-webkit-scrollbar {
-    width: 15px;
-  }
+  width: 15px;
+}
 
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
 
-  ::-webkit-scrollbar-thumb {
-    background-color: #bdbdbd;
-    border-radius: 15px;
-    border: 6px solid transparent;
-    background-clip: content-box;
-  }
+::-webkit-scrollbar-thumb {
+  background-color: #bdbdbd;
+  border-radius: 15px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #bdbdbd;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background-color: #bdbdbd;
+}
 
-  .fade-enter-active,
+.fade-enter-active,
 .fade-leave-active {
-    transition: opacity .2s
+  transition: opacity .2s
 }
 
 .fade-enter,
 .fade-leave-to {
-    opacity: 0
+  opacity: 0
 }
-.pointer{
+
+.pointer {
   cursor: pointer;
 }
 
@@ -62,4 +67,11 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.theme--dark.v-calendar-weekly .v-calendar-weekly__head-weekday.v-outside,
+.theme--dark.v-calendar-weekly .v-calendar-weekly__day,
+.theme--dark.v-calendar-weekly,
+.theme--dark.v-calendar-weekly .v-calendar-weekly__head-weekday {
+  border-color: #4a4a4a !important;
 }

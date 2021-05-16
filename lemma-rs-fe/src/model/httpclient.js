@@ -142,9 +142,7 @@ export default {
             }
         })).data
     },
-    async getPermissionLevels() {
-        return (await AXIOS.get('permission-level')).data
-    },
+
     async getJWT(code, provider) {
         try {
             const response = await AXIOS.post("/login/social/jwt-pair/", {
@@ -158,16 +156,46 @@ export default {
         }
 
     },
-    async refreshToken(refresh) {
-        try {
-            const response = await AXIOS.post("/token/refresh/", {
-                refresh
-            })
-            return response.data
-        } catch (e) {
-            console.log("Token refresh FAILED")
-            console.log(e)
-        }
 
+    // PERMISSIONS
+    async getPermissionLevels() {
+        return (await AXIOS.get('permission-level/')).data
+    },
+
+    async getPermissionRequests() {
+        return (await  AXIOS.get('permission-request/')).data
+    },
+
+    async resolvePermissionRequest(id,expDate, approved, response) {
+        const data = {
+            expiration_date: expDate,
+            approved: approved,
+            response: response
+        }
+        return await  AXIOS.put('permission-request/'+id+'/resolve_request/',data)
+    },
+
+    async applyPermissionRequest(requestedLevel, reason) {
+        const data = {
+            requested_level: requestedLevel,
+            reason: reason
+        }
+        return await AXIOS.put('permission-request/send_request/', data)
+    },
+
+    // RESERVATIONS
+    async getReservations() {
+        return (await AXIOS.get('reservation/')).data
+    },
+    async createReservation(pickUpDate, returnDate, resources,approvalRequierd, project) {
+        const data = {
+            pickup_date_time: pickUpDate,
+            return_date_time: returnDate,
+            resources: resources,
+            approval_required: approvalRequierd,
+            project
+        }
+        return await (AXIOS.put('reservation/create_reservation/',data)).data
     }
+
 }

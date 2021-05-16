@@ -23,10 +23,22 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room']
 
 
-class TagSerializer(serializers.HyperlinkedModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['id', 'name']
+
+
+class BlockingIntervalSerializer(serializers.ModelSerializer):
+    start = serializers.DateTimeField(source='reservation.pickup_date_time')
+    end = serializers.DateTimeField(source='blocking_end')
+    reservation_id = serializers.IntegerField(source='reservation.id')
+    reservation_name = serializers.StringRelatedField(source='reservation.project')
+
+    class Meta:
+        model = ReservedResource
+        # fields = ('id', 'start', 'end')
+        fields = ('id', 'start', 'end', 'reservation_name', 'reservation_id')
 
 
 class ResourceSerializer(serializers.ModelSerializer):
@@ -34,13 +46,15 @@ class ResourceSerializer(serializers.ModelSerializer):
     tags_str = serializers.StringRelatedField(source='tags', many=True, read_only=True)
     required_permission_level_str = serializers.StringRelatedField(source='required_permission_level', read_only=True)
     provider_str = serializers.StringRelatedField(source='provider', read_only=True)
+    not_returned = serializers.BooleanField(read_only=True)
+    blocking_reservations = BlockingIntervalSerializer(read_only=True, many=True)
 
     class Meta:
         model = Resource
         provider = SimpleUserSerializer(read_only=True)
         fields = (
             'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider', 'provider_str',
-            'tags', 'tags_str', 'required_permission_level', 'required_permission_level_str')
+            'tags', 'tags_str', 'required_permission_level', 'not_returned', 'blocking_reservations', 'required_permission_level_str')
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
@@ -79,34 +93,46 @@ class PermissionRequestCreateSerializer(serializers.ModelSerializer):
 class PermissionRequestResolveSerializer(serializers.ModelSerializer):
     class Meta:
         model = PermissionRequest
-        fields = ('expiration_date', 'approved', 'response')
+        fields = ('id', 'expiration_date', 'approved', 'response')
 
 
 class PermissionRequestFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = PermissionRequest
+        depth = 1
         fields = '__all__'
 
 
 class ReservedResourceSerializer(serializers.ModelSerializer):
+    resource_str = serializers.StringRelatedField(source='resource', read_only=True)
+
     class Meta:
         model = ReservedResource
-        fields = ('real_return_date', 'real_pickup_date', 'comment', 'resource')
+        fields = ('real_return_date', 'real_pickup_date', 'comment', 'resource', 'resource_str', 'reservation')
+
+
+
 
 
 class ReservationSerializer(serializers.ModelSerializer):
     resources = ReservedResourceSerializer(many=True)
+    applicant = serializers.StringRelatedField(read_only=True)
+    project = serializers.StringRelatedField(read_only=True)
 
     class Meta:
+        depth = 1
         model = Reservation
-        fields = ('pickup_date_time', 'return_date_time', 'picked_up', 'applicant', 'approved', 'approved_by','resources')
+        fields = (
+            'id', 'pickup_date_time', 'return_date_time', 'picked_up', 'applicant', 'approved', 'approved_by',
+            'resources', 'project')
 
 
 class ReservationCreateSerializer(serializers.ModelSerializer):
     resources = serializers.ListField(
         child=serializers.IntegerField()
     )
+    approval_required = serializers.BooleanField()
 
     class Meta:
         model = Reservation
-        fields = ('pickup_date_time', 'return_date_time', 'resources')
+        fields = ('pickup_date_time', 'return_date_time', 'resources', 'approval_required', 'project')

@@ -14,6 +14,16 @@ export default new Vuex.Store({
         toasts: [],
         projects: [],
     },
+    getters: {
+        myProjects: (state, getters) => {
+           return state.projects.filter( prj => {
+               return (prj.members.find(member => member.id === getters.getProfile.id)) ||
+                prj.owner.id === getters.getProfile.id
+
+
+            })
+        },
+    },
     actions: {
         async notify({commit, state}, notification) {
             notification.id = state.toasts.length
@@ -25,7 +35,7 @@ export default new Vuex.Store({
         },
         async getProjects({commit, state}) {
             const projects = await API.getProjects()
-            commit('setProjects',projects)
+            commit('setProjects', projects)
         }
     },
     mutations: {

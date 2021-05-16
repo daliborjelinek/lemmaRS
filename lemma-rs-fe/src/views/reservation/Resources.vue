@@ -1,55 +1,83 @@
 <template lang="pug">
   .flex-grow-1.pa-3(style="height: 0; overflow-y: auto")
-    transition(mode="out-in", name="fade")
-      #grid(key="1", v-if="displayStyle === 'cards'")
-        v-card.pointer(
-          ripple=false
-          @click="openResource(resource)",
-          :key="resource.id",
-          v-for="(resource, index) in filteredResources",
-          max-width="300"
-          color="#0000008c"
-          class="d-flex flex-column"
-        )
+    v-progress-circular(v-if="loading" class="d-block mx-auto mt-4" :size="70", :width="4", color="primary" indeterminate)
+    div(v-else)
+      transition( mode="out-in", name="fade")
+        #grid(key="1", v-if="displayStyle === 'cards'")
+          v-card.pointer(
+            ripple=false
+            @click="openResource(resource)",
+            :key="resource.id",
+            v-for="(resource, index) in filteredResources",
+            max-width="300"
+            color="#0000008c"
+            class="d-flex flex-column"
+          )
 
-          div(style="height: 200px")
-            v-img.rounded-t(height="100%" v-if="resource.image_url" :src="apiUrl + resource.image_url")
-            v-img.rounded-t(height="100%" v-else src='@/assets/placeholder.jpg' )
-          v-card-title.py-1(style="word-break: break-word;") {{resource.name}}
-          v-spacer
+            div(style="height: 200px; position:relative")
+              div.ma-2(style="position:absolute; z-index: 1")
+                v-chip(v-if="!resource.allowed" class="ma-2" label color="#4c0000c2" title="nemáte dostatečné oprávnění")
+                  v-icon() mdi-shield-lock
+                v-chip(v-if="false" class="ma-2" label color="#4c0000c2" title="Zdroj je ve zvoleném termínu rezervován")
+                  v-icon() mdi-lock-clock
+                v-chip(v-if="!resource.active" class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
+                  v-icon() mdi-heart-broken
+                v-chip(v-if="false" class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
+                  v-icon() mdi-heart-broken
+              v-img.rounded-t(height="100%" v-if="resource.image_url" :src="apiUrl + resource.image_url")
+              v-img.rounded-t(height="100%" v-else src='@/assets/placeholder.jpg' )
+            v-card-title.py-1(style="font-size:1rem; word-break: break-word;") {{resource.name}}
+            v-spacer
 
-          v-card-text.subtitle-1.py-1
-            v-icon mdi-tag
-            tags(:tags="resource.tags_str")
-            div
-              v-icon mdi-account-cog
-              span.ml-1 {{resource.provider_str}}
-          v-card-actions
-            v-btn(@click.stop="addReservationItem(resource)" )
-              v-icon(left) mdi-cart-arrow-down
-              span(v-if="!resource.selected") Rezervovat
-              span(v-else) Odebrat
-            v-btn(color=red, @click.stop="dialog = true", text )
-              v-icon(left) mdi-calendar
-              | Kalendář
-      v-data-table.elevation-1(
-        key="2",
-        v-else,
-        fixed-header,
-        height="calc(100vh - 90px)",
-        disable-pagination,
-        :value="selectedResources"
-        hide-default-footer,
-        :headers="headers",
-        @click:row="rowClick"
-        :items="filteredResources",
-        item-key="id")
-        template(v-slot:item.provider="{ item }") {{providers.find(x => x.id === item.provider).fullname}}
-        template(v-slot:item.tags="{ item }")
-          tags(:tags="item.tags_str")
-        template(v-slot:item.actions="{ item }")
-          v-btn(@click.stop="dialog = true", text )
-            v-icon(left) mdi-calendar
+            v-card-text.subtitle-1.py-1
+              | {{resource.blocking_reservations}}
+
+              tags(:tags="resource.tags_str")
+              //div
+
+                //span.ml-1 {{resource.provider_str}}
+            v-card-actions
+              v-btn(@click.stop="addReservationItem(resource)" :disabled="!reservationIsPossible(resource)")
+                v-icon(left) mdi-cart-arrow-down
+                span(v-if="!resource.selected") Rezervovat
+                span(v-else) Odebrat
+              v-btn(color=red, @click.stop="dialog = true", text )
+                v-icon(left) mdi-calendar
+                | Kalendář
+        v-data-table.elevation-1(
+          key="2",
+          v-else,
+          fixed-header,
+          height="calc(100vh - 90px)",
+          disable-pagination,
+          :value="selectedResources"
+          hide-default-footer,
+          :headers="headers",
+          @click:row="rowClick"
+          :items="filteredResources",
+          item-key="id")
+          template(v-slot:item.provider="{ item }") {{providers.find(x => x.id === item.provider).fullname}}
+          template(v-slot:item.tags="{ item }")
+            tags(:tags="item.tags_str")
+          template(v-slot:item.actions="{ item }")
+            v-btn(icon, :disabled="!reservationIsPossible(item)" @click.stop="addReservationItem(item)" )
+              v-icon( small v-if="!item.selected") mdi-cart-arrow-down
+              v-icon( small v-else="item.selected") mdi-cart-arrow-up
+            v-btn(icon @click.stop="dialog = true")
+              v-icon(small) mdi-calendar
+          template(v-slot:item.attributes="{ item }")
+            v-chip(v-if="!item.allowed" small class="ma-2" label color="#4c0000c2" title="nemáte dostatečné oprávnění")
+              v-icon(small) mdi-shield-lock
+            v-chip(v-if="false" small class="ma-2" label color="#4c0000c2" title="Zdroj je ve zvoleném termínu rezervován")
+              v-icon(small) mdi-lock-clock
+            v-chip(v-if="!item.active" small class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
+              v-icon(small) mdi-heart-broken
+            v-chip(v-if="false" small class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
+              v-icon(small) mdi-selection-ellipse
+
+
+
+
 
 
 
@@ -205,20 +233,17 @@ export default {
     Paster
   },
   async mounted() {
-
+    this.loading = true,
     await this.loadTags()
     await this.loadProviders()
     await this.loadPermissionLevels()
     await this.$store.dispatch('getProjects')
     await this.$store.dispatch('getResources')
-
+    this.loading = false
 
   },
   computed: {
     month() {
-      console.log(
-          new Date(this.value).toLocaleString("cs-CZ", {month: "long"})
-      );
       return new Date(this.value).toLocaleString("cs-CZ", {month: "long"});
     },
     userRole() {
@@ -235,6 +260,9 @@ export default {
     },
   },
   methods: {
+    reservationIsPossible(itm){
+        return itm.active && itm.allowed
+    },
     click(props) {
       console.log(props);
     },
@@ -347,6 +375,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       value: new Date(),
       resourceDetailTab: 0,
       tags: [],
@@ -371,7 +400,7 @@ export default {
         {text: "Výdejář", value: "provider"},
         {text: "Oprávnění", value: "required_permission_level_str"},
         {text: "Tagy", value: "tags"},
-        {text: "Dostupné", value: "active"},
+        {text: "Atributy", value: "attributes"},
         {text: "Akce", value: "actions", sortable: false},
       ],
       saveResourceLoading: false,
@@ -417,8 +446,9 @@ export default {
   grid-gap: 16px;
   justify-content: center;
   width: 100%;
+
 }
-#reservation-items{
+table{
   th {
     white-space: nowrap !important;
   }

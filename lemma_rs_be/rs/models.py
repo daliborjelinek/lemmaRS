@@ -1,12 +1,9 @@
-from datetime import timedelta
-
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
-
 # Create your models here.
-from django.db.models import Max, Value
+from django.db.models import Max, Value, Q
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
@@ -31,6 +28,18 @@ class Resource(models.Model):
     provider = models.ForeignKey('User', on_delete=models.RESTRICT)
     tags = models.ManyToManyField('Tag', related_name='tags', blank=True)
     required_permission_level = models.ForeignKey('PermissionLevel', on_delete=models.RESTRICT)
+
+    def blocking_reservations(self):
+        return self.reservations.filter(Q(reservation__pickup_date_time__gt=timezone.now()) | (
+                    Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True)))
+
+    @property
+    def not_returned(self):
+        return self.reservations \
+            .filter(reservation__return_date_time__lt=timezone.now()) \
+            .filter(real_return_date__isnull=True) \
+            .filter(real_pickup_date__isnull=False) \
+            .exists()
 
     def __str__(self):
         return self.name
@@ -62,9 +71,11 @@ class AccountManager(BaseUserManager):
 
         return self.create_user(email, username, fullname, password, **other_fields)
 
-    def create_user(self, email, username, fullname, password=None, role=Role.COMMON, role_display=Role.COMMON, **other_fields):
+    def create_user(self, email, username, fullname, password=None, role=Role.COMMON, role_display=Role.COMMON,
+                    **other_fields):
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, fullname=fullname, role=role, role_display=role_display, **other_fields)
+        user = self.model(email=email, username=username, fullname=fullname, role=role, role_display=role_display,
+                          **other_fields)
         if other_fields.get('is_superuser'):
             user.set_password(password)
         user.save()
@@ -151,6 +162,9 @@ class Project(models.Model):
     members = models.ManyToManyField(User, related_name='members', blank=True)
     group = models.ForeignKey('ProjectGroup', on_delete=models.PROTECT)
 
+    def __str__(self):
+        return self.name
+
 
 class ProjectGroup(models.Model):
     name = models.CharField(max_length=10000)
@@ -158,40 +172,54 @@ class ProjectGroup(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class PermissionRequest(models.Model):
     reason = models.CharField(max_length=10000)
     created_at = models.DateTimeField(auto_now_add=True)
     applicant = models.ForeignKey('User', related_name='my_permission_requests', on_delete=models.PROTECT)
     approved = models.BooleanField(default=None, null=True)
-    expiration_date = models.DateTimeField(default=timezone.now() + timedelta(days=365))
-    approved_by = models.ForeignKey('User', null=True, default=None, related_name='approved_permission_request', on_delete=models.PROTECT)
-    response = models.CharField(max_length=10000)
+    expiration_date = models.DateTimeField(null=True, default=None)
+    approved_by = models.ForeignKey('User', null=True, default=None, related_name='approved_permission_request',
+                                    on_delete=models.PROTECT)
+    response = models.CharField(max_length=10000, blank=True, null=True)
     requested_level = models.ForeignKey('PermissionLevel', on_delete=models.PROTECT)
 
 
 class Reservation(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.PROTECT)
     pickup_date_time = models.DateTimeField()
     return_date_time = models.DateTimeField()
     picked_up = models.BooleanField(default=False)
     applicant = models.ForeignKey('User', on_delete=models.PROTECT)
+    canceled = models.BooleanField(default=False)
     approved = models.BooleanField(default=False)
-    approved_by = models.ForeignKey('User', related_name='reservation_approved_by', on_delete=models.PROTECT)
+    approved_by = models.ForeignKey('User', blank=True, null=True, related_name='reservation_approved_by',
+                                    on_delete=models.PROTECT)
 
 
 class ReservedResource(models.Model):
-    resource = models.ForeignKey('User', on_delete=models.PROTECT)
+    resource = models.ForeignKey('Resource', related_name='reservations', on_delete=models.PROTECT)
     reservation = models.ForeignKey('Reservation', related_name='resources', on_delete=models.PROTECT)
-    real_return_date = models.DateTimeField(blank=True)
+    real_return_date = models.DateTimeField(blank=True, null=True)
     comment = models.CharField(max_length=10000, default="")
-    real_pickup_date = models.DateTimeField(blank=True)
+    real_pickup_date = models.DateTimeField(blank=True, null=True)
 
-
-
-
-
-
-
-
-
-
+    @property
+    def blocking_end(self):
+        if self.reservation.pickup_date_time > timezone.now():
+            # reservation not started yet
+            return self.reservation.return_date_time
+        if self.real_return_date is not None:
+            # resource was returned
+            return self.real_return_date
+        if self.reservation.return_date_time > timezone.now():
+            # reservation in progress
+            return self.reservation.return_date_time
+        if self.real_pickup_date is None:
+            # reservation ended; resource was never picked up
+            return self.reservation.return_date_time
+        # reservation ended resource was not returned yet
+        return timezone.now()

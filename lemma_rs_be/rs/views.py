@@ -11,7 +11,8 @@ from rest_framework_api_key.permissions import HasAPIKey
 from url_filter.integrations.drf import DjangoFilterBackend
 
 from . import serializers
-from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation
+from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation, \
+    ReservedResource
 from .permissions import UserPermission, ProjectPermission, ProjectGroupPermission, ResourcePermission, \
     PermissionLevelPermission, TagPermission, CommonReadAdminAndProviderAll, IsAdmin
 from .serializers import ProjectSerializer, ProjectGroupSerializer, ResourceSerializer, PermissionLevelSerializer, \
@@ -62,7 +63,7 @@ class ProjectViewSet(mixins.CreateModelMixin,
         queryset = Project.objects.all()
         username = self.request.query_params.get('username')
         if username is not None:
-            queryset = queryset.filter(Q(members__username=username) | Q(owner=username))
+            queryset = queryset.filter(Q(members__username=username) | Q(owner__username=username))
         return queryset
 
     def perform_create(self, serializer):
@@ -117,7 +118,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class PermissionRequestViewSet(viewsets.ModelViewSet):
-    queryset = PermissionRequest.objects.all()
+    queryset = PermissionRequest.objects.order_by('-created_at').all()
     permission_classes = [CommonReadAdminAndProviderAll]
     serializer_class = PermissionRequestFullSerializer
 
@@ -131,8 +132,9 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             reason = serializer.validated_data.get('reason')
             applicant = request.user
-            requested_level = PermissionLevel.objects.get(pk=serializer.validated_data.get('requested_level'))
-            PermissionRequest.objects.create(reason=reason, applicant=applicant, requested_level=requested_level)
+            # requested_level = PermissionLevel.objects.get(pk=serializer.validated_data.get('requested_level'))
+            PermissionRequest.objects.create(reason=reason, applicant=applicant,
+                                             requested_level=serializer.validated_data.get('requested_level'))
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -141,16 +143,17 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         request=PermissionRequestResolveSerializer,
         responses={204: None}
     )
-    @action(methods=['PUT'], detail=False, name='Send result of permission request', permission_classes=[IsAdmin])
-    def resolve_request(self, request):
+    @action(methods=['PUT'], detail=True, name='Send result of permission request', permission_classes=[IsAdmin])
+    def resolve_request(self, request, pk):
         serializer = PermissionRequestResolveSerializer(data=request.data)
         if serializer.is_valid():
             approved = serializer.validated_data.get('approved')
             approved_by = request.user
             response = serializer.validated_data.get('response')
             expiration_date = serializer.validated_data.get('expiration_date')
-            PermissionRequest.objects.update(approved=approved, approved_by=approved_by, response=response,
-                                             expiration_date=expiration_date)
+            PermissionRequest.objects.filter(pk=pk).update(approved=approved, approved_by=approved_by,
+                                                           response=response,
+                                                           expiration_date=expiration_date)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -171,11 +174,20 @@ class ReservationViewSet(viewsets.ModelViewSet):
         serializer = ReservationCreateSerializer(data=request.data)
         if serializer.is_valid():
             pickup_date_time = serializer.validated_data.get('pickup_date_time')
-            return_date_time = serializer.validated_data.get('pickup_date_time')
+            approval_required = serializer.validated_data.get('approval_required')
+            return_date_time = serializer.validated_data.get('return_date_time')
+            resources = serializer.validated_data.get('resources')
             applicant = request.user
+            project = serializer.validated_data.get('project')
 
-            Reservation.objects.update(pickup_date_time=pickup_date_time, return_date_time=return_date_time,
-                                       applicant=applicant)
+            reservation = Reservation.objects.create(project=project, pickup_date_time=pickup_date_time,
+                                                     return_date_time=return_date_time,
+                                                     applicant=applicant, approved=(not approval_required))
+
+            for resource_id in resources:
+                resource = Resource.objects.get(pk=resource_id)
+                ReservedResource.objects.create(resource=resource, reservation=reservation)
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

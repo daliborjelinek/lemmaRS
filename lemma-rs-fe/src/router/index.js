@@ -50,7 +50,7 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
-    path: '/Projests',
+    path: '/Projects',
     name: 'Projects',
     component: Projects,
     beforeEnter: ifAuthenticated

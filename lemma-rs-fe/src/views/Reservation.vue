@@ -23,6 +23,14 @@
     <portal to="responsive-buttons">
       <v-btn @click="drawer=true; drawerContent='reservation'" icon class="ml-1">
         <v-icon>mdi-calendar-edit</v-icon>
+        <v-badge
+            v-if="$store.state.reservation.selectedResources.length"
+            color="purple"
+            :content="$store.state.reservation.selectedResources.length"
+
+        >
+
+        </v-badge>
       </v-btn>
       <v-btn @click="drawer=true; drawerContent='filters'" icon class="ml-1">
         <v-icon>mdi-filter</v-icon>

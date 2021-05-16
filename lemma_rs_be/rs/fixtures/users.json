@@ -1,0 +1,68 @@
+[
+  {
+    "model": "rs.user",
+    "pk": 2,
+    "fields": {
+      "last_login": null,
+      "is_superuser": false,
+      "email": "sojka@mail.muni.cz",
+      "username": "2378",
+      "password": "",
+      "fullname": "Petr Sojka",
+      "phone": "",
+      "is_active": true,
+      "is_staff": true,
+      "role": "ADMIN",
+      "role_display": "ADMIN",
+      "address": "",
+      "calendar_data": {},
+      "room": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "rs.user",
+    "pk": 3,
+    "fields": {
+      "last_login": null,
+      "is_superuser": false,
+      "email": "lysakova@fi.muni.cz",
+      "username": "133066",
+      "password": "",
+      "fullname": "Hana Lysáková",
+      "phone": "",
+      "is_active": true,
+      "is_staff": false,
+      "role": "PROVIDER",
+      "role_display": "PROVIDER",
+      "address": "",
+      "calendar_data": {},
+      "room": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "rs.user",
+    "pk": 4,
+    "fields": {
+      "last_login": null,
+      "is_superuser": false,
+      "email": "usr1@testing.cz",
+      "username": "000000",
+      "password": "",
+      "fullname": "Prvni uzivatel",
+      "phone": "",
+      "is_active": true,
+      "is_staff": false,
+      "role": "COMMON",
+      "role_display": "COMMON",
+      "address": "",
+      "calendar_data": {},
+      "room": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

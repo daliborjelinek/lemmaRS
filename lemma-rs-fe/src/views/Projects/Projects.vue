@@ -10,7 +10,7 @@
         <v-tabs-items v-model="tab">
           <!--MY PROJECTS-->
           <v-tab-item>
-            <projects-table :projects.sync="projects" :headers="myProjectHeaders" :project-groups="projectGroups"/>
+            <projects-table :projects.sync="myProjects" :headers="myProjectHeaders" :project-groups="projectGroups"/>
           </v-tab-item>
           <!--ALL PROJECTS-->
           <v-tab-item>
@@ -52,17 +52,22 @@ export default {
       {text: "Skupina", value: "group"},
       {text: "Akce", value: "actions", sortable: false},
     ],
-    projects: [],
     projectGroups: [],
     loadingProjects: false,
   }),
   computed: {
+    projects(){
+      return this.$store.state.projects
+    },
+    myProjects(){
+      return this.$store.getters.myProjects
+    }
   },
 
   watch: {},
 
   async created() {
-    this.projects = await API.getProjects();
+    await this.$store.dispatch('getProjects')
     this.projectGroups = await API.getProjectGroups();
   },
 

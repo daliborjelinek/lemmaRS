@@ -1,27 +1,26 @@
 <template>
   <v-dialog
-      ref="dialog"
       v-model="modal"
-      :return-value.sync="time"
-      persistent
       width="290px"
   >
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
           :class="icon? 'mr-1' : 'ml-1'"
           v-model="time"
-          @change="(value) => $emit('change',value)"
+          :rules="[(v) => !!v || 'Vyplňte čas rezervace']"
           :label="label"
           readonly
           :prepend-icon="icon ? 'mdi-alarm-multiple' : ''"
-          hide-details
           v-bind="attrs"
           v-on="on"
       ></v-text-field>
     </template>
     <v-time-picker
         v-if="modal"
+        :allowed-hours="allowedHours"
         v-model="time"
+        @change="change"
+        format="24hr"
         full-width
     >
       <v-spacer></v-spacer>
@@ -30,14 +29,7 @@
           color="primary"
           @click="modal = false"
       >
-        Cancel
-      </v-btn>
-      <v-btn
-          text
-          color="primary"
-          @click="$refs.dialog.save(time)"
-      >
-        OK
+        Ok
       </v-btn>
     </v-time-picker>
   </v-dialog>
@@ -45,14 +37,32 @@
 
 <script>
 export default {
-  props:['label','icon'],
+  props:['label','icon', 'value'],
   name: "Timepicker",
-  data: function (){
+  data: function () {
     return {
       modal: false,
       time: null,
     }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        this.time = newVal
+      }
+    }
+  },
+  methods:{
+    change(val){
+      console.log(val)
+      this.$emit('change',val)
+    },
+    allowedHours(h){
+        return (h > 8) && (h < 15)
+    }
   }
+
 }
 </script>
 

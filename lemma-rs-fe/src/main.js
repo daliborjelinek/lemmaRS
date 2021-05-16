@@ -10,10 +10,14 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import PortalVue from 'portal-vue'
 import { createOidcAuth, SignInType } from 'vue-oidc-client';
 import axios from 'axios';
-import moment from "moment";
 import VueMomentJS from "vue-momentjs";
 import vueDebounce from "vue-debounce"
 import VueLazyImageLoading from 'vue-lazy-image-loading'
+
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
+
+const moment = extendMoment(Moment);
 
 
 

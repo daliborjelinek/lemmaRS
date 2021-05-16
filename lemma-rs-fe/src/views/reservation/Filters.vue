@@ -1,84 +1,44 @@
-<template>
-  <v-card class="flex-grow-1 d-flex flex-column fill-height"  elevation="5" color="#1e1e1ee6" rounded="0">
-    <v-card-title>
-      Filtry <v-spacer />
-       <v-btn-toggle mandatory v-model="filtersData.displayStyle">
-        <v-btn value="cards" small>
-          <v-icon >mdi-apps</v-icon>
-        </v-btn>
-
-        <v-btn value="table"  small>
-          <v-icon >mdi-format-list-bulleted</v-icon>
-        </v-btn>
-      </v-btn-toggle>
-      <!-- <v-btn icon >
+<template lang="pug">
+  v-card.flex-grow-1.d-flex.flex-column.fill-height(elevation='5' color='#1e1e1ee6' rounded='0')
+    v-card-title
+      | Filtry
+      v-spacer
+      v-btn-toggle(mandatory='' v-model='filtersData.displayStyle')
+        v-btn(value='cards' small='')
+          v-icon mdi-apps
+        v-btn(value='table' small='')
+          v-icon mdi-format-list-bulleted
+      //
+        <v-btn icon >
         <v-icon small class="mr-1">fas fa-sort-amount-down</v-icon>
-      </v-btn> -->
-    </v-card-title>
+        </v-btn>
+    v-card-text
+      portal-target(name='add-resource-btn')
+      v-text-field.ma-0.pa-0(v-debounce:300ms='search' placeholder='Hledat' persistent-hint='' :hint="'Zobrazeno '+ $store.getters.filteredResourcesCount + ' výsledků'" append-icon='mdi-magnify')
+      .d-flex.align-center.mt-2
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="alreadyReserved" label='Rezervované v termínu')
+        v-spacer
+        v-btn(small='' icon='')
+          v-icon(small='') mdi-information-outline
+      .d-flex.align-center.mt-2
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="disallowed" label='Bez oprávnění')
+        v-spacer
+        v-btn(small='' icon='')
+          v-icon(small='') mdi-information-outline
+      .d-flex.align-center.mt-2
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="inactive" label='Neodstupné')
+        v-spacer
+        v-btn(small='' icon='')
+          v-icon(small='') mdi-information-outline
+      v-divider.mt-2
+    v-list-item-group.flex-grow-1(@change='filterTagChanged' style='height: 200px; overflow-y: auto')
+      template(v-for='(item, i) in items')
+        v-list-item(dense='' :key='`item-${i}`' :value='item')
+          v-list-item-icon
+            v-icon {{ item.icon }}
+          v-list-item-content
+            v-list-item-title(v-text='item.name')
 
-    <v-card-text>
-       <portal-target name="add-resource-btn" />
-      <v-text-field
-          v-debounce:300ms="search"
-        placeholder="Hledat"
-        class="ma-0 pa-0"
-        persistent-hint
-        :hint="'Zobrazeno '+ $store.getters.filteredResourcesCount + ' výsledků'"
-        append-icon="mdi-magnify"
-      ></v-text-field>
-
-      <div class="d-flex align-center mt-2">
-        <v-switch
-          class="mt-0 py-0 d-flex align-center"
-          hide-details
-          :input-value="true"
-          label="Rezervované v termínu"
-        ></v-switch>
-        <v-spacer /><v-btn small icon
-          ><v-icon small>mdi-information-outline</v-icon></v-btn
-        >
-      </div>
-      <div class="d-flex align-center mt-2">
-        <v-switch
-          class="mt-0 py-0 d-flex align-center"
-          hide-details
-          :input-value="false"
-          label="Bez oprávnění"
-        ></v-switch>
-        <v-spacer /><v-btn small icon
-          ><v-icon small>mdi-information-outline</v-icon></v-btn
-        >
-      </div>
-      <div class="d-flex align-center mt-2">
-        <v-switch
-          class="mt-0 py-0 d-flex align-center"
-          hide-details
-          :input-value="false"
-          label="Neodstupné"
-        ></v-switch>
-        <v-spacer /><v-btn small icon
-          ><v-icon small>mdi-information-outline</v-icon></v-btn
-        >
-      </div>
-      <v-divider class="mt-2"></v-divider>
-    </v-card-text>
-
-    <v-list-item-group
-        class="flex-grow-1"
-        @change="filterTagChanged"
-        style="height: 200px; overflow-y: auto">
-      <template v-for="(item, i) in items">
-        <v-list-item dense :key="`item-${i}`" :value="item">
-          <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
-    </v-list-item-group>
-  </v-card>
 </template>
 
 <script>
@@ -92,6 +52,9 @@ export default {
   props: ['filtersData'],
   computed:{
     ...mapFields([
+        'inactive',
+        'disallowed',
+        'alreadyReserved'
 
     ]),
     filters(){

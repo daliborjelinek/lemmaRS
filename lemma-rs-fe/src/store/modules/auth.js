@@ -33,17 +33,6 @@ const actions = {
       commit(AUTH_LOGOUT);
       localStorage.removeItem("user-token");
       localStorage.removeItem("refresh-token");
-  },
-  async getNewAccessToken({ commit, dispatch }) {
-    try {
-      const token = await API.refreshToken(localStorage.getItem("refresh-token"))
-      return token?.access
-    } catch (e){
-        console.log(e)
-        commit(AUTH_LOGOUT);
-    }
-
-
   }
 };
 
