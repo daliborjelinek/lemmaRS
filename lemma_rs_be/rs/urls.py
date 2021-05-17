@@ -21,7 +21,8 @@ router.register('tag', views.TagViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', include('rest_social_auth.urls_jwt_pair')),
-    path('image/', FileUploadView.as_view())
+    path('image/', FileUploadView.as_view()),
+    # path("django_query_profiler/", include("django_query_profiler.client.urls")),
 ]
 
 

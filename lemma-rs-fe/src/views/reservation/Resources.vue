@@ -22,16 +22,14 @@
                   v-icon() mdi-lock-clock
                 v-chip(v-if="!resource.active" class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
                   v-icon() mdi-heart-broken
-                v-chip(v-if="false" class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
-                  v-icon() mdi-heart-broken
+                v-chip(v-if="resource.not_returned" class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
+                  v-icon() mdi-selection-ellipse
               v-img.rounded-t(height="100%" v-if="resource.image_url" :src="apiUrl + resource.image_url")
               v-img.rounded-t(height="100%" v-else src='@/assets/placeholder.jpg' )
             v-card-title.py-1(style="font-size:1rem; word-break: break-word;") {{resource.name}}
             v-spacer
 
             v-card-text.subtitle-1.py-1
-              | {{resource.blocking_reservations}}
-
               tags(:tags="resource.tags_str")
               //div
 
@@ -59,6 +57,8 @@
           template(v-slot:item.provider="{ item }") {{providers.find(x => x.id === item.provider).fullname}}
           template(v-slot:item.tags="{ item }")
             tags(:tags="item.tags_str")
+          template(v-slot:item.required_permission_level="{ item }")
+            | {{permissionLevels.find(x => x.level === item.required_permission_level).name}}
           template(v-slot:item.actions="{ item }")
             v-btn(icon, :disabled="!reservationIsPossible(item)" @click.stop="addReservationItem(item)" )
               v-icon( small v-if="!item.selected") mdi-cart-arrow-down
@@ -72,7 +72,7 @@
               v-icon(small) mdi-lock-clock
             v-chip(v-if="!item.active" small class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
               v-icon(small) mdi-heart-broken
-            v-chip(v-if="false" small class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
+            v-chip(v-if="item.not_returned" small class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
               v-icon(small) mdi-selection-ellipse
 
 
@@ -398,7 +398,7 @@ export default {
       headers: [
         {text: "Jméno", value: "name"},
         {text: "Výdejář", value: "provider"},
-        {text: "Oprávnění", value: "required_permission_level_str"},
+        {text: "Oprávnění", value: "required_permission_level"},
         {text: "Tagy", value: "tags"},
         {text: "Atributy", value: "attributes"},
         {text: "Akce", value: "actions", sortable: false},

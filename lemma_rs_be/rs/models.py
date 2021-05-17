@@ -3,9 +3,27 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 # Create your models here.
-from django.db.models import Max, Value, Q
+from django.db.models import Max, Value
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+
+
+class DefaultSelectOrPrefetchManager(models.Manager):
+    def __init__(self, *args, **kwargs):
+        self._select_related = kwargs.pop('select_related', None)
+        self._prefetch_related = kwargs.pop('prefetch_related', None)
+
+        super(DefaultSelectOrPrefetchManager, self).__init__(*args, **kwargs)
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(DefaultSelectOrPrefetchManager, self).get_queryset(*args, **kwargs)
+
+        if self._select_related:
+            qs = qs.select_related(*self._select_related)
+        if self._prefetch_related:
+            qs = qs.prefetch_related(*self._prefetch_related)
+
+        return qs
 
 
 class Role(models.TextChoices):
@@ -29,17 +47,13 @@ class Resource(models.Model):
     tags = models.ManyToManyField('Tag', related_name='tags', blank=True)
     required_permission_level = models.ForeignKey('PermissionLevel', on_delete=models.RESTRICT)
 
-    def blocking_reservations(self):
-        return self.reservations.filter(Q(reservation__pickup_date_time__gt=timezone.now()) | (
-                    Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True)))
-
-    @property
     def not_returned(self):
-        return self.reservations \
-            .filter(reservation__return_date_time__lt=timezone.now()) \
-            .filter(real_return_date__isnull=True) \
-            .filter(real_pickup_date__isnull=False) \
-            .exists()
+
+        for res in self.blocking_reservations:
+            if res.resource.name and res.reservation.return_date_time < timezone.now() and res.real_return_date is None and res.real_pickup_date is not None:
+                return True
+            pass
+        return False
 
     def __str__(self):
         return self.name
@@ -204,7 +218,7 @@ class ReservedResource(models.Model):
     resource = models.ForeignKey('Resource', related_name='reservations', on_delete=models.PROTECT)
     reservation = models.ForeignKey('Reservation', related_name='resources', on_delete=models.PROTECT)
     real_return_date = models.DateTimeField(blank=True, null=True)
-    comment = models.CharField(max_length=10000, default="")
+    comment = models.CharField(max_length=10000, blank=True, default="")
     real_pickup_date = models.DateTimeField(blank=True, null=True)
 
     @property

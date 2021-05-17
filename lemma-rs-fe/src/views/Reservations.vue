@@ -24,6 +24,10 @@
             v-spacer
             v-btn(color='primary' @click.stop='openCalendar')
               | Kalendář
+        template(v-slot:item.approved='{ item }')
+          v-icon {{ item.approved !== null ?  (item.approved ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline") : "mdi-help-box" }}
+        template(v-slot:item.actions='{ item }')
+          | daw{{item.resources}}
       v-dialog(v-model="calendarDialog")
       v-card
         v-toolbar(color="primary", dark)
@@ -110,7 +114,8 @@ export default {
           pickup_date_time: this.$moment(itm.pickup_date_time).locale("cs").format('LLL'),
           return_date_time: this.$moment(itm.return_date_time).locale("cs").format('LLL'),
           picked_up: itm.picked_up,
-          id: itm.id
+          id: itm.id,
+          resources: itm.resources,
         }
 
       })

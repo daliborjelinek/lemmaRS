@@ -44,17 +44,13 @@ class BlockingIntervalSerializer(serializers.ModelSerializer):
 class ResourceSerializer(serializers.ModelSerializer):
     # tag_str = serializers.CharField(source='tags', read_only=True)
     tags_str = serializers.StringRelatedField(source='tags', many=True, read_only=True)
-    required_permission_level_str = serializers.StringRelatedField(source='required_permission_level', read_only=True)
-    provider_str = serializers.StringRelatedField(source='provider', read_only=True)
-    not_returned = serializers.BooleanField(read_only=True)
     blocking_reservations = BlockingIntervalSerializer(read_only=True, many=True)
 
     class Meta:
         model = Resource
-        provider = SimpleUserSerializer(read_only=True)
-        fields = (
-            'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider', 'provider_str',
-            'tags', 'tags_str', 'required_permission_level', 'not_returned', 'blocking_reservations', 'required_permission_level_str')
+        fields = ('not_returned',
+            'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider',
+            'tags', 'tags_str', 'required_permission_level', 'blocking_reservations')
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
@@ -108,10 +104,7 @@ class ReservedResourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReservedResource
-        fields = ('real_return_date', 'real_pickup_date', 'comment', 'resource', 'resource_str', 'reservation')
-
-
-
+        fields = ('id', 'real_return_date', 'real_pickup_date', 'comment', 'resource_str', 'reservation')
 
 
 class ReservationSerializer(serializers.ModelSerializer):

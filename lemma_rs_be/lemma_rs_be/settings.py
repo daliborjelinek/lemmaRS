@@ -11,20 +11,18 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from datetime import timedelta
+from pathlib import Path
 from typing import List
+# from django_query_profiler.settings import *
 
 import environ
-
-from pathlib import Path
 
 root = environ.Path(__file__) - 2  # get root of the project
 env = environ.Env()
 env.read_env(env.str('ENV_PATH', '.env'))  # reading .env file
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -35,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = ['*'] # env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = ['*']  # env.list('ALLOWED_HOSTS')
 
 FORCE_SCRIPT_NAME = env('FORCE_SCRIPT_NAME')
 STATIC_URL = env('STATIC_URL')
@@ -43,7 +41,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = env('MEDIA_URL')
 MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
-
 
 # Application definition
 
@@ -59,15 +56,16 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'rs',
-    #oauth
-    #oauth new
+    # oauth
     'rest_framework.authtoken',  # only if you use token authentication
     'social_django',  # django social auth
     'rest_social_auth',  # this package
-    #swagger
+    # swagger
     'drf_spectacular',
     'rest_framework_api_key',
-    'django_crontab'
+    'django_crontab',
+    # profiler
+    # 'django_query_profiler'
 ]
 
 MIDDLEWARE = [
@@ -80,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django_query_profiler.client.middleware.QueryProfilerMiddleware',
 ]
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
@@ -122,9 +121,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lemma_rs_be.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# Profiler DB
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django_query_profiler.django.db.backends.postgresql',
+#         'NAME': 'lemmars',
+#         'USER': 'lemmars',
+#         'PASSWORD': 'lemmars',
+#         'HOST': '127.0.0.1',
+#         'PORT': 5433
+#     }
+# }
 
 DATABASES = {
     'default': env.db()
@@ -138,7 +145,6 @@ if DEBUG:
     DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
         'rest_framework.renderers.BrowsableAPIRenderer',
     )
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -158,7 +164,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -175,9 +180,9 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
-   'django.contrib.auth.backends.ModelBackend',
-   'lemma_rs_be.muni_auth_be.Muni',
-   'lemma_rs_be.mock_auth_be.Mock',
+    'django.contrib.auth.backends.ModelBackend',
+    'lemma_rs_be.muni_auth_be.Muni',
+    'lemma_rs_be.mock_auth_be.Mock',
 )
 
 SOCIAL_AUTH_PIPELINE = (
@@ -201,9 +206,8 @@ SOCIAL_AUTH_MOCK_KEY = 'client-credentials-mock-client'
 SOCIAL_AUTH_MOCK_SECRET = 'client-credentials-mock-client-secret'
 SOCIAL_AUTH_MOCK_USER_FIELDS = ['username', 'email', 'fullname']
 
-#REST_SOCIAL_OAUTH_REDIRECT_URI = env('REST_SOCIAL_OAUTH_REDIRECT_URI')
+# REST_SOCIAL_OAUTH_REDIRECT_URI = env('REST_SOCIAL_OAUTH_REDIRECT_URI')
 REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI = env('REST_SOCIAL_OAUTH_ABSOLUTE_REDIRECT_URI')
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -217,7 +221,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTH_USER_MODEL = 'rs.User'
 
@@ -225,3 +229,10 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
 }
+
+# DJANGO_QUERY_PROFILER_REDIS_HOST = 'localhost'
+# DJANGO_QUERY_PROFILER_REDIS_PORT = 6379
+# DJANGO_QUERY_PROFILER_REDIS_DB = 'test'
+
+
+

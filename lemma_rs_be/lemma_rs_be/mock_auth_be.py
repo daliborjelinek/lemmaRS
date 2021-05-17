@@ -17,7 +17,6 @@ class Mock(OpenIdConnectAuth):
 
     def get_user_details(self, response):
         """Return user details from PixelPin account"""
-        print(response)
         return {'email': response.get('email'),
                 'fullname': response.get('name'),
                 'username': response.get('sub')

@@ -1,4 +1,5 @@
-from django.db.models import Q
+from django.db.models import Q, Prefetch
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -100,7 +101,15 @@ class ProjectGroupViewSet(viewsets.ModelViewSet):
 
 
 class ResourceViewSet(viewsets.ModelViewSet):
-    queryset = Resource.objects.order_by('name').all()
+    # queryset = Resource.objects.order_by('name').all().prefetch_related('tags')
+    queryset = Resource.objects.order_by('name').all().prefetch_related('tags', Prefetch(
+        'reservations',
+        queryset=ReservedResource.objects.filter(Q(reservation__pickup_date_time__gt=timezone.now()) | (
+                Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True))).select_related('reservation', ),
+        to_attr='blocking_reservations'
+    )
+                                                                        )
+
     permission_classes = [ResourcePermission | HasAPIKey]
     serializer_class = ResourceSerializer
 
