@@ -11,6 +11,7 @@
       v-data-table.elevation-1.pointer-rows(:headers='headers'
         :items='filteredItems'
         :search='search'
+        @click:row="openReservationDialog"
         :footer-props="{'items-per-page-options': [10, 50, 100]}"
         :items-per-page='50')
         template(v-slot:top)
@@ -27,7 +28,18 @@
         template(v-slot:item.approved='{ item }')
           v-icon {{ item.approved !== null ?  (item.approved ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline") : "mdi-help-box" }}
         template(v-slot:item.actions='{ item }')
-          | daw{{item.resources}}
+          v-btn.mr-1(color="primary")
+            v-icon(left @click="openReservationDialog(item)") mdi-handshake
+            | vydat
+          v-btn.mr-1(color="warning")
+            v-icon(left @click="openReservationDialog(item)") mdi-delete-circle
+            | storno
+          v-btn.mr-1(v-if="true" color="success")
+            v-icon(left @click="openReservationDialog(item)") mdi-check-circle
+            | schválit {{item.approved === null}}
+          v-btn.mr-1(color="error")
+            v-icon(left @click="openReservationDialog(item)") mdi-close-circle
+            | zamítnout
       v-dialog(v-model="calendarDialog")
       v-card
         v-toolbar(color="primary", dark)
@@ -50,6 +62,20 @@
             :events="calendarEvents",
             type="month"
           )
+      v-dialog(max-width="800px" v-model="reservationDialog")
+        v-toolbar(color="primary")
+          | Rezervace
+          v-spacer
+          v-btn(icon, @click="reservationDialog = false")
+            v-icon mdi-close
+        v-sheet.pa-2(v-if="reservationDialog===true")
+          v-data-table(:items='formatedResources', :headers='resourcesHeaders' show-select=true)
+            template(v-slot:top)
+              v-toolbar(flat)
+                v-btn(color='primary' @click.stop='openCalendar')
+                  | převzít
+                v-btn(color='primary' @click.stop='openCalendar')
+                  | odebrat
 
 
 </template>
@@ -68,8 +94,10 @@ export default {
   name: "Reservations",
   data: function () {
     return {
-      evts: this.getEvents(new Date('2021-01-05'),new Date('2021-05-30')),
+      evts: this.getEvents(new Date('2021-01-05'), new Date('2021-05-30')),
       calendarDialog: false,
+      reservationDialog: false,
+      selectedReservation: null,
       calendarModel: new Date(),
       // newRequest: emptyRequest(),
       // newResolve: emptyResolve(true),
@@ -79,6 +107,14 @@ export default {
       search: '',
       reservations: [],
       loading: true,
+      resourcesHeaders: [
+        {text: 'Zdroj', value: 'resource_str'},
+        {text: 'Vyzvednuto', value: 'real_pickup_date'},
+        {text: 'Vráceno', value: 'real_return_date'},
+        {text: 'Komentář', value: 'comment'},
+        {text: 'Akce', value: 'actions'}
+
+      ]
 
     }
   },
@@ -109,15 +145,19 @@ export default {
         return true
       }).map(itm => {
         return {
-          approved: itm.approved,
-          applicant: itm.applicant,
+          ...itm,
           pickup_date_time: this.$moment(itm.pickup_date_time).locale("cs").format('LLL'),
-          return_date_time: this.$moment(itm.return_date_time).locale("cs").format('LLL'),
-          picked_up: itm.picked_up,
-          id: itm.id,
-          resources: itm.resources,
+          return_date_time: this.$moment(itm.return_date_time).locale("cs").format('LLL')
         }
-
+      })
+    },
+    formatedResources() {
+      return this.selectedReservation?.resources.map(res => {
+        return {
+          ...res,
+         real_pickup_date: res.real_pickup_date ? this.$moment(res.real_pickup_date).locale("cs").format('LLL') : 'nevyzvednuto',
+         real_return_date: res.real_return_date ? this.$moment(res.real_return_date).locale("cs").format('LLL') : 'nevráceno'
+        }
       })
     },
     userRole() {
@@ -134,12 +174,15 @@ export default {
       ]
       if (this.$store.getters.getDisplayRole === 'COMMON') headers.pop()
       return headers
-    }
-
-
+    },
   },
   methods: {
-    getEvents (start,end) {
+    openReservationDialog(reservation) {
+      console.log(reservation)
+      this.selectedReservation = reservation
+      this.reservationDialog = true
+    },
+    getEvents(start, end) {
       const events = []
 
       const min = new Date(`2021-05-12T00:00:00`)
@@ -165,10 +208,10 @@ export default {
 
       return events
     },
-    getEventColor (event) {
+    getEventColor(event) {
       return event.color
     },
-    rnd (a, b) {
+    rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a
     },
     openCalendar() {

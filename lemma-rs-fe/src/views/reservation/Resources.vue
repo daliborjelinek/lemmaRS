@@ -8,7 +8,7 @@
             ripple=false
             @click="openResource(resource)",
             :key="resource.id",
-            v-for="(resource, index) in filteredResources",
+            v-for="(resource) in filteredResources",
             max-width="300"
             color="#0000008c"
             class="d-flex flex-column"
@@ -140,14 +140,16 @@
                     :rules="[(v) => !!v || 'Vyplňte jméno zdroje']"
                     prepend-icon="mdi-form-textbox",
                     :disabled="!resourceDialogEditing")
-                  v-select(prepend-icon="mdi-account-cog",
+                  api-select(
                     v-model="activeResource.provider"
                     hide-details,
+                    prepend-icon="mdi-account-cog",
                     :disabled="!resourceDialogEditing",
+                    query="user/?role__in=ADMIN,PROVIDER"
+                    :default-index="1",
                     label="Výdejář",
                     :item-value="(itm)=> itm.id" ,
-                    :item-text="(itm)=> itm.fullname"
-                    :items="providers")
+                    :item-text="(itm)=> itm.fullname")
                   v-select.mt-2(prepend-icon="mdi-shield-lock",
                     v-model="activeResource.required_permission_level"
                     :disabled="!resourceDialogEditing",
@@ -233,7 +235,7 @@ export default {
     Paster
   },
   async mounted() {
-    this.loading = true,
+    this.loading = true
     await this.loadTags()
     await this.loadProviders()
     await this.loadPermissionLevels()
@@ -293,8 +295,7 @@ export default {
       //this.activeResource.image = evt.target.files[0]
       const formData = new FormData();
       formData.append('file', file);
-      const url = await API.uploadImage(formData, file.name)
-      this.activeResource.image_url = url
+      this.activeResource.image_url = await API.uploadImage(formData, file.name)
 
     },
     handlePaste(files){
@@ -436,7 +437,7 @@ export default {
 
 }
 
-.ql-toolbar.ql-snow, ql-container.ql-snow {
+.ql-toolbar.ql-snow {
   border: none;
 }
 

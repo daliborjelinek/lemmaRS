@@ -19,14 +19,8 @@
 </template>
 
 ><script>
-import axios from 'axios'
-import API from '@/model/httpclient'
-import { USER_REQUEST } from "@/store/actions/user";
 import {
   AUTH_REQUEST,
-  AUTH_ERROR,
-  AUTH_SUCCESS,
-  AUTH_LOGOUT
 } from "@/store/actions/auth";
 export default {
   data(){
@@ -48,7 +42,7 @@ export default {
       const redirectUri= window.location.origin + '/auth/signinwin/main'
       this.auth_backend = 'mock';
       this.$store.commit(AUTH_REQUEST);
-      const url =`http://192.168.0.101:4011/connect/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=openid profile email&response_type=code`
+      const url =`http://localhost:4011/connect/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=openid profile email&response_type=code`
 
       window.open(url, "popup", "height=600,width=500");
     },

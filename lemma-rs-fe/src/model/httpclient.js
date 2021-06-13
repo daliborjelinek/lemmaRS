@@ -52,9 +52,12 @@ AXIOS.interceptors.response.use(undefined, async (err) => {
 
 
 export default {
+    async commonGetRequest(query){
+      return (await AXIOS.get(query)).data
+    },
+
     async getUsers(roles = null) {
         const q = 'user/' + (roles ? '?role__in=' + roles : '')
-        console.log(q)
         return (await AXIOS.get(q)).data
     },
     // USER

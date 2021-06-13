@@ -8,6 +8,14 @@
         | {{$store.getters.hourCost}} {{$store.getters.approvalRequired}}
         v-alert.mb-0( v-if="$store.getters.approvalRequired" dense icon='mdi-alert' text='' type='warning') Vyžaduje schválení
         v-form(ref="reservationForm")
+          api-select(
+            v-model="provider"
+            prepend-icon="mdi-account-cog",
+            query="user/?role__in=ADMIN,PROVIDER"
+            :default-index="1",
+            label="Výdejář",
+            :item-value="(itm)=> itm.id" ,
+            :item-text="(itm)=> itm.fullname")
           v-dialog( v-model='showCalendar' width='290px')
             template(v-slot:activator='{ on, attrs }')
               v-text-field(v-model='dateRangeText' label='Termín rezervace' :rules="[(v) => !!v || 'Vyplňte termín rezervace']" prepend-icon='mdi-calendar' readonly v-bind='attrs' v-on='on')
@@ -40,15 +48,24 @@
 
 <script>
 import Timepicker from "@/components/Timepicker";
+import ApiSelect from "@/components/ApiSelect";
+import {createHelpers} from "vuex-map-fields";
+const { mapFields } = createHelpers({
+  getterType: "getResField",
+  mutationType: "updateResField",
+});
 
 export default {
-  components: {Timepicker},
+  components: {ApiSelect, Timepicker},
   data: () => ({
     date: [],
     showCalendar: false
   }),
 
   computed: {
+    ...mapFields([
+      'provider',
+    ]),
     dateRangeText(){
       return this.$store.state.reservation.startDate ?
       this.$store.state.reservation.startDate + " ~ " + this.$store.state.reservation.endDate: null

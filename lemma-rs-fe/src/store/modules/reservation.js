@@ -30,6 +30,7 @@ const state = {
     tag: null,
     search: '',
     reservationDate: [],
+    provider: null,
     alreadyReserved: false,
     disallowed: true,
     inactive: false,
