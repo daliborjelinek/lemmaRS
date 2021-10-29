@@ -23,7 +23,9 @@
             v-btn(color='primary' @click.stop='openCreateDialog')
               | Vytvořit žádost
         template(v-slot:item.approved='{ item }')
-          v-icon {{ item.approved !== null ?  (item.approved ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline") : "mdi-help-box" }}
+          v-icon(v-if="item.approved === null") mdi-help-box
+          v-icon(v-else-if="item.approved === false" color='error') mdi-close-box
+          v-icon(v-else color='success') mdi-checkbox-marked
         template(v-slot:item.actions='{ item }')
           span(v-if="item.approved === null")
             v-btn(icon color="green")

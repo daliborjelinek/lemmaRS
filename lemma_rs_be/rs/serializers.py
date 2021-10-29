@@ -45,12 +45,13 @@ class ResourceSerializer(serializers.ModelSerializer):
     # tag_str = serializers.CharField(source='tags', read_only=True)
     tags_str = serializers.StringRelatedField(source='tags', many=True, read_only=True)
     blocking_reservations = BlockingIntervalSerializer(read_only=True, many=True)
+    inv_numbers = serializers.JSONField()
 
     class Meta:
         model = Resource
         fields = ('not_returned',
             'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider',
-            'tags', 'tags_str', 'required_permission_level', 'blocking_reservations')
+            'tags', 'tags_str', 'required_permission_level', 'blocking_reservations', 'inv_numbers')
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
@@ -109,22 +110,23 @@ class ReservedResourceSerializer(serializers.ModelSerializer):
 
 class ReservationSerializer(serializers.ModelSerializer):
     resources = ReservedResourceSerializer(many=True)
-    applicant = serializers.StringRelatedField(read_only=True)
+    applicant = SimpleUserSerializer(read_only=True)
     project = serializers.StringRelatedField(read_only=True)
+    fully_returned = serializers.BooleanField(read_only=True)
 
     class Meta:
         depth = 1
         model = Reservation
         fields = (
             'id', 'pickup_date_time', 'return_date_time', 'picked_up', 'applicant', 'approved', 'approved_by',
-            'resources', 'project')
+            'resources', 'project', 'created_at','fully_returned',)
 
 
 class ReservationCreateSerializer(serializers.ModelSerializer):
     resources = serializers.ListField(
         child=serializers.IntegerField()
     )
-    approval_required = serializers.BooleanField()
+    approval_required = serializers.BooleanField(allow_null=True)
 
     class Meta:
         model = Reservation

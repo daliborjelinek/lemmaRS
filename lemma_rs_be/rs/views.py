@@ -170,9 +170,18 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
 
 class ReservationViewSet(viewsets.ModelViewSet):
     # todo: exlude porvider from
-    queryset = Reservation.objects.all()
+    queryset = Reservation.objects.all().order_by('-created_at')
     permission_classes = [CommonReadAdminAndProviderAll]
     serializer_class = ReservationSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        reservation = self.get_object()
+        if reservation.picked_up:
+            return Response("delete of picked up reservation is not allowed", status=status.HTTP_400_BAD_REQUEST)
+        if reservation.return_date_time < timezone.now():
+            return Response("delete of ended reservation is not allowed", status=status.HTTP_400_BAD_REQUEST)
+        reservation.delete()
+        return Response(data='delete success')
 
     @extend_schema(
         request=ReservationCreateSerializer,
@@ -191,7 +200,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
             reservation = Reservation.objects.create(project=project, pickup_date_time=pickup_date_time,
                                                      return_date_time=return_date_time,
-                                                     applicant=applicant, approved=(not approval_required))
+                                                     applicant=applicant, approved=None if approval_required else True)
 
             for resource_id in resources:
                 resource = Resource.objects.get(pk=resource_id)
@@ -200,6 +209,50 @@ class ReservationViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['PUT'], detail=True, name='TransmitReservation')
+    def transmit_reservation(self, request, pk):
+        reservation = self.get_object()
+        if not reservation.approved:
+            return Response('This reservation needs to be approved first.', status=status.HTTP_400_BAD_REQUEST)
+        if reservation.picked_up:
+            return Response('Reservation has been already transmitted', status=status.HTTP_400_BAD_REQUEST)
+        if reservation.pickup_date_time > timezone.now():
+            return Response("Transmit before claimed pickup date not allowed", status=status.HTTP_400_BAD_REQUEST)
+        if reservation.return_date_time < timezone.now():
+            return Response("Transmit after claimed return date not allowed", status=status.HTTP_400_BAD_REQUEST)
+
+        ReservedResource.objects.filter(reservation_id=pk).update(real_pickup_date=timezone.now())
+        reservation.picked_up = True
+        reservation.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['PUT'], detail=True, name='resolve_reservation_request')
+    def resolve_reservation_request(self, request, pk):
+        reservation = self.get_object()
+        print(reservation.approved_by)
+        if reservation.approved_by is None:
+            reservation.approved_by = request.user
+            reservation.approved = request.data['approved']
+            reservation.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("Reservation has been already approved", status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['PUT'], detail=True, name='')
+    def take_up_resources(self, request, pk):
+        reservation = self.get_object()
+        if not reservation.picked_up:
+            return Response("Cant take up reservation which was not picked up", status=status.HTTP_400_BAD_REQUEST)
+        ids = request.data['resources']
+        print(ids)
+        already_returned_resources = ReservedResource.objects.filter(pk__in=ids).filter(
+            real_return_date__isnull=False).values_list('id', flat=True)
+        print(already_returned_resources)
+        if len(already_returned_resources) > 0:
+            return Response('ids ' + ', '.join(map(str, already_returned_resources)) + ' was already returned', status=status.HTTP_400_BAD_REQUEST)
+        ReservedResource.objects.filter(pk__in=ids).update(real_return_date=timezone.now())
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FileUploadView(APIView):

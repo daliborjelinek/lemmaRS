@@ -62,12 +62,7 @@ const getters = {
             //const searchTag =  state.search ? res.name.includes(state.filters.search) : true
 
 
-        }).map(res => {
-            res.selected = state.selectedResources.includes(res)
-            res.allowed = rootState.user.profile.permission_level >= res.required_permission_level
-            return res
-        }
-        );
+        });
     },
     filteredResourcesCount: (state, getters, rootState) => {
         return getters.filteredResources.length
@@ -144,7 +139,7 @@ const mutations = {
             Object.keys(s).forEach(key => {
                 state[key] = s[key]
             })
-    }
+    },
     }
 ;
 

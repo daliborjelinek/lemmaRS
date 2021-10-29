@@ -1,3 +1,39 @@
+/*
+SELECT * from lemma.sources
+
+ --WHERE sources.name NOT LIKE ALL(ARRAY['%vyřazeno%','%ukradeno%']) AND (sources.issuemaster != 14);
+
+
+SELECT id, name
+FROM   lemma.sources
+WHERE  id NOT IN (
+SELECT lemma.sources.id, max(p.since)
+from lemma.project__reservation__source
+    JOIN lemma.reservations p on p.id = project__reservation__source.reservation
+    JOIN lemma.sources i on i.id = project__reservation__source.source
+GROUP BY source,name)
+
+
+SELECT i.id, i.available, i.name, c.name, max(p.since) as last_borrow
+from lemma.project__reservation__source
+         JOIN lemma.reservations p on p.id = project__reservation__source.reservation
+         RIGHT JOIN lemma.sources i on i.id = project__reservation__source.source
+         JOIN lemma.issuemasters c on c.id = i.issuemaster
+GROUP BY source, i.name, c.name, i.id, i.available
+HAVING max(p.since) > to_timestamp('2018-01-01', 'yyyy-mm-dd')
+ORDER BY last_borrow;
+
+SELECT * from lemma.project__reservation__source
+        JOIN lemma.sources src on src.id = project__reservation__source.source
+        JOIN lemma.reservations p on p.id = project__reservation__source.reservation
+WHERE src.id = 239;
+
+SELECT * from lemma.sources;
+
+
+ */
+
+
 const source = [
     {
       "issuemaster": 15,
@@ -1881,22 +1917,23 @@ const tagmap = {
 
 let result = [sojka, lysakova, ...tags, ...permissions,]
 
+//filter((src) => src.issuemaster === 15)
+const resources = source.map((src, index) => {
 
-const resources = source.filter((src) => src.issuemaster === 15).map((src, index) => {
-    
     return {
         model: "rs.resource",
         pk: index + 1,
         fields: {
             name: src.name,
             description: src.description || '',
-            internal_notes: "<p>Inventární číslo: " + src.inventary_number + " </p> <p> Výrobní číslo: " + src.manufacturing_number + "</p>",
+            internal_notes: "<p> Výrobní číslo: " + src.manufacturing_number + "</p>",
             active: src.available,
             cost: src.cost,
             image_url: "",
             provider: 3,
             required_permission_level: src.permission_category === 14 ? 1 : 2,
-            tags: [tagmap[src.type]]
+            tags: [tagmap[src.type]],
+            inv_numbers: [src.inventary_number]
 
         }
 

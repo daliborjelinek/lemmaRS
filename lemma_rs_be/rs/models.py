@@ -46,6 +46,7 @@ class Resource(models.Model):
     provider = models.ForeignKey('User', on_delete=models.RESTRICT)
     tags = models.ManyToManyField('Tag', related_name='tags', blank=True)
     required_permission_level = models.ForeignKey('PermissionLevel', on_delete=models.RESTRICT)
+    inv_numbers = models.JSONField(default=list)
 
     def not_returned(self):
 
@@ -159,7 +160,7 @@ class CommonUser(User):
 class Admin(User):
     class AdminObjects(models.Manager):
         def get_queryset(self, *args, **kwargs):
-            return super().get_queryset(*args, **kwargs).filter(role=User.Role.ADMIN)
+            return super().get_queryset(*args, **kwargs).filter(role=Role.ADMIN)
 
     objects = AdminObjects()
 
@@ -209,14 +210,19 @@ class Reservation(models.Model):
     picked_up = models.BooleanField(default=False)
     applicant = models.ForeignKey('User', on_delete=models.PROTECT)
     canceled = models.BooleanField(default=False)
-    approved = models.BooleanField(default=False)
+    approved = models.BooleanField(default=False, blank=True, null=True)
     approved_by = models.ForeignKey('User', blank=True, null=True, related_name='reservation_approved_by',
                                     on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def fully_returned(self):
+        return not (self.resources.filter(real_return_date__isnull=True).count() > 0)
 
 
 class ReservedResource(models.Model):
     resource = models.ForeignKey('Resource', related_name='reservations', on_delete=models.PROTECT)
-    reservation = models.ForeignKey('Reservation', related_name='resources', on_delete=models.PROTECT)
+    reservation = models.ForeignKey('Reservation', related_name='resources', on_delete=models.CASCADE)
     real_return_date = models.DateTimeField(blank=True, null=True)
     comment = models.CharField(max_length=10000, blank=True, default="")
     real_pickup_date = models.DateTimeField(blank=True, null=True)

@@ -3,19 +3,19 @@
     <v-data-table
         :headers="projectGroupHeaders"
         :items="projectGroups"
-        :search="search"
         :items-per-page="5"
+        :search="search"
         class="elevation-1"
     >
       <template v-slot:top>
         <v-toolbar flat>
           <v-text-field
-              style="max-width: 300px"
               v-model="search"
               append-icon="mdi-magnify"
+              hide-details
               label="Hledat"
               single-line
-              hide-details
+              style="max-width: 300px"
           ></v-text-field>
           <v-spacer></v-spacer>
           <v-btn
@@ -32,7 +32,7 @@
         </v-icon>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editProjectGroup(item)">
+        <v-icon class="mr-2" small @click="editProjectGroup(item)">
           mdi-pencil
         </v-icon>
         <v-icon small @click="deleteProjectGroup(item)"> mdi-delete</v-icon>
@@ -63,7 +63,7 @@
         <v-card-actions>
           <v-spacer/>
           <v-btn text @click="projectGroupDialog = false"> Zavřít</v-btn>
-          <v-btn text @click="saveProjectGroup"> {{activeGroup.id ? 'Uložit' : 'Vytvořit'}}</v-btn>
+          <v-btn text @click="saveProjectGroup"> {{ activeGroup.id ? 'Uložit' : 'Vytvořit' }}</v-btn>
 
         </v-card-actions>
       </v-card>
@@ -84,17 +84,11 @@ const emptyGroup = () => {
 };
 export default {
   components: {ProjectGroups},
-  props:['projectGroups'],
+  props: ['projectGroups'],
   data: () => ({
     search: "",
     activeGroup: emptyGroup(),
     projectGroupDialog: false,
-    projectGroupHeaders: [
-      {text: "Jméno", value: "name"},
-      {text: "Popis", value: "description"},
-      {text: "Aktivní", value: "active"},
-      {text: "Akce", value: "actions", sortable: false},
-    ],
     loadingProjectsGroups: false,
   }),
 
@@ -103,9 +97,20 @@ export default {
   watch: {},
 
   methods: {
-    openCreateDialog(){
+    projectGroupHeaders() {
+      const headers = [
+        {text: "Jméno", value: "name"},
+        {text: "Popis", value: "description"},
+        {text: "Aktivní", value: "active"},
+        {text: "Akce", value: "actions", sortable: false},
+      ]
+      if (this.$store.getters.getDisplayRole === 'COMMON')
+        headers.pop()
+      return headers
+    },
+    openCreateDialog() {
       this.activeGroup = emptyGroup()
-      if(this.$refs.projectGroupForm) this.$refs.projectGroupForm.resetValidation()
+      if (this.$refs.projectGroupForm) this.$refs.projectGroupForm.resetValidation()
       this.projectGroupDialog = true
     },
     editProjectGroup(group) {

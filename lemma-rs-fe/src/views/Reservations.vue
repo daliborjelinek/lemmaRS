@@ -2,14 +2,18 @@
   v-main
     v-container
       v-card
-        v-tabs()
-          v-tab(v-if="userRole !== 'COMMON'", href="#pending") Ke schválení
+        v-tabs(v-model="tab")
+          v-tab(v-if="userRole === 'ADMIN'", href="#pending_approval") Ke schválení
+          v-tab(v-if="userRole !== 'COMMON'", href="#toTransmit") K vydání
+          v-tab(v-if="userRole !== 'COMMON'", href="#toTakeUp") K převzetí
           v-tab(href="#my")  Moje rezervace
-          v-tab(v-if="userRole !== 'COMMON'", @change="tab='all'")  Plánované
-          v-tab(v-if="userRole !== 'COMMON'", @change="tab='all'")  Vše
+          v-tab(href="#planned")  Plánované
+          v-tab(href="#all" v-if="userRole !== 'COMMON'", @change="tab='all'")  Vše
 
       v-data-table.elevation-1.pointer-rows(:headers='headers'
+        id="reservationTable"
         :items='filteredItems'
+        fixed-header,
         :search='search'
         @click:row="openReservationDialog"
         :footer-props="{'items-per-page-options': [10, 50, 100]}"
@@ -25,57 +29,64 @@
             v-spacer
             v-btn(color='primary' @click.stop='openCalendar')
               | Kalendář
+        template(v-slot:item.applicant='{ item }') {{item.applicant.fullname}}
         template(v-slot:item.approved='{ item }')
-          v-icon {{ item.approved !== null ?  (item.approved ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline") : "mdi-help-box" }}
+          v-icon(v-if="item.approved === null") mdi-help-box
+          v-icon(v-else-if="item.approved === false" color='error') mdi-close-box
+          v-icon(v-else color='success') mdi-checkbox-marked
+        template(v-slot:item.picked_up='{ item }')
+          v-icon {{ item.picked_up ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline" }}
+        template(v-slot:item.fully_returned='{ item }')
+          v-icon(v-if="item.fully_returned" color="success") mdi-checkbox-marked
+          v-icon(v-else-if="item.picked_up && !item.fully_returned && item.returnDatePassed" color='error') mdi-close-box
+          v-icon(v-else) mdi-checkbox-blank-outline
+
         template(v-slot:item.actions='{ item }')
-          v-btn.mr-1(color="primary")
-            v-icon(left @click="openReservationDialog(item)") mdi-handshake
-            | vydat
-          v-btn.mr-1(color="warning")
-            v-icon(left @click="openReservationDialog(item)") mdi-delete-circle
-            | storno
-          v-btn.mr-1(v-if="true" color="success")
-            v-icon(left @click="openReservationDialog(item)") mdi-check-circle
-            | schválit {{item.approved === null}}
-          v-btn.mr-1(color="error")
-            v-icon(left @click="openReservationDialog(item)") mdi-close-circle
-            | zamítnout
-      v-dialog(v-model="calendarDialog")
-      v-card
-        v-toolbar(color="primary", dark)
-          v-btn.ma-2(
-            icon,
-            @click="$refs.calendar.prev() "
-          )
-            v-icon mdi-chevron-left
-          span.text-center(style='width:110px') {{ calendarMonth }}
-          v-btn.ma-2(icon, @click="$refs.calendar.next()")
-            v-icon mdi-chevron-right
-          v-spacer
-          v-btn(icon, @click="calendarDialog = false")
-            v-icon mdi-close
-        v-sheet.pa-2
-          v-calendar(
-            v-model="calendarModel",
-            ref="calendar",
-            color="primary",
-            :events="calendarEvents",
-            type="month"
-          )
-      v-dialog(max-width="800px" v-model="reservationDialog")
+          span(style="white-space: nowrap")
+            v-btn.mr-1(small color="primary" @click.stop="transmitReservation(item)" :disabled='!item.isTransmittable')
+              v-icon(left) mdi-handshake
+              | vydat
+            v-btn.mr-1( icon color="warning" @click.stop="deleteReservation(item)" :disabled="item.picked_up === true")
+              v-icon mdi-delete-circle
+            v-btn(icon v-if="userRole === 'ADMIN'" @click.stop="resolveReservationRequest(item,true)" color="success" :disabled="item.approved !== null || item.returnDatePassed" title="Schválit")
+              v-icon mdi-check-decagram
+            v-btn(icon v-if="userRole === 'ADMIN'" color="error" @click.stop="resolveReservationRequest(item, false)" :disabled="item.approved !== null || item.returnDatePassed" title="Zamítnout")
+              v-icon mdi-close-octagon-outline
+      v-dialog(v-model="calendarDialog" max-width="900")
+        v-card
+          v-toolbar(color="primary", dark)
+            v-btn.ma-2(
+              icon,
+              @click="$refs.calendar.prev() "
+            )
+              v-icon mdi-chevron-left
+            span.text-center(style='width:110px') {{ calendarMonth }}
+            v-btn.ma-2(icon, @click="$refs.calendar.next()")
+              v-icon mdi-chevron-right
+            v-spacer
+            v-btn(icon, @click="calendarDialog = false")
+              v-icon mdi-close
+          v-sheet.pa-2()
+            v-calendar(
+              v-model="calendarModel",
+              ref="calendar",
+              color="primary",
+              :events="calendarEvents",
+              type="month"
+            )
+      v-dialog(max-width="900px" v-model="reservationDialog")
         v-toolbar(color="primary")
-          | Rezervace
+          | {{selectedReservation ? selectedReservation.applicant.fullname + ' - ' + selectedReservation.project : '' }}
           v-spacer
           v-btn(icon, @click="reservationDialog = false")
             v-icon mdi-close
         v-sheet.pa-2(v-if="reservationDialog===true")
-          v-data-table(:items='formatedResources', :headers='resourcesHeaders' show-select=true)
+          v-data-table(v-model='selectedResources' :items='formatedResources', :headers='resourcesHeaders' :show-select="userRole !== 'COMMON'")
             template(v-slot:top)
-              v-toolbar(flat)
-                v-btn(color='primary' @click.stop='openCalendar')
+              v-toolbar(flat v-if="userRole !== 'COMMON'")
+                v-btn(color='primary' :disabled='!selectedResources.length || !selectedReservation.picked_up' @click.stop='takeUpResources')
+                  v-icon(left) mdi-handshake
                   | převzít
-                v-btn(color='primary' @click.stop='openCalendar')
-                  | odebrat
 
 
 </template>
@@ -83,21 +94,14 @@
 <script>
 import API from "@/model/httpclient";
 
-const emptyRequest = () => {
-  return {
-    requestedLevel: 1,
-    reason: ''
-  }
-}
-
 export default {
   name: "Reservations",
   data: function () {
     return {
-      evts: this.getEvents(new Date('2021-01-05'), new Date('2021-05-30')),
       calendarDialog: false,
       reservationDialog: false,
       selectedReservation: null,
+      selectedResources: [],
       calendarModel: new Date(),
       // newRequest: emptyRequest(),
       // newResolve: emptyResolve(true),
@@ -112,7 +116,7 @@ export default {
         {text: 'Vyzvednuto', value: 'real_pickup_date'},
         {text: 'Vráceno', value: 'real_return_date'},
         {text: 'Komentář', value: 'comment'},
-        {text: 'Akce', value: 'actions'}
+       // {text: 'Akce', value: 'actions'}
 
       ]
 
@@ -130,8 +134,9 @@ export default {
         return {
           start: new Date(res.pickup_date_time),
           end: new Date(res.return_date_time),
-          name: res.applicant + ' - ' + res.project,
-          timed: true
+          name: res.applicant.fullname + ' - ' + res.project,
+          timed: true,
+          color: this.$randomColor({seed: res.project, luminosity: 'dark'})
         }
       })
     },
@@ -139,24 +144,39 @@ export default {
       return new Date(this.calendarModel).toLocaleString("cs-CZ", {month: "long", year: 'numeric'});
     },
     filteredItems() {
-      return this.reservations.filter(itm => {
-        if (this.tab === 'my') return itm.applicant.id === this.$store.getters.getProfile.id
-        if (this.tab === 'pending') return !itm.expiration_date
-        return true
-      }).map(itm => {
+      return this.reservations.map(itm => {
         return {
           ...itm,
           pickup_date_time: this.$moment(itm.pickup_date_time).locale("cs").format('LLL'),
-          return_date_time: this.$moment(itm.return_date_time).locale("cs").format('LLL')
+          return_date_time: this.$moment(itm.return_date_time).locale("cs").format('LLL') + ' (' + (this.$moment(itm.return_date_time).diff(this.$moment(itm.pickup_date_time), "days")+1) + 'd)',
+          created_at: this.$moment(itm.created_at).locale("cs").format('LLL'),
+          isTransmittable:
+              (new Date(itm.pickup_date_time) <= new Date()) &&
+              (new Date(itm.return_date_time) > new Date()) &&
+              itm.approved &&
+              !itm.picked_up,
+          returnDatePassed: new Date(itm.return_date_time) < new Date(),
+          isTransmittableString: "rezarevace začala " + (new Date(itm.pickup_date_time) <= new Date()) + '\n'+
+              " rezarvace neskončila: " + (new Date(itm.return_date_time) > new Date()) +
+              ' rezervace je schvalena:  ' + itm.approved +  '\n'+
+              ' rezervace není vyzvednuta ' + !itm.picked_up
         }
+      }).filter(itm => {
+        if (this.tab === 'my') return itm.applicant.id === this.$store.getters.getProfile.id
+        if (this.tab === 'pending_approval') return itm.approved === null  && !itm.returnDatePassed
+        if (this.tab === 'toTransmit') return itm.isTransmittable
+        if (this.tab === 'planned') return !itm.picked_up
+        if (this.tab === 'toTakeUp') return (itm.picked_up && !itm.fully_returned)
+        return true
       })
     },
     formatedResources() {
       return this.selectedReservation?.resources.map(res => {
         return {
           ...res,
-         real_pickup_date: res.real_pickup_date ? this.$moment(res.real_pickup_date).locale("cs").format('LLL') : 'nevyzvednuto',
-         real_return_date: res.real_return_date ? this.$moment(res.real_return_date).locale("cs").format('LLL') : 'nevráceno'
+          real_pickup_date: res.real_pickup_date ? this.$moment(res.real_pickup_date).locale("cs").format('LLL') : 'nevyzvednuto',
+          real_return_date: res.real_return_date ? this.$moment(res.real_return_date).locale("cs").format('LLL') : 'nevráceno',
+          isSelectable: !res.real_return_date
         }
       })
     },
@@ -164,15 +184,19 @@ export default {
       return this.$store.getters.getDisplayRole
     },
     headers() {
-      const headers = [
+      let headers = [
         {text: "Žadatel", value: "applicant"},
+        {text: "Projekt", value: "project"},
+        {text: "Vytvořeno", value: "created_at"},
         {text: "Od", value: "pickup_date_time"},
         {text: "Do", value: "return_date_time"},
         {text: "Schváleno", value: "approved"},
         {text: "Vyzvednuto", value: "picked_up"},
+        {text: "Vráceno", value: "fully_returned"},
         {text: "Akce", value: "actions", sortable: false},
       ]
-      if (this.$store.getters.getDisplayRole === 'COMMON') headers.pop()
+      if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers.pop()
+      if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers = headers.filter(h =>h.value !== 'applicant')
       return headers
     },
   },
@@ -182,97 +206,36 @@ export default {
       this.selectedReservation = reservation
       this.reservationDialog = true
     },
-    getEvents(start, end) {
-      const events = []
-
-      const min = new Date(`2021-05-12T00:00:00`)
-      const max = new Date(`2021-05-30T23:59:59`)
-      const days = (max.getTime() - min.getTime()) / 86400000
-      const eventCount = this.rnd(days, days + 20)
-
-      for (let i = 0; i < eventCount; i++) {
-        const allDay = this.rnd(0, 3) === 0
-        const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-        const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-        const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-        const second = new Date(first.getTime() + secondTimestamp)
-
-        events.push({
-          name: 'dawdaw',
-          start: first,
-          end: second,
-          color: 'cyan',
-          timed: !allDay,
-        })
-      }
-
-      return events
+    async transmitReservation(item) {
+      await API.transmitReservation(item.id)
+      this.reservations = await API.getReservations()
     },
-    getEventColor(event) {
-      return event.color
+    async deleteReservation(item) {
+      if (confirm("Opravdu chcete zrušit tuto rezerevaci?"))
+        await API.deleteReservation(item.id)
+      this.reservations = await API.getReservations()
     },
-    rnd(a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a
+    async resolveReservationRequest(item, approved) {
+      await API.resolveReservationRequest(item.id, approved)
+      this.reservations = await API.getReservations()
+    },
+    async takeUpResources() {
+      const resources = this.selectedResources.map(res => res.id)
+      await API.takeUpResources(this.selectedReservation.id, resources)
+      this.selectedResources = []
+      this.reservations = await API.getReservations();
+      this.selectedReservation = this.reservations.find(r => r.id === this.selectedReservation.id);
     },
     openCalendar() {
       this.calendarDialog = true
     }
-    //   openCreateDialog() {
-    //     if (this.$refs.createPermissionRequestForm) this.$refs.createPermissionRequestForm.resetValidation()
-    //     this.newRequest = emptyRequest()
-    //     this.createDialog = true
-    //   },
-    //   openResolveDialog(id, approved) {
-    //     if (this.$refs.resolvePermissionRequestForm) this.$refs.resolvePermissionRequestForm.resetValidation()
-    //     this.newResolve = emptyResolve(id, approved)
-    //     this.resolveDialog = true
-    //   },
-    //   async resolve() {
-    //     const date = this.newResolve.expirationDate ? new Date(this.newResolve.expirationDate) : null
-    //     try {
-    //       await API.resolvePermissionRequest(this.newResolve.id,date, this.newResolve.approved,this.newResolve.response)
-    //       this.permissions = await API.getPermissionRequests();
-    //       this.$store.dispatch("notify", {
-    //         type: "success",
-    //         text: "Žádost vyřešena",
-    //       });
-    //       console.log('zaviram')
-    //     } catch (e) {
-    //       console.log(e);
-    //       this.$store.dispatch("notify", {
-    //         type: "error",
-    //         text: "Ukládání žádosti se nezdařilo ",
-    //       });
-    //     } finally {
-    //       console.log('zaviram')
-    //       this.resolveDialog = false;
-    //     }
-    //
-    //
-    //   },
-    //   async create() {
-    //     if (!this.$refs.createPermissionRequestForm.validate()) return;
-    //     try {
-    //       await API.applyPermissionRequest(this.newRequest.requestedLevel, this.newRequest.reason)
-    //       this.permissions = await API.getPermissionRequests()
-    //       this.createDialog = false;
-    //       await this.$store.dispatch("notify", {
-    //         type: "success",
-    //         text: "Žádost vytvořena",
-    //       });
-    //     } catch (e) {
-    //       console.log(e);
-    //       await this.$store.dispatch("notify", {
-    //         type: "error",
-    //         text: "Vytváření žádosti selhalo",
-    //       });
-    //     }
-    //
-    //   }
+
   }
 }
 </script>
 
-<style scoped>
-
+<style>
+#reservationTable .v-data-table__wrapper {
+  max-height: calc(100vh - 260px);
+}
 </style>

@@ -43,7 +43,7 @@ export default {
       {text: "Dokončeno", value: "finished"},
       {text: "Vlastník", value: "owner"},
       {text: "Skupina", value: "group"},
-      {text: "Akce", value: "actions", sortable: false},
+
     ],
     myProjectHeaders: [
       {text: "Jméno", value: "name"},

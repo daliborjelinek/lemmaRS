@@ -190,6 +190,21 @@ export default {
     async getReservations() {
         return (await AXIOS.get('reservation/')).data
     },
+
+    async deleteReservation(id) {
+        return (await AXIOS.delete('reservation/'+ id + '/'))
+    },
+
+    async resolveReservationRequest(id, approved) {
+       return (await AXIOS.put('reservation/'+ id + '/resolve_reservation_request/', {approved}))
+    },
+
+    async takeUpResources(id, resources) {
+        return (await AXIOS.put('reservation/'+ id + '/take_up_resources/', {resources}))
+    },
+
+
+
     async createReservation(pickUpDate, returnDate, resources,approvalRequierd, project) {
         const data = {
             pickup_date_time: pickUpDate,
@@ -199,6 +214,9 @@ export default {
             project
         }
         return await (AXIOS.put('reservation/create_reservation/',data)).data
+    },
+    async transmitReservation(id) {
+        return await  (AXIOS.put('reservation/'+ id + '/transmit_reservation/'))
     }
 
 }

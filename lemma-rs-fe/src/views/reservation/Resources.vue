@@ -39,7 +39,7 @@
                 v-icon(left) mdi-cart-arrow-down
                 span(v-if="!resource.selected") Rezervovat
                 span(v-else) Odebrat
-              v-btn(color=red, @click.stop="dialog = true", text )
+              v-btn(color=red, @click.stop="openCalendarDialog(resource)", text )
                 v-icon(left) mdi-calendar
                 | Kalendář
         v-data-table.elevation-1(
@@ -63,7 +63,7 @@
             v-btn(icon, :disabled="!reservationIsPossible(item)" @click.stop="addReservationItem(item)" )
               v-icon( small v-if="!item.selected") mdi-cart-arrow-down
               v-icon( small v-else="item.selected") mdi-cart-arrow-up
-            v-btn(icon @click.stop="dialog = true")
+            v-btn(icon @click.stop="openCalendarDialog(item)")
               v-icon(small) mdi-calendar
           template(v-slot:item.attributes="{ item }")
             v-chip(v-if="!item.allowed" small class="ma-2" label color="#4c0000c2" title="nemáte dostatečné oprávnění")
@@ -81,31 +81,29 @@
 
 
 
-    v-dialog(v-model="dialog")
+    v-dialog(v-model="calendarDialog" max-width="900")
       v-card
         v-toolbar(color="primary", dark)
-          span Canon EOD 500D
-          v-btn.ma-2(
-            icon,
-            @click="$refs.calendar.prev(); click($refs.calendar); "
-          )
+          v-btn.ma-2(icon, @click="$refs.calendar.prev()")
             v-icon mdi-chevron-left
-            span {{ month }}
+          span {{ month }}
           v-btn.ma-2(icon, @click="$refs.calendar.next()")
             v-icon mdi-chevron-right
           v-spacer
-            v-btn(icon, @click="dialog = false")
-              v-icon mdi-close
-        v-sheet.pa-2(height="400")
+          v-btn(icon, @click="calendarDialog = false")
+            v-icon mdi-close
+        v-sheet.pa-2(height=600)
           v-calendar(
+            height="400px",
             v-model="value",
             ref="calendar",
             color="primary",
-            :events="events",
+            event-overlap-mode="stack",
+            :events="blockingEventsOfActiveResource",
             event-color="cyan",
             type="month"
           )
-    v-dialog(v-model="resourceDialog", :persistent=resourceDialogEditing, max-width="900")
+    v-dialog(v-model="resourceDialog", scrollable :persistent=resourceDialogEditing, max-width="900")
       template(v-slot:default="dialog")
         v-card
           v-toolbar(color="primary", dark) Zdroj {{activeResource.name}}
@@ -195,6 +193,7 @@
                 v-tabs(v-model="resourceDetailTab" class="mb-3")
                   v-tab Popis
                   v-tab(v-if="userRole !== 'COMMON'") Interní poznámky
+                  v-tab(v-if="userRole !== 'COMMON'") Inventární čísla
                 v-tabs-items(v-model="resourceDetailTab")
                   v-tab-item
                     div(v-if="!resourceDialogEditing" v-html="activeResource.description")
@@ -202,6 +201,31 @@
                   v-tab-item
                     div(v-if="!resourceDialogEditing" v-html="activeResource.internal_notes")
                     vue-editor(v-else v-model="activeResource.internal_notes" :editor-toolbar="toolbarOptions")
+                  v-tab-item
+                    v-list
+                      v-list-item(v-for='invNumber in activeResource.inv_numbers' :key='invNumber')
+                        v-list-item-icon
+                          v-icon mdi-numeric
+                        v-list-item-content
+                          v-list-item-title(v-text='invNumber')
+                        v-list-item-avatar
+                          v-btn(@click='removeInvNumber(invNumber)' fab='' x-small dark)
+                            v-icon mdi-delete
+                      v-divider
+                      v-list-item(v-if="resourceDialogEditing")
+                        v-list-item-content
+                          v-list-item-title
+                            v-text-field(v-model="newInvNumber",
+                              label="Nové inventární čislo",
+                              prepend-icon="mdi-numeric",
+                              type="number",
+                            )
+                        v-list-item-avatar
+                          v-btn(color='success' @click='addInvNumber' fab='' x-small='' dark='')
+                            v-icon mdi-plus-circle
+
+
+
 
     paster(:enable="pasterActive" @close="handlePaste")
     portal(to='add-resource-btn')
@@ -213,6 +237,7 @@ import API from "@/model/httpclient";
 import {VueEditor} from "vue2-editor";
 import Tags from "@/components/Tags"
 import Paster from "@/components/Paster";
+import ApiSelect from "@/components/ApiSelect";
 
 const emptyResource = () => {
   return {
@@ -223,7 +248,8 @@ const emptyResource = () => {
     image_url: null,
     tags: [],
     provider: null,
-    required_permission_level: 1
+    required_permission_level: 1,
+    invNumbers: []
   };
 };
 
@@ -232,7 +258,8 @@ export default {
   components: {
     Tags,
     VueEditor,
-    Paster
+    Paster,
+    ApiSelect
   },
   async mounted() {
     this.loading = true
@@ -262,14 +289,14 @@ export default {
     },
   },
   methods: {
-    reservationIsPossible(itm){
-        return itm.active && itm.allowed
+    reservationIsPossible(itm) {
+      return itm.active && itm.allowed
     },
     click(props) {
       console.log(props);
     },
-    addReservationItem(item){
-      this.$store.commit('toggleSelectedItem',item)
+    addReservationItem(item) {
+      this.$store.commit('toggleSelectedItem', item)
     },
     rowClick(item, row) {
 
@@ -283,7 +310,7 @@ export default {
       this.resourceDialog = true
     },
     openResource(resource) {
-      this.activeResource = {...resource};
+      this.activeResource = JSON.parse(JSON.stringify(resource))
       this.resourceDialog = true
     },
     editResource() {
@@ -291,14 +318,14 @@ export default {
     },
     async loadImage(files) {
       const file = files[0]
-      if(!file) return;
+      if (!file) return;
       //this.activeResource.image = evt.target.files[0]
       const formData = new FormData();
       formData.append('file', file);
       this.activeResource.image_url = await API.uploadImage(formData, file.name)
 
     },
-    handlePaste(files){
+    handlePaste(files) {
       this.pasterActive = false;
       this.loadImage(files)
     },
@@ -371,8 +398,34 @@ export default {
 
       }
 
-    }
+    },
+    addInvNumber() {
+      if (this.activeResource.inv_numbers.indexOf(this.newInvNumber) === -1) {
+        this.activeResource.inv_numbers.push(this.newInvNumber)
+        this.newInvNumber = ''
+      }
 
+
+    },
+    removeInvNumber(value) {
+      this.activeResource.inv_numbers = this.activeResource.inv_numbers.filter(function (item) {
+        return item !== value
+      })
+      console.log('inv number removed')
+    },
+    openCalendarDialog(resource) {
+      this.activeResource = resource
+      this.calendarDialog = true
+      this.blockingEventsOfActiveResource = this.activeResource.blocking_reservations.map(blockingRes => {
+        return {
+          color: this.$randomColor({seed: blockingRes.reservation_name, luminosity: 'dark'}),
+          end: new Date(blockingRes.end),
+          start: new Date(blockingRes.start),
+          name: blockingRes.reservation_name,
+          timed: true
+        }
+      })
+    }
   },
   data() {
     return {
@@ -381,18 +434,11 @@ export default {
       resourceDetailTab: 0,
       tags: [],
       newTag: '',
+      newInvNumber: '',
+      blockingEventsOfActiveResource: [],
       providers: [],
       permissionLevels: [],
-      events: [
-        {
-          color: "cyan",
-          end: new Date("2021-02-12"),
-          name: "Ondřej Kocar - Onetake",
-          start: new Date("2021-02-8"),
-          timed: false,
-        },
-      ],
-      dialog: false,
+      calendarDialog: false,
       resourceDialog: false,
       resourceDialogEditing: false,
       activeResource: emptyResource(),
@@ -405,7 +451,7 @@ export default {
         {text: "Akce", value: "actions", sortable: false},
       ],
       saveResourceLoading: false,
-      pasterActive:false,
+      pasterActive: false,
       toolbarOptions: [
         [{'header': [1, 2, 3, 4, 5, 6, false]}],  // custom dropdown
         ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -449,7 +495,8 @@ export default {
   width: 100%;
 
 }
-table{
+
+table {
   th {
     white-space: nowrap !important;
   }
