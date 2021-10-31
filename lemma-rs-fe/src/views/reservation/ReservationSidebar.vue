@@ -6,8 +6,10 @@
         v-btn( @click="sendReservation" :disabled='!reservationIsNotEmpty || !reservationErrors.reservationIsValid' color='primary') odeslat
       v-card-text.flex-grow-1.d-flex.flex-column
         div
-          | {{$store.getters.hourCost}} {{reservationErrors}}
-          v-alert.mb-0( v-if="$store.getters.approvalRequired" dense icon='mdi-alert' text='' type='warning') Vyžaduje schválení
+          //| {{$store.getters.hourCost}}
+          v-alert.mb-1( v-if="$store.getters.approvalRequired" dense icon='mdi-alert' text='' type='warning') Vyžaduje schválení
+          v-alert.mb-1( v-if="reservationErrors.timeConflicts.length > 0" dense icon='mdi-close-circle' text='' type='error') Konflikt s jinou rezervací
+          v-alert.mb-1( v-if="reservationErrors.invalidProvider.length > 0" dense icon='mdi-close-circle' text='' type='error') Zdroje různých výdejářů
           v-form(ref="reservationForm")
             api-select(
               v-model="provider"
@@ -25,7 +27,7 @@
                 v-btn(text='' color='primary' @click='showCalendar = false')
                   | OK
             .d-flex
-              v-autocomplete.pr-2(:items='timeOptions'
+              v-autocomplete.pr-2(:items='["13:00"]'
                 :value="$store.state.reservation.startTime"
                 color='white'
                 @change="t => setTime(t,'start')"
@@ -80,7 +82,26 @@ export default {
   components: {ApiSelect, Timepicker,ProjectEditorModal},
   data: () => ({
     date: [],
-    timeOptions: ['10:00','10:15','11:00','13:00'],
+    timeOptions: ['8:00',
+      '8:15',
+      '8:30',
+      '8:45',
+      '9:00',
+      '9:15',
+      '9:30',
+      '9:45',
+      '10:00',
+      '10:15',
+      '10:30',
+      '13:00',
+      '13:30',
+      '13:45',
+      '14:00',
+      '14:15',
+      '14:30',
+      '14:45',
+      '15:00']
+    ,
     showCalendar: false
   }),
 
@@ -93,7 +114,7 @@ export default {
       this.$store.state.reservation.startDate + " ~ " + this.$store.state.reservation.endDate: null
     },
     selectedResources() {
-      return this.$store.state.reservation.selectedResources
+      return this.$store.getters.selectedResourcesObj
     },
     myProjects() {
       return this.$store.getters.myProjects

@@ -24,8 +24,8 @@ function initState(){
 const state = {
     resources: [],
     selectedResources: [],
-    startTime: null,
-    endTime: null,
+    startTime: '13:00',
+    endTime: '13:00',
     startDate: null,
     endDate: null,
     tag: 2,
@@ -49,37 +49,21 @@ const getters = {
             range: moment.range(moment(startDateTime),moment(endDateTime))
         }
     },
-    reservationErrors: (state, getters, rootState) => {
-        const errors = {
-            timeConflicts: [],
-            invalidProvider: [],
-        }
-        state.selectedResources.forEach(res =>{
-            if(res.hasTimeConflict) errors.timeConflicts.push()
-            if(res.provider !== state.provider) errors.invalidProvider.push()
-        })
-        errors.reservationIsValid = errors.timeConflicts.length + errors.invalidProvider.length === 0
-        return errors
-
-    },
-    filteredResources: (state, getters, rootState) => {
+    formatedResources: (state, getters, rootState) => {
         return state.resources.map(res => {
-                res.selected = state.selectedResources.includes(res)
+                res.selected = state.selectedResources.includes(res.id)
                 res.allowed = rootState.user.profile.permission_level >= res.required_permission_level
                 res.providerStr = rootState.providers.find(x => x.id === res.provider)?.fullname
-                res.hasTimeConflict = res.blocking_reservations.find((br) =>{
-                   const isOverlap =  moment.range(moment(br.start),moment((br.end))).overlaps(getters.reservationRange.range)
-
-                    if(isOverlap){
-                        console.log('conflict with:', br)
-                        return true
-                    } else return false
-
+                res.hasTimeConflict = !!res.blocking_reservations.find((br) =>{
+                   return  moment.range(moment(br.start),moment((br.end))).overlaps(getters.reservationRange.range)
                 })
                 res.reservationIsPossible = res.active && res.allowed && !res.hasTimeConflict && res.provider === state.provider
                 return res
             }
-        ).filter(res => {
+        )
+    },
+    filteredResources: (state, getters, rootState) => {
+        return getters.formatedResources.filter(res => {
             const tag = state.tag ? res.tags.includes(state.tag) : true
             let search = true;
             let notReserved = true;
@@ -98,11 +82,27 @@ const getters = {
 
         });
     },
+    selectedResourcesObj: (state,getters) => {
+      return getters.formatedResources.filter(res => res.selected)
+    },
+    reservationErrors: (state, getters, rootState) => {
+        const errors = {
+            timeConflicts: [],
+            invalidProvider: [],
+        }
+        getters.selectedResourcesObj.forEach(res =>{
+            if(res.hasTimeConflict) errors.timeConflicts.push(res.id)
+            if(res.provider !== state.provider) errors.invalidProvider.push(res.id)
+        })
+        errors.reservationIsValid = errors.timeConflicts.length + errors.invalidProvider.length === 0
+        return errors
+
+    },
     filteredResourcesCount: (state, getters, rootState) => {
         return getters.filteredResources.length
     },
     totalCost: (state, getters) => {
-        return state.selectedResources.reduce((acc,itm) => acc + itm.cost,0)
+        return getters.selectedResourcesObj.reduce((acc,itm) => acc + itm.cost,0)
     },
     reservationLength: (state) => {
         if(state.startDate && state.endDate) return moment(state.endDate).diff(moment(state.startDateDate),'days')+1
@@ -146,13 +146,12 @@ const mutations = {
         state.search = value
     },
     toggleSelectedItem(state, resource){
-        if (state.selectedResources.includes(resource)){
-            state.selectedResources = state.selectedResources.filter(itm => resource !== itm)
-        } else state.selectedResources.push(resource)
-        console.log(state.selectedResources)
+        if (state.selectedResources.includes(resource.id)){
+            state.selectedResources = state.selectedResources.filter(itm => resource.id !== itm)
+        } else state.selectedResources.push(resource.id)
     },
     removeSelectedItem(state,resource) {
-        state.selectedResources = state.selectedResources.filter(itm => itm !== resource)
+        state.selectedResources = state.selectedResources.filter(itm => itm !== resource.id)
     },
     setTime(state,{time,type}){
         if(type==='start') state.startTime=time
