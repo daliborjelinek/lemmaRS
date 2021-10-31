@@ -1,7 +1,8 @@
 import API from "@/model/httpclient.js"
 import {createHelpers} from "vuex-map-fields";
-import moment from "moment"
-
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
+const moment = extendMoment(Moment);
 
 const {getResField, updateResField} = createHelpers({
     getterType: 'getResField',
@@ -27,7 +28,7 @@ const state = {
     endTime: null,
     startDate: null,
     endDate: null,
-    tag: null,
+    tag: 2,
     search: '',
     reservationDate: [],
     provider: null,
@@ -39,16 +40,49 @@ const state = {
 
 const getters = {
     getResField,
+    reservationRange: (state) => {
+        const startDateTime = moment(state.startDate + ' '+ state.startTime).toISOString()
+        const endDateTime = moment(state.endDate + ' ' + state.endTime).toISOString()
+        return {
+            startDateTime,
+            endDateTime,
+            range: moment.range(moment(startDateTime),moment(endDateTime))
+        }
+    },
+    reservationErrors: (state, getters, rootState) => {
+        const errors = {
+            timeConflicts: [],
+            invalidProvider: [],
+        }
+        state.selectedResources.forEach(res =>{
+            if(res.hasTimeConflict) errors.timeConflicts.push()
+            if(res.provider !== state.provider) errors.invalidProvider.push()
+        })
+        errors.reservationIsValid = errors.timeConflicts.length + errors.invalidProvider.length === 0
+        return errors
+
+    },
     filteredResources: (state, getters, rootState) => {
         return state.resources.map(res => {
                 res.selected = state.selectedResources.includes(res)
                 res.allowed = rootState.user.profile.permission_level >= res.required_permission_level
+                res.providerStr = rootState.providers.find(x => x.id === res.provider)?.fullname
+                res.hasTimeConflict = res.blocking_reservations.find((br) =>{
+                   const isOverlap =  moment.range(moment(br.start),moment((br.end))).overlaps(getters.reservationRange.range)
+
+                    if(isOverlap){
+                        console.log('conflict with:', br)
+                        return true
+                    } else return false
+
+                })
+                res.reservationIsPossible = res.active && res.allowed && !res.hasTimeConflict && res.provider === state.provider
                 return res
             }
         ).filter(res => {
             const tag = state.tag ? res.tags.includes(state.tag) : true
             let search = true;
-            let reserved = true;
+            let notReserved = true;
             let activity = true;
             let permission = true;
             if (state.search) {
@@ -56,8 +90,8 @@ const getters = {
             }
             if (!state.inactive) activity =  res.active
             if (!state.disallowed) permission = res.allowed
-            if (!state.alreadyReserved) reserved = true
-            return tag && search && activity && permission && reserved
+            if (!state.alreadyReserved) notReserved = !res.hasTimeConflict
+            return tag && search && activity && permission && notReserved
             //const searchName = state.search ? res.name.includes(state.filters.search) : true
             //const searchTag =  state.search ? res.name.includes(state.filters.search) : true
 
@@ -92,11 +126,9 @@ const actions = {
 
     },
     async sendReservation({commit, dispatch, state, getters},) {
-        const pickupDate = moment(state.startDate + ' '+ state.startTime).toISOString()
-        const returnDate = moment(state.endDate + ' ' + state.endTime).toISOString()
         const resources = state.selectedResources.map(res => res.id)
         const approvalRequired = getters.approvalRequired
-        await API.createReservation(pickupDate,returnDate,resources,approvalRequired,state.project)
+        await API.createReservation(getters.reservationRange.startDateTime,getters.reservationRange.endDateTime,resources,approvalRequired,state.project)
         dispatch('getResources')
         commit('flushReservation')
     }

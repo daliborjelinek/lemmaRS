@@ -3,10 +3,10 @@
     v-card.fill-height.d-flex.flex-column(elevation='5' color='#1e1e1ee6' rounded='0')
       v-card-title Rezervace
         v-spacer
-        v-btn( @click="sendReservation" :disabled='!reservationIsValid' color='primary') odeslat
+        v-btn( @click="sendReservation" :disabled='!reservationIsNotEmpty || !reservationErrors.reservationIsValid' color='primary') odeslat
       v-card-text.flex-grow-1.d-flex.flex-column
         div
-          | {{$store.getters.hourCost}} {{$store.getters.approvalRequired}}
+          | {{$store.getters.hourCost}} {{reservationErrors}}
           v-alert.mb-0( v-if="$store.getters.approvalRequired" dense icon='mdi-alert' text='' type='warning') Vyžaduje schválení
           v-form(ref="reservationForm")
             api-select(
@@ -25,8 +25,17 @@
                 v-btn(text='' color='primary' @click='showCalendar = false')
                   | OK
             .d-flex
-              timepicker.pr-2(icon='true' label='Začatek' @change="t => setTime(t,'start')" :value="$store.state.reservation.startTime")
-              timepicker.mb-2(label='Konec' @change="t => setTime(t,'end')" :value="$store.state.reservation.endTime")
+              v-autocomplete.pr-2(:items='timeOptions'
+                :value="$store.state.reservation.startTime"
+                color='white'
+                @change="t => setTime(t,'start')"
+                label='Začátek'
+                prepend-icon='mdi-alarm-multiple')
+              v-autocomplete(:items='timeOptions'
+                :value="$store.state.reservation.endTime"
+                color='white'
+                @change="t => setTime(t,'end')"
+                label='Konec')
             v-autocomplete(:items='myProjects'
               :value="$store.state.reservation.project"
               color='white'
@@ -36,7 +45,7 @@
               :rules="[(v) => !!v || 'Vyplňte projekt']"
               label='Projekt'
               prepend-icon='mdi-database-search'
-              return-object='')
+              return-object)
               template(v-slot:append-item)
                 v-divider
                 v-list-item(link @click="openNewProjectDialog")
@@ -49,7 +58,7 @@
         v-list-item-group.flex-grow-1(style='height: 200px; overflow-y: auto')
           v-list-item(dense='' v-for='(resource, i) in selectedResources' :title="resource.name" :key='resource.id')
             v-list-item-content
-              v-list-item-title {{resource.name}}
+              v-list-item-title(:class="resource.reservationIsPossible ?'' : 'error--text'") {{resource.name}}
             v-list-item-action
               v-btn(@click='removeResource(resource)' x-small='' icon='')
                 v-icon(small='' color='grey lighten-1') mdi-delete
@@ -71,6 +80,7 @@ export default {
   components: {ApiSelect, Timepicker,ProjectEditorModal},
   data: () => ({
     date: [],
+    timeOptions: ['10:00','10:15','11:00','13:00'],
     showCalendar: false
   }),
 
@@ -88,8 +98,11 @@ export default {
     myProjects() {
       return this.$store.getters.myProjects
     },
-    reservationIsValid() {
-      return this.$store.getters.hourCost > 0
+    reservationIsNotEmpty() {
+      return this.$store.getters.hourCost > 0;
+    },
+    reservationErrors(){
+      return this.$store.getters.reservationErrors
     }
 
   },

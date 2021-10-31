@@ -47,30 +47,3 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_authenticated and (request.user.role == Role.ADMIN)
 
 
-class ProjectGroupPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and (request.user.role == Role.ADMIN or
-                                                  request.user.role == Role.PROVIDER or
-                                                  request.method in SAFE_METHODS)
-
-
-class ResourcePermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and (request.user.role == Role.ADMIN or
-                                                  request.user.role == Role.PROVIDER or
-                                                  request.method in SAFE_METHODS)
-
-
-class PermissionLevelPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and (request.user.role == Role.ADMIN or
-                                                  request.user.role == Role.PROVIDER or
-                                                  request.method in SAFE_METHODS)
-
-
-class TagPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and (request.user.role == Role.ADMIN or
-                                                  request.user.role == Role.PROVIDER or
-                                                  request.method in SAFE_METHODS)
-

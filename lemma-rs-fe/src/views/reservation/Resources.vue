@@ -24,6 +24,10 @@
                   v-icon() mdi-heart-broken
                 v-chip(v-if="resource.not_returned" class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
                   v-icon() mdi-selection-ellipse
+                v-chip(v-if="resource.hasTimeConflict" class="ma-2" label color="#4c0000c2" title="Zdroj je již v daném termínu rezervován")
+                  v-icon() mdi-clock-alert
+                v-chip(v-if="resource.provider !== selectedProvider" class="ma-2" label color="#4c0000c2" :title="'Pro rezervování tohoto zdroje je potřeba vybrat výdejáře:' + resource.providerStr")
+                  v-icon() mdi-account-cog
               v-img.rounded-t(height="100%" v-if="resource.image_url" :src="apiUrl + resource.image_url")
               v-img.rounded-t(height="100%" v-else src='@/assets/placeholder.jpg' )
             v-card-title.py-1(style="font-size:1rem; word-break: break-word;") {{resource.name}}
@@ -35,7 +39,7 @@
 
                 //span.ml-1 {{resource.provider_str}}
             v-card-actions
-              v-btn(@click.stop="addReservationItem(resource)" :disabled="!reservationIsPossible(resource)")
+              v-btn(@click.stop="addReservationItem(resource)" :disabled="!resource.reservationIsPossible")
                 v-icon(left) mdi-cart-arrow-down
                 span(v-if="!resource.selected") Rezervovat
                 span(v-else) Odebrat
@@ -54,13 +58,13 @@
           @click:row="rowClick"
           :items="filteredResources",
           item-key="id")
-          template(v-slot:item.provider="{ item }") {{providers.find(x => x.id === item.provider).fullname}}
+          template(v-slot:item.provider="{ item }") {{item.providerStr}}
           template(v-slot:item.tags="{ item }")
             tags(:tags="item.tags_str")
           template(v-slot:item.required_permission_level="{ item }")
             | {{permissionLevels.find(x => x.level === item.required_permission_level).name}}
           template(v-slot:item.actions="{ item }")
-            v-btn(icon, :disabled="!reservationIsPossible(item)" @click.stop="addReservationItem(item)" )
+            v-btn(icon, :disabled="!item.reservationIsPossible" @click.stop="addReservationItem(item)" )
               v-icon( small v-if="!item.selected") mdi-cart-arrow-down
               v-icon( small v-else="item.selected") mdi-cart-arrow-up
             v-btn(icon @click.stop="openCalendarDialog(item)")
@@ -74,6 +78,8 @@
               v-icon(small) mdi-heart-broken
             v-chip(v-if="item.not_returned" small class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
               v-icon(small) mdi-selection-ellipse
+            v-chip(v-if="item.hasTimeConflict" class="ma-2" label color="#4c0000c2" title="Zdroj je již v daném termínu rezervován")
+              v-icon() mdi-clock-alert
 
 
 
@@ -264,8 +270,8 @@ export default {
   async mounted() {
     this.loading = true
     await this.loadTags()
-    await this.loadProviders()
     await this.loadPermissionLevels()
+    await this.$store.dispatch('getProviders')
     await this.$store.dispatch('getProjects')
     await this.$store.dispatch('getResources')
     this.loading = false
@@ -284,17 +290,17 @@ export default {
     selectedResources() {
       return this.$store.state.reservation.selectedResources
     },
+    selectedProvider() {
+      return this.$store.state.reservation.provider
+    },
+    providers() {
+      return this.$store.state.providers
+    },
     apiUrl() {
       return process.env.VUE_APP_API_URL
     },
   },
   methods: {
-    reservationIsPossible(itm) {
-      return itm.active && itm.allowed
-    },
-    click(props) {
-      console.log(props);
-    },
     addReservationItem(item) {
       this.$store.commit('toggleSelectedItem', item)
     },
@@ -334,6 +340,7 @@ export default {
     },
     async loadProviders() {
       this.providers = await API.getUsers('PROVIDER,ADMIN')
+
     },
 
     async loadPermissionLevels() {
@@ -436,7 +443,6 @@ export default {
       newTag: '',
       newInvNumber: '',
       blockingEventsOfActiveResource: [],
-      providers: [],
       permissionLevels: [],
       calendarDialog: false,
       resourceDialog: false,

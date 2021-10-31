@@ -1,13 +1,14 @@
 <template>
   <v-main class="d-flex">
     <div id="filter-sidebar" :class="{ show: $vuetify.breakpoint.mdAndUp }">
-      <filters :filtersData="filtersData" />
+
+      <reservation-sidebar />
     </div>
     <div
       id="reservation-sidebar"
       :class="{ show: $vuetify.breakpoint.mdAndUp }"
     >
-      <reservation-sidebar />
+      <filters :filtersData="filtersData" />
     </div>
     <div
       id="reservation-items"
@@ -79,7 +80,6 @@ import ReservationSidebar from "./reservation/ReservationSidebar";
 import Resources from "./reservation/Resources"
 export default {
   data: () => ({
-    selectedResources:[],
     drawer: false,
     drawerContent: null,
     filtersData: {
@@ -89,10 +89,5 @@ export default {
 
   }),
   components: { Filters, ReservationSidebar, Resources },
-  computed: {
-    dateRangeText() {
-      return this.date.join(" ~ ");
-    },
-  },
 };
 </script>

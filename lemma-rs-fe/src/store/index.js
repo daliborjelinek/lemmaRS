@@ -13,6 +13,7 @@ export default new Vuex.Store({
     state: {
         toasts: [],
         projects: [],
+        providers: [],
     },
     getters: {
         myProjects: (state, getters) => {
@@ -36,7 +37,11 @@ export default new Vuex.Store({
         async getProjects({commit, state}) {
             const projects = await API.getProjects()
             commit('setProjects', projects)
-        }
+        },
+        async getProviders({commit, state}) {
+            const providers = await API.getUsers('PROVIDER,ADMIN')
+            commit('setProvides', providers)
+        },
     },
     mutations: {
         pushNotification(state, notification) {
@@ -49,6 +54,9 @@ export default new Vuex.Store({
         setProjects(state, projects) {
             state.projects = projects
         },
+        setProvides(state, providers) {
+            state.providers = providers
+        }
     },
     modules: {
         user,

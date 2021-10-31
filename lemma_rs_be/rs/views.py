@@ -14,8 +14,7 @@ from url_filter.integrations.drf import DjangoFilterBackend
 from . import serializers
 from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation, \
     ReservedResource
-from .permissions import UserPermission, ProjectPermission, ProjectGroupPermission, ResourcePermission, \
-    PermissionLevelPermission, TagPermission, CommonReadAdminAndProviderAll, IsAdmin
+from .permissions import UserPermission, ProjectPermission, CommonReadAdminAndProviderAll, IsAdmin
 from .serializers import ProjectSerializer, ProjectGroupSerializer, ResourceSerializer, PermissionLevelSerializer, \
     TagSerializer, PermissionRequestFullSerializer, PermissionRequestCreateSerializer, \
     PermissionRequestResolveSerializer, ReservationSerializer, ReservationCreateSerializer
@@ -96,7 +95,7 @@ class ProjectViewSet(mixins.CreateModelMixin,
 
 class ProjectGroupViewSet(viewsets.ModelViewSet):
     queryset = ProjectGroup.objects.all()
-    permission_classes = [ProjectGroupPermission]
+    permission_classes = [CommonReadAdminAndProviderAll]
     serializer_class = ProjectGroupSerializer
 
 
@@ -110,19 +109,19 @@ class ResourceViewSet(viewsets.ModelViewSet):
     )
                                                                         )
 
-    permission_classes = [ResourcePermission | HasAPIKey]
+    permission_classes = [CommonReadAdminAndProviderAll | HasAPIKey]
     serializer_class = ResourceSerializer
 
 
 class PermissionLevelViewSet(viewsets.ModelViewSet):
     queryset = PermissionLevel.objects.all()
-    permission_classes = [PermissionLevelPermission]
+    permission_classes = [CommonReadAdminAndProviderAll]
     serializer_class = PermissionLevelSerializer
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
-    permission_classes = [TagPermission]
+    permission_classes = [CommonReadAdminAndProviderAll]
     serializer_class = TagSerializer
 
 
@@ -135,7 +134,7 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         request=PermissionRequestCreateSerializer,
         responses={204: None}
     )
-    @action(methods=['PUT'], detail=False, name='Send request for higher permissions')
+    @action(methods=['PUT'], detail=False, name='Send request for higher permissions',permission_classes=[IsAuthenticated])
     def send_request(self, request):
         serializer = PermissionRequestCreateSerializer(data=request.data)
         if serializer.is_valid():

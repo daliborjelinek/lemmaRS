@@ -49,7 +49,6 @@ class Resource(models.Model):
     inv_numbers = models.JSONField(default=list)
 
     def not_returned(self):
-
         for res in self.blocking_reservations:
             if res.resource.name and res.reservation.return_date_time < timezone.now() and res.real_return_date is None and res.real_pickup_date is not None:
                 return True

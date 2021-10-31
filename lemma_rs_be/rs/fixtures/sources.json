@@ -132,7 +132,7 @@
       "cost": 350,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -152,7 +152,7 @@
       "cost": 260,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -172,7 +172,7 @@
       "cost": 300,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -192,7 +192,7 @@
       "cost": 480,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -212,7 +212,7 @@
       "cost": 480,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -232,7 +232,7 @@
       "cost": 590,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -252,7 +252,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -272,7 +272,7 @@
       "cost": 220,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -292,7 +292,7 @@
       "cost": 220,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -312,7 +312,7 @@
       "cost": 470,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -332,7 +332,7 @@
       "cost": 1893,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -352,7 +352,7 @@
       "cost": 540,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -372,7 +372,7 @@
       "cost": 1893,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -392,7 +392,7 @@
       "cost": 14697,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -412,7 +412,7 @@
       "cost": 18137,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -432,7 +432,7 @@
       "cost": 5384,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -452,7 +452,7 @@
       "cost": 570,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -472,7 +472,7 @@
       "cost": 570,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -492,7 +492,7 @@
       "cost": 1927,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -512,7 +512,7 @@
       "cost": 400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -532,7 +532,7 @@
       "cost": 5000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -552,7 +552,7 @@
       "cost": 600,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -572,7 +572,7 @@
       "cost": 5384,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -592,7 +592,7 @@
       "cost": 7140,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -612,7 +612,7 @@
       "cost": 350,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -632,7 +632,7 @@
       "cost": 350,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -652,7 +652,7 @@
       "cost": 400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -672,7 +672,7 @@
       "cost": 550,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -692,7 +692,7 @@
       "cost": 37000,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -712,7 +712,7 @@
       "cost": 500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -732,7 +732,7 @@
       "cost": 4695,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -752,7 +752,7 @@
       "cost": 1450,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -772,7 +772,7 @@
       "cost": 300,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -792,7 +792,7 @@
       "cost": 75000,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -812,7 +812,7 @@
       "cost": 260,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -832,7 +832,7 @@
       "cost": 900,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -852,7 +852,7 @@
       "cost": 1490,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -872,7 +872,7 @@
       "cost": 4400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -892,7 +892,7 @@
       "cost": 39318,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -912,7 +912,7 @@
       "cost": 1390,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -932,7 +932,7 @@
       "cost": 7917,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -952,7 +952,7 @@
       "cost": 1390,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -972,7 +972,7 @@
       "cost": 1246,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -992,7 +992,7 @@
       "cost": 5150,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -1012,7 +1012,7 @@
       "cost": 4695,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1032,7 +1032,7 @@
       "cost": 2084,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1052,7 +1052,7 @@
       "cost": 2084,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1072,7 +1072,7 @@
       "cost": 3163,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1092,7 +1092,7 @@
       "cost": 1000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1112,7 +1112,7 @@
       "cost": 17559,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1132,7 +1132,7 @@
       "cost": 17178,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1152,7 +1152,7 @@
       "cost": 17178,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1172,7 +1172,7 @@
       "cost": 17178,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1192,7 +1192,7 @@
       "cost": 26946,
       "image_url": "",
       "provider": 4,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1212,7 +1212,7 @@
       "cost": 15700,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1232,7 +1232,7 @@
       "cost": 11287,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1252,7 +1252,7 @@
       "cost": 6490,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1272,7 +1272,7 @@
       "cost": 5212.2,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1292,7 +1292,7 @@
       "cost": 1500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1312,7 +1312,7 @@
       "cost": 1666,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1332,7 +1332,7 @@
       "cost": 1666,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1352,7 +1352,7 @@
       "cost": 4046,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1372,7 +1372,7 @@
       "cost": 1112,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1392,7 +1392,7 @@
       "cost": 1195,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1412,7 +1412,7 @@
       "cost": 3000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1432,7 +1432,7 @@
       "cost": 250,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1452,7 +1452,7 @@
       "cost": 300,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1472,7 +1472,7 @@
       "cost": 11287,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1492,7 +1492,7 @@
       "cost": 700,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1512,7 +1512,7 @@
       "cost": 4473,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1532,7 +1532,7 @@
       "cost": 3000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1552,7 +1552,7 @@
       "cost": 700,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1572,7 +1572,7 @@
       "cost": 900,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1592,7 +1592,7 @@
       "cost": 16052,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1612,7 +1612,7 @@
       "cost": 8500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1632,7 +1632,7 @@
       "cost": 11580,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         3
       ],
@@ -1652,7 +1652,7 @@
       "cost": 400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1672,7 +1672,7 @@
       "cost": 390,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1692,7 +1692,7 @@
       "cost": 390,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1712,7 +1712,7 @@
       "cost": 1800,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -1732,7 +1732,7 @@
       "cost": 8851,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1752,7 +1752,7 @@
       "cost": 4599,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -1772,7 +1772,7 @@
       "cost": 13673,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -1792,7 +1792,7 @@
       "cost": 6330,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1812,7 +1812,7 @@
       "cost": 600,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1832,7 +1832,7 @@
       "cost": 845,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1852,7 +1852,7 @@
       "cost": 740,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1872,7 +1872,7 @@
       "cost": 890,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -1892,7 +1892,7 @@
       "cost": 5914,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -1912,7 +1912,7 @@
       "cost": 3000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -1932,7 +1932,7 @@
       "cost": 400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1952,7 +1952,7 @@
       "cost": 2652,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         3
       ],
@@ -1972,7 +1972,7 @@
       "cost": 300,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -1992,7 +1992,7 @@
       "cost": 600,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2012,7 +2012,7 @@
       "cost": 1990,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2032,7 +2032,7 @@
       "cost": 3000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2052,7 +2052,7 @@
       "cost": 4690,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2072,7 +2072,7 @@
       "cost": 16052,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2092,7 +2092,7 @@
       "cost": 20000,
       "image_url": "",
       "provider": 2,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2112,7 +2112,7 @@
       "cost": 400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2132,7 +2132,7 @@
       "cost": 400,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2152,7 +2152,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2172,7 +2172,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2192,7 +2192,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2212,7 +2212,7 @@
       "cost": 5000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2232,7 +2232,7 @@
       "cost": 3000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2252,7 +2252,7 @@
       "cost": 3204,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2272,7 +2272,7 @@
       "cost": 576,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2292,7 +2292,7 @@
       "cost": 129,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2312,7 +2312,7 @@
       "cost": 129,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2332,7 +2332,7 @@
       "cost": 10000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2352,7 +2352,7 @@
       "cost": 6000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2372,7 +2372,7 @@
       "cost": 3000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2392,7 +2392,7 @@
       "cost": 8677.8,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2412,7 +2412,7 @@
       "cost": 300,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2432,7 +2432,7 @@
       "cost": 10000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2452,7 +2452,7 @@
       "cost": 2000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2472,7 +2472,7 @@
       "cost": 1500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2492,7 +2492,7 @@
       "cost": 576,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2512,7 +2512,7 @@
       "cost": 576,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2532,7 +2532,7 @@
       "cost": 500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2552,7 +2552,7 @@
       "cost": 10000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2572,7 +2572,7 @@
       "cost": 6000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2592,7 +2592,7 @@
       "cost": 30000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2612,7 +2612,7 @@
       "cost": 5000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2632,7 +2632,7 @@
       "cost": 900,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2652,7 +2652,7 @@
       "cost": 18000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -2672,7 +2672,7 @@
       "cost": 590,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2692,7 +2692,7 @@
       "cost": 1600,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2712,7 +2712,7 @@
       "cost": 250,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2732,7 +2732,7 @@
       "cost": 1000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2752,7 +2752,7 @@
       "cost": 900,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -2772,7 +2772,7 @@
       "cost": 13000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -2792,7 +2792,7 @@
       "cost": 35000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -2812,7 +2812,7 @@
       "cost": 1000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2832,7 +2832,7 @@
       "cost": 5000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -2852,7 +2852,7 @@
       "cost": 35000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -2872,7 +2872,7 @@
       "cost": 12042,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         3
       ],
@@ -2892,7 +2892,7 @@
       "cost": 4600,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2912,7 +2912,7 @@
       "cost": 15000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -2932,7 +2932,7 @@
       "cost": 1700,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -2952,7 +2952,7 @@
       "cost": 4289,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -2972,7 +2972,7 @@
       "cost": 36072,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -2992,7 +2992,7 @@
       "cost": 12000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3012,7 +3012,7 @@
       "cost": 29334,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -3032,7 +3032,7 @@
       "cost": 20364,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -3052,7 +3052,7 @@
       "cost": 15000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3092,7 +3092,7 @@
       "cost": 3909,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3112,7 +3112,7 @@
       "cost": 50,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3132,7 +3132,7 @@
       "cost": 2718,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3192,7 +3192,7 @@
       "cost": 12000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3212,7 +3212,7 @@
       "cost": 2718,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3252,7 +3252,7 @@
       "cost": 7000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3272,7 +3272,7 @@
       "cost": 15804,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -3292,7 +3292,7 @@
       "cost": 30000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3312,7 +3312,7 @@
       "cost": 3200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3332,7 +3332,7 @@
       "cost": 2000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3352,7 +3352,7 @@
       "cost": 21768,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -3372,7 +3372,7 @@
       "cost": 21768,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -3392,7 +3392,7 @@
       "cost": 1618,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3412,7 +3412,7 @@
       "cost": 6229.08,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         3
       ],
@@ -3432,7 +3432,7 @@
       "cost": 4289,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -3452,7 +3452,7 @@
       "cost": 33108.02,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         2
       ],
@@ -3472,7 +3472,7 @@
       "cost": 1500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3492,7 +3492,7 @@
       "cost": 1500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3512,7 +3512,7 @@
       "cost": 1500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3532,7 +3532,7 @@
       "cost": 1500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3552,7 +3552,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3572,7 +3572,7 @@
       "cost": 3846,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3592,7 +3592,7 @@
       "cost": 8500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         5
       ],
@@ -3612,7 +3612,7 @@
       "cost": 3993,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3632,7 +3632,7 @@
       "cost": 1936,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3652,7 +3652,7 @@
       "cost": 3183,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3672,7 +3672,7 @@
       "cost": 3183,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3712,7 +3712,7 @@
       "cost": 3993,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3752,7 +3752,7 @@
       "cost": 1936,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -3772,7 +3772,7 @@
       "cost": 450,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3792,7 +3792,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3812,7 +3812,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3832,7 +3832,7 @@
       "cost": 200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3852,7 +3852,7 @@
       "cost": 4990,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3872,7 +3872,7 @@
       "cost": 1700,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3892,7 +3892,7 @@
       "cost": 3790,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -3912,7 +3912,7 @@
       "cost": 2990,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4152,7 +4152,7 @@
       "cost": 5333,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4172,7 +4172,7 @@
       "cost": 5000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4192,7 +4192,7 @@
       "cost": 1952,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4212,7 +4212,7 @@
       "cost": 13000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -4232,7 +4232,7 @@
       "cost": 4390,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -4252,7 +4252,7 @@
       "cost": 16000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4272,7 +4272,7 @@
       "cost": 16000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4292,7 +4292,7 @@
       "cost": 890,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4312,7 +4312,7 @@
       "cost": 1250,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -4352,7 +4352,7 @@
       "cost": 1250,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -4372,7 +4372,7 @@
       "cost": 1200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4392,7 +4392,7 @@
       "cost": 1200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4412,7 +4412,7 @@
       "cost": 490,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4432,7 +4432,7 @@
       "cost": 13460,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4452,7 +4452,7 @@
       "cost": 690,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4472,7 +4472,7 @@
       "cost": 1200,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4492,7 +4492,7 @@
       "cost": 5690,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -4512,7 +4512,7 @@
       "cost": 3909,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4532,7 +4532,7 @@
       "cost": 2500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4552,7 +4552,7 @@
       "cost": 15000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4572,7 +4572,7 @@
       "cost": 2000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4592,7 +4592,7 @@
       "cost": 2190,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4612,7 +4612,7 @@
       "cost": 6390,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         4
       ],
@@ -4632,7 +4632,7 @@
       "cost": 7000,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],
@@ -4672,7 +4672,7 @@
       "cost": 3890,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         3
       ],
@@ -4692,7 +4692,7 @@
       "cost": 1890,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4712,7 +4712,7 @@
       "cost": 890,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         6
       ],
@@ -4732,7 +4732,7 @@
       "cost": 7500,
       "image_url": "",
       "provider": 3,
-      "required_permission_level": 2,
+      "required_permission_level": 1,
       "tags": [
         1
       ],

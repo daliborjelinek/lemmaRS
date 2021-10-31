@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-data-table
-        :headers="projectGroupHeaders"
+        :headers="projectGroupHeaders()"
         :items="projectGroups"
         :items-per-page="5"
         :search="search"

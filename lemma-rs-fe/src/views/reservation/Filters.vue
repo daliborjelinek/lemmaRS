@@ -13,7 +13,7 @@
         <v-icon small class="mr-1">fas fa-sort-amount-down</v-icon>
         </v-btn>
     v-card-text
-      portal-target(name='add-resource-btn')
+      portal-target(v-if="userRole !== 'COMMON'" name='add-resource-btn')
       v-text-field.ma-0.pa-0(v-debounce:300ms='search' placeholder='Hledat' persistent-hint='' :hint="'Zobrazeno '+ $store.getters.filteredResourcesCount + ' výsledků'" append-icon='mdi-magnify')
       .d-flex.align-center.mt-2
         v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="alreadyReserved" label='Rezervované v termínu')
@@ -31,9 +31,13 @@
         v-btn(small='' icon='')
           v-icon(small='') mdi-information-outline
       v-divider.mt-2
-    v-list-item-group.flex-grow-1(@change='filterTagChanged' style='height: 200px; overflow-y: auto')
+    v-list-item-group.flex-grow-1(@change='filterTagChanged' :value='activeTag' style='height: 200px; overflow-y: auto')
       template(v-for='(item, i) in items')
-        v-list-item(dense='' :key='`item-${i}`' :value='item')
+        v-list-item(
+          dense
+          :key='`item-${i}`'
+          :value='item.value'
+          )
           v-list-item-icon
             v-icon {{ item.icon }}
           v-list-item-content
@@ -59,7 +63,13 @@ export default {
     ]),
     filters(){
       return this.$store.state.reservation.search
-    }
+    },
+    activeTag(){
+      return this.$store.state.reservation.tag
+    },
+    userRole() {
+      return this.$store.getters.getDisplayRole
+    },
   },
   methods:{
     search(e){
@@ -68,18 +78,13 @@ export default {
     },
     filterTagChanged(tag){
 
-      this.$store.commit('setTagFilter',tag?.value)
+      this.$store.commit('setTagFilter',tag)
     }
   },
   data: function () {
     return {
       toggl: 'cards',
       items: [
-        {
-          value: 1,
-          name: "AUDIO",
-          icon: "mdi-microphone-variant",
-        },
         {
           value: 2,
           name: "VIDEO",
@@ -89,6 +94,11 @@ export default {
           value: 3,
           name: "OBJEKTIVY",
           icon: "mdi-camera-iris",
+        },
+        {
+          value: 1,
+          name: "AUDIO",
+          icon: "mdi-microphone-variant",
         },
         {
           value: 4,
