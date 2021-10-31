@@ -114,9 +114,6 @@ const getters = {
     approvalRequired(state,getters){
         return  getters.hourCost > 50000
     },
-    reservationIsValid: (state, getters) =>{
-       return true
-    }
 };
 
 const actions = {
