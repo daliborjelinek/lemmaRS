@@ -37,7 +37,6 @@ const state = {
     inactive: false,
     project: null,
 }
-
 const getters = {
     getResField,
     reservationRange: (state) => {
