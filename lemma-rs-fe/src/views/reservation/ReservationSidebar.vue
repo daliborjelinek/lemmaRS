@@ -27,7 +27,7 @@
                 v-btn(text='' color='primary' @click='showCalendar = false')
                   | OK
             .d-flex
-              v-autocomplete.pr-2(:items='["13:00"]'
+              v-autocomplete.pr-2(:items='timeOptions'
                 :value="$store.state.reservation.startTime"
                 color='white'
                 @change="t => setTime(t,'start')"
