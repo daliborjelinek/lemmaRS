@@ -4394,7 +4394,7 @@ const siler = {
       "last_login": null,
       "is_superuser": false,
       "email": "siler@mail.muni.cz",
-      "username": "2378169103",
+      "username": "169103",
       "password": "",
       "fullname": "Pavel Šiler",
       "phone": "",
