@@ -10,6 +10,9 @@ services:
       - static_volume:/home/lemma_rs_be/api/staticfiles
     expose:
       - 8000
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      SOCIAL_AUTH_MUNI_SECRET: ${SOCIAL_AUTH_MUNI_SECRET}    
     depends_on:
       - db
   db:
