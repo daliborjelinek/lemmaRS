@@ -4,6 +4,7 @@ SELECT * from lemma.sources
  --WHERE sources.name NOT LIKE ALL(ARRAY['%vyřazeno%','%ukradeno%']) AND (sources.issuemaster != 14);
 
 
+
 SELECT id, name
 FROM   lemma.sources
 WHERE  id NOT IN (
