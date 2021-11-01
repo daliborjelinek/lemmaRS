@@ -15,6 +15,7 @@ services:
       SOCIAL_AUTH_MUNI_SECRET: ${SOCIAL_AUTH_MUNI_SECRET}    
     depends_on:
       - db
+    restart: always  
   db:
     image: postgres:13-alpine
     volumes:
@@ -23,6 +24,7 @@ services:
       - POSTGRES_DB=lemmars
       - POSTGRES_USER=lemmars
       - POSTGRES_PASSWORD=lemmars
+    restart: always  
   fe:
     build:
       context: ./lemma-rs-fe
@@ -31,6 +33,7 @@ services:
         aliases:
           - rs-fe
       default:
+    restart: always
   apisrv:
     build: ./lemma_rs_be/apiserver
     volumes:
@@ -43,6 +46,7 @@ services:
         aliases:
           - rs-api
       default:
+    restart: always  
 volumes:
   postgres_data:
   static_volume:
