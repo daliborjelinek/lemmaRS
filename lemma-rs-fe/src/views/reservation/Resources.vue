@@ -111,7 +111,7 @@
           )
     v-dialog(v-model="resourceDialog", scrollable :persistent=resourceDialogEditing, max-width="900")
       template(v-slot:default="dialog")
-        v-card
+        v-card(color="#131313")
           v-toolbar(color="primary", dark) Zdroj {{activeResource.name}}
             v-spacer
             div(v-if="userRole !== 'COMMON'")
@@ -123,112 +123,110 @@
                 v-icon mdi-plus-circle
             v-btn(icon, @click="resourceDialog = false; resourceDialogEditing = false")
               v-icon mdi-close
-          v-card-text
-            v-row
-              v-col()
-                input(id="image-upload" accept="image/x-png,image/jpeg" :disabled="!resourceDialogEditing" @change="(evt) =>loadImage(evt.target.files)" type="file" style="display: none")
-                label(for="image-upload")
-                  div(style="position: relative")
-                    v-img.rounded( v-if="activeResource.image_url" :style="resourceDialogEditing? 'cursor: pointer' : ''" :src="apiUrl + activeResource.image_url")
-                    v-img.rounded( v-else :style="resourceDialogEditing? 'cursor: pointer' : ''" src='@/assets/placeholder.jpg' )
-                    div(v-if="resourceDialogEditing" style="position: absolute; right:10px; bottom:10px")
-                      v-btn.mr-2(small fab @click="pasterActive = true" )
-                        v-icon(small) mdi-content-paste
-                      v-btn(fab small @click="activeResource.image_url = ''")
-                        v-icon(small) mdi-image-remove
-              v-col
-                v-form#resource-form
-                  v-text-field(v-model="activeResource.name",
-                    hide-details,
-                    label="Název"
-                    :rules="[(v) => !!v || 'Vyplňte jméno zdroje']"
-                    prepend-icon="mdi-form-textbox",
-                    :disabled="!resourceDialogEditing")
-                  api-select(
-                    v-model="activeResource.provider"
-                    hide-details,
-                    prepend-icon="mdi-account-cog",
-                    :disabled="!resourceDialogEditing",
-                    query="user/?role__in=ADMIN,PROVIDER"
-                    :default-index="1",
-                    label="Výdejář",
-                    :item-value="(itm)=> itm.id" ,
-                    :item-text="(itm)=> itm.fullname")
-                  v-select.mt-2(prepend-icon="mdi-shield-lock",
-                    v-model="activeResource.required_permission_level"
-                    :disabled="!resourceDialogEditing",
-                    label="Úroveň oprávnění"
-                    :item-text="(itm) => itm.name"
-                    :item-value="(itm) => itm.level"
-                    :items="permissionLevels")
-                  v-autocomplete(
-                    v-model="activeResource.tags"
-                    prepend-icon="mdi-tag", class="mt-0 pt-0",
-                    :items="tags",
-                    :disabled="!resourceDialogEditing",
-                    chips,
-                    deletable-chips,
-                    small-chips,
-                    hide-details,
-                    label="Štítky",
-                    multiple,
-                    :item-value="(itm) => itm.id",
-                    :item-text="(itm) => itm.name")
-                    template(v-slot:append-item)
-                      v-divider
-                      v-text-field.px-3(v-model="newTag", label="Nový štítek")
-                        template(slot="append")
-                          v-btn(icon, @click="createTag")
-                            v-icon mdi-plus
-                  v-text-field(v-model="activeResource.cost",
-                    label="Cena",
-                    prepend-icon="mdi-cash-multiple",
-                    type="number",
-                    :disabled="!resourceDialogEditing")
-                    template(slot="append") Kč
-                  v-checkbox(prepend-icon="mdi-check-all"
-                    class="mt-0"
-                    :disabled="!resourceDialogEditing"
-                    v-model="activeResource.active"
-                    label="Zdroj je k dispozici")
-
-            v-divider
-            v-row
-
-              v-col(class="pt-0")
-                v-tabs(v-model="resourceDetailTab" class="mb-3")
-                  v-tab Popis
-                  v-tab(v-if="userRole !== 'COMMON'") Interní poznámky
-                  v-tab(v-if="userRole !== 'COMMON'") Inventární čísla
-                v-tabs-items(v-model="resourceDetailTab")
-                  v-tab-item
-                    div(v-if="!resourceDialogEditing" v-html="activeResource.description")
-                    vue-editor(v-else v-model="activeResource.description" :editor-toolbar="toolbarOptions")
-                  v-tab-item
-                    div(v-if="!resourceDialogEditing" v-html="activeResource.internal_notes")
-                    vue-editor(v-else v-model="activeResource.internal_notes" :editor-toolbar="toolbarOptions")
-                  v-tab-item
-                    v-list
-                      v-list-item(v-for='invNumber in activeResource.inv_numbers' :key='invNumber')
-                        v-list-item-icon
-                          v-icon mdi-numeric
-                        v-list-item-content
-                          v-list-item-title(v-text='invNumber')
-                        v-list-item-avatar
-                          v-btn(@click='removeInvNumber(invNumber)' fab='' x-small dark)
-                            v-icon mdi-delete
-                      v-divider
-                      v-list-item(v-if="resourceDialogEditing")
-                        v-list-item-content
-                          v-list-item-title
-                            v-text-field(v-model="newInvNumber",
-                              label="Nové inventární čislo",
-                              prepend-icon="mdi-numeric",
-                              type="number",
-                            )
-                        v-list-item-avatar
-                          v-btn(color='success' @click='addInvNumber' fab='' x-small='' dark='')
-                            v-icon mdi-plus-circle
+          v-card-text.pa-0
+            v-container
+              v-row
+                v-col(cols="12" order="2" order-sm="1" sm="6")
+                  v-card.pa-2(style="height:100%")
+                    v-form#resource-form
+                      v-text-field(v-model="activeResource.name",
+                        hide-details,
+                        label="Název"
+                        :rules="[(v) => !!v || 'Vyplňte jméno zdroje']"
+                        prepend-icon="mdi-form-textbox",
+                        :disabled="!resourceDialogEditing")
+                      api-select(
+                        v-model="activeResource.provider"
+                        hide-details,
+                        prepend-icon="mdi-account-cog",
+                        :disabled="!resourceDialogEditing",
+                        query="user/?role__in=ADMIN,PROVIDER"
+                        :default-index="1",
+                        label="Výdejář",
+                        :item-value="(itm)=> itm.id" ,
+                        :item-text="(itm)=> itm.fullname")
+                      v-select.mt-2(prepend-icon="mdi-shield-lock",
+                        v-model="activeResource.required_permission_level"
+                        :disabled="!resourceDialogEditing",
+                        label="Úroveň oprávnění"
+                        :item-text="(itm) => itm.name"
+                        :item-value="(itm) => itm.level"
+                        :items="permissionLevels")
+                      v-autocomplete(
+                        v-model="activeResource.tags"
+                        prepend-icon="mdi-tag", class="mt-0 pt-0",
+                        :items="tags",
+                        :disabled="!resourceDialogEditing",
+                        chips,
+                        deletable-chips,
+                        small-chips,
+                        hide-details,
+                        label="Štítky",
+                        multiple,
+                        :item-value="(itm) => itm.id",
+                        :item-text="(itm) => itm.name")
+                        template(v-slot:append-item)
+                          v-divider
+                          v-text-field.px-3(v-model="newTag", label="Nový štítek")
+                            template(slot="append")
+                              v-btn(icon, @click="createTag")
+                                v-icon mdi-plus
+                      v-text-field(v-model="activeResource.cost",
+                        label="Cena",
+                        prepend-icon="mdi-cash-multiple",
+                        type="number",
+                        :disabled="!resourceDialogEditing")
+                        template(slot="append") Kč
+                      v-checkbox(prepend-icon="mdi-check-all"
+                        class="mt-0"
+                        :disabled="!resourceDialogEditing"
+                        v-model="activeResource.active"
+                        label="Zdroj je k dispozici")
+                v-col(cols="12" order="1" order-sm="2" sm="6")
+                  v-card.d-flex.align-center.justify-center.pa-2(style="position: relative; height:100%")
+                    input(id="image-upload" accept="image/x-png,image/jpeg" :disabled="!resourceDialogEditing" @change="(evt) =>loadImage(evt.target.files)" type="file" style="display: none")
+                    label(for="image-upload")
+                      img.rounded.w-100(v-if="activeResource.image_url" :style="resourceDialogEditing? 'cursor: pointer' : ''" :src="apiUrl + activeResource.image_url")
+                      img.rounded.w-100( v-else :style="resourceDialogEditing? 'cursor: pointer' : ''" src='@/assets/placeholder.jpg' )
+                      div(v-if="resourceDialogEditing" style="position: absolute; right:10px; bottom:10px")
+                        v-btn.mr-2(small fab @click="pasterActive = true" )
+                          v-icon(small) mdi-content-paste
+                        v-btn(fab small @click="activeResource.image_url = ''")
+                          v-icon(small) mdi-image-remove
+              v-row
+                v-col()
+                  v-tabs.secondary.darken-2(v-model="resourceDetailTab" background-color="secondary darken-2")
+                    v-tab Popis
+                    v-tab(v-if="userRole !== 'COMMON'") Interní poznámky
+                    v-tab(v-if="userRole !== 'COMMON'") Inventární čísla
+                  v-tabs-items.secondary.darken-2(v-model="resourceDetailTab")
+                    v-tab-item(style="background-color:#1E1E1E")
+                      div.ma-3(v-if="!resourceDialogEditing" v-html="activeResource.description")
+                      vue-editor(v-else v-model="activeResource.description" :editor-toolbar="toolbarOptions")
+                    v-tab-item(style="background-color:#1E1E1E")
+                      div.ma-3(v-if="!resourceDialogEditing" v-html="activeResource.internal_notes")
+                      vue-editor(v-else v-model="activeResource.internal_notes" :editor-toolbar="toolbarOptions")
+                    v-tab-item
+                      v-list
+                        v-list-item(v-for='invNumber in activeResource.inv_numbers' :key='invNumber')
+                          v-list-item-icon
+                            v-icon mdi-numeric
+                          v-list-item-content
+                            v-list-item-title(v-text='invNumber')
+                          v-list-item-avatar
+                            v-btn(v-if="resourceDialogEditing" @click='removeInvNumber(invNumber)' fab='' x-small dark)
+                              v-icon mdi-delete
+                        v-divider
+                        v-list-item(v-if="resourceDialogEditing")
+                          v-list-item-content
+                            v-list-item-title
+                              v-text-field(v-model="newInvNumber",
+                                label="Nové inventární čislo",
+                                prepend-icon="mdi-numeric",
+                              )
+                          v-list-item-avatar
+                            v-btn(color='success' @click='addInvNumber' fab='' x-small='' dark='')
+                              v-icon mdi-plus-circle
 
 
 

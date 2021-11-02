@@ -74,7 +74,6 @@ export default {
   methods:{
     search(e){
       this.$store.commit('setSearch',e)
-      console.log(e)
     },
     filterTagChanged(tag){
 
