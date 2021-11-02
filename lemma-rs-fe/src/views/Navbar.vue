@@ -9,12 +9,12 @@
     >
       <img height="80%" class="mr-1" src="../assets/lemma.png" />
       <v-spacer />
-      <div class="d-none d-md-block">
+      <div :class="{'d-none': true, 'd-block': $vuetify.breakpoint.mdAndUp }">
         <v-btn @click="item.action" :key="item.text" v-for="item in items" text>
           {{ item.text }}
         </v-btn>
       </div>
-      <div class="d-md-none">
+      <div :class="{'d-none': $vuetify.breakpoint.mdAndUp }">
         <portal-target class="d-inline" name="responsive-buttons" />
 
 
