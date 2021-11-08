@@ -103,8 +103,10 @@ class ResourceViewSet(viewsets.ModelViewSet):
     # queryset = Resource.objects.order_by('name').all().prefetch_related('tags')
     queryset = Resource.objects.order_by('name').all().prefetch_related('tags', Prefetch(
         'reservations',
-        queryset=ReservedResource.objects.filter(Q(reservation__pickup_date_time__gt=timezone.now()) | (
-                Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True))).select_related('reservation', ),
+        queryset=ReservedResource.objects.filter(
+            (Q(reservation__approved=True) | Q(reservation__approved=None)) &  # exclude declined reservations
+            (Q(reservation__pickup_date_time__gt=timezone.now()) |
+            (Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True)))).select_related('reservation', ),
         to_attr='blocking_reservations'
     )
                                                                         )

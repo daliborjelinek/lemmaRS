@@ -119,7 +119,7 @@ const actions = {
 
     },
     async sendReservation({commit, dispatch, state, getters},) {
-        const resources = state.selectedResources.map(res => res.id)
+        const resources = state.selectedResources
         const approvalRequired = getters.approvalRequired
         await API.createReservation(getters.reservationRange.startDateTime,getters.reservationRange.endDateTime,resources,approvalRequired,state.project)
         dispatch('getResources')
