@@ -107,7 +107,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(choices=Role.choices, max_length=50, default=Role.COMMON)
     role_display = models.CharField(choices=Role.choices, max_length=50, default=Role.COMMON)
     address = models.CharField(max_length=150, default="", blank=True)
-    calendar_data = models.JSONField(default=dict, blank=True)
+    calendar_data = models.JSONField(default=list, blank=True)
+    # holidays = models.JSONField(default=list, blank=True)
     room = models.CharField(max_length=150, default="", blank=True)
 
     objects = AccountManager()

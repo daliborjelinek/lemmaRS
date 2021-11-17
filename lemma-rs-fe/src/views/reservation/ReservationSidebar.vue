@@ -3,7 +3,7 @@
     v-card.fill-height.d-flex.flex-column(elevation='5' color='#1e1e1ee6' rounded='0')
       v-card-title Rezervace
         v-spacer
-        v-btn( @click="sendReservation" :disabled='!reservationIsNotEmpty || !reservationErrors.reservationIsValid' color='primary') odeslat
+        v-btn( @click="sendReservation" :disabled='!reservationIsFilled || !reservationErrors.reservationIsValid' color='primary') odeslat
       v-card-text.flex-grow-1.d-flex.flex-column
         div
           //| {{$store.getters.hourCost}}
@@ -11,32 +11,39 @@
           v-alert.mb-1( v-if="reservationErrors.timeConflicts.length > 0" dense icon='mdi-close-circle' text='' type='error') Konflikt s jinou rezervací
           v-alert.mb-1( v-if="reservationErrors.invalidProvider.length > 0" dense icon='mdi-close-circle' text='' type='error') Zdroje různých výdejářů
           v-form(ref="reservationForm")
-            api-select(
+            v-select(
               v-model="provider"
               prepend-icon="mdi-account-cog",
-              query="user/?role__in=ADMIN,PROVIDER"
-              :default-index="1",
+              :items="providers",
               label="Výdejář",
-              :item-value="(itm)=> itm.id" ,
-              :item-text="(itm)=> itm.fullname")
+              :item-text="(itm)=> itm.fullname"
+              :item-value="(itm)=> itm.id" )
             v-dialog( v-model='showCalendar' width='290px')
               template(v-slot:activator='{ on, attrs }')
-                v-text-field(v-model='dateRangeText' label='Termín rezervace' :rules="[(v) => !!v || 'Vyplňte termín rezervace']" prepend-icon='mdi-calendar' readonly v-bind='attrs' v-on='on')
+                v-text-field(v-model='dateRangeText'
+                  label='Termín rezervace'
+                  :rules="[(v) => !!v || 'Vyplňte termín rezervace']"
+                  prepend-icon='mdi-calendar'
+                  readonly v-bind='attrs'
+                  v-on='on')
               v-date-picker(first-day-of-week='1' v-model='date' @change="setDate" :allowedDates="allowedDates", :min='$moment().format()' no-title range scrollable)
                 v-spacer
                 v-btn(text='' color='primary' @click='showCalendar = false')
                   | OK
             .d-flex
-              v-autocomplete.pr-2(:items='timeOptions'
+              v-autocomplete.pr-2(:items='providerAvailability.pickupTimes'
                 :value="$store.state.reservation.startTime"
                 color='white'
                 @change="t => setTime(t,'start')"
                 label='Začátek'
+                auto-select-first
                 prepend-icon='mdi-alarm-multiple')
-              v-autocomplete(:items='timeOptions'
+
+              v-autocomplete(:items='providerAvailability.returnTimes'
                 :value="$store.state.reservation.endTime"
                 color='white'
                 @change="t => setTime(t,'end')"
+                auto-select-first
                 label='Konec')
             v-autocomplete(:items='myProjects'
               :value="$store.state.reservation.project"
@@ -72,46 +79,84 @@
 import Timepicker from "@/components/Timepicker";
 import ApiSelect from "@/components/ApiSelect";
 import ProjectEditorModal from "@/views/Projects/ProjectEditorModal";
+import API from '@/model/httpclient'
 import {createHelpers} from "vuex-map-fields";
-const { mapFields } = createHelpers({
+import Holidays from "date-holidays";
+const { mapFields, mapMultiRowFields } = createHelpers({
   getterType: "getResField",
   mutationType: "updateResField",
 });
-
+const hd = new Holidays('CZ')
 export default {
   components: {ApiSelect, Timepicker,ProjectEditorModal},
   data: () => ({
-    date: [],
-    timeOptions: ['8:00',
-      '8:15',
-      '8:30',
-      '8:45',
-      '9:00',
-      '9:15',
-      '9:30',
-      '9:45',
-      '10:00',
-      '10:15',
-      '10:30',
-      '13:00',
-      '13:30',
-      '13:45',
-      '14:00',
-      '14:15',
-      '14:30',
-      '14:45',
-      '15:00']
-    ,
+    providers:[],
     showCalendar: false
   }),
-
+  async created() {
+    const res = await API.getProviders()
+    this.providers = res.filter(provider => provider.calendar_data.length)
+  },
   computed: {
+    date:{
+      get(){
+        return this.$store.state.reservation.dateRange
+
+      },
+      set(range){
+        const sorted = range.sort((a,b) => this.$moment(a) - this.$moment(b))
+        this.$store.commit('setDate', sorted)
+      },
+    },
+    providerAvailability(){
+      const provider = this.providers.find((provider) => provider.id === this.provider)
+      const startDate = this.$store.getters.startDate
+      const endDate = this.$store.getters.endDate
+      const availableDays = [... new Set(provider?.calendar_data.map(interval => interval.dow))]
+
+      const pickupIntervals = startDate ? provider?.calendar_data.filter((rec) => rec.dow === this.$moment(startDate).day()) || [] :[]
+      const returnIntervals = endDate ? provider?.calendar_data.filter((rec) => rec.dow === this.$moment(endDate).day()) || [] : []
+
+      const pickupTimes = []
+      const returnTimes = []
+
+      pickupIntervals.forEach((interval)=>{
+        let start = this.$moment(interval.start,'HH:mm');
+        let end = this.$moment(interval.end,'HH:mm');
+        while (end.isSameOrAfter(start)) {
+          pickupTimes.push(start.format('HH:mm'));
+          start.add(15, 'minutes');
+        }
+      })
+
+      returnIntervals.forEach((interval)=>{
+        let start = this.$moment(interval.start,'HH:mm');
+        let end = this.$moment(interval.end,'HH:mm');
+        while (end.isSameOrAfter(start)) {
+          returnTimes.push(start.format('HH:mm'));
+          start.add(15, 'minutes');
+        }
+      })
+
+      return {
+        pickupIntervals,
+        returnIntervals: this.$store.getters.endDate,
+        availableDays,
+        pickupTimes,
+        returnTimes
+      }
+
+      while (start <= end) {
+        result.push(start.format('HH:mm'));
+        start.add(15, 'minutes');
+      }
+    },
     ...mapFields([
       'provider',
     ]),
+
     dateRangeText(){
-      return this.$store.state.reservation.startDate ?
-      this.$store.state.reservation.startDate + " ~ " + this.$store.state.reservation.endDate: null
+      return this.$store.getters.startDate ? this.$store.getters.startDate +  " ~ " +  this.$store.getters.endDate : ''
     },
     selectedResources() {
       return this.$store.getters.selectedResourcesObj
@@ -119,9 +164,10 @@ export default {
     myProjects() {
       return this.$store.getters.myProjects
     },
-    reservationIsNotEmpty() {
-      return this.$store.getters.hourCost > 0;
+    reservationIsFilled() {
+      return this.$store.getters.reservationIsFilled
     },
+
     reservationErrors(){
       return this.$store.getters.reservationErrors
     }
@@ -135,16 +181,13 @@ export default {
       this.$store.commit('setTime', {time, type})
     },
     setDate(range) {
-      console.log(range)
-      if (range.length === 2) {
-        this.$store.commit('setDate', {start: range[0], end: range[1]})
-      }
+        this.$store.commit('setDate', range)
     },
     setProject(val){
       this.$store.commit('setProject',val.id)
     },
     allowedDates(val) {
-      return ![6, 0].includes(this.$moment(val).day())
+      return this.providerAvailability.availableDays.includes(this.$moment(val).day()) && !(hd.isHoliday(val))
     },
     async sendReservation(){
         if(!this.$refs.reservationForm.validate()) return;

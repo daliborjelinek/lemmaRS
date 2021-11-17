@@ -217,6 +217,9 @@ export default {
     },
     async transmitReservation(id) {
         return await  (AXIOS.put('reservation/'+ id + '/transmit_reservation/'))
+    },
+    async getProviders() {
+        return (await AXIOS.get('user/?role__in=ADMIN,PROVIDER')).data
     }
 
 }

@@ -10,7 +10,7 @@
             :key="resource.id",
             v-for="(resource) in filteredResources",
             max-width="300"
-            color="#0000008c"
+            :color="resource.selected ? (resource.reservationIsPossible ? '#00714E8c' : '#4c0000c2'): '#0000008c'"
             class="d-flex flex-column"
           )
 
@@ -39,8 +39,8 @@
 
                 //span.ml-1 {{resource.provider_str}}
             v-card-actions
-              v-btn(@click.stop="addReservationItem(resource)" :disabled="!resource.reservationIsPossible")
-                v-icon(left) mdi-cart-arrow-down
+              v-btn(@click.stop="addReservationItem(resource)" :disabled="!resource.reservationIsPossible && !resource.selected")
+                v-icon(left ) mdi-cart-arrow-down
                 span(v-if="!resource.selected") Rezervovat
                 span(v-else) Odebrat
               v-btn(color=red, @click.stop="openCalendarDialog(resource)", text )
@@ -81,12 +81,6 @@
             v-chip(v-if="item.hasTimeConflict" class="ma-2" label color="#4c0000c2" title="Zdroj je již v daném termínu rezervován")
               v-icon() mdi-clock-alert
 
-
-
-
-
-
-
     v-dialog(v-model="calendarDialog" max-width="900")
       v-card
         v-toolbar(color="primary", dark)
@@ -95,6 +89,7 @@
           span {{ month }}
           v-btn.ma-2(icon, @click="$refs.calendar.next()")
             v-icon mdi-chevron-right
+          | {{activeResource.name}}
           v-spacer
           v-btn(icon, @click="calendarDialog = false")
             v-icon mdi-close
@@ -286,7 +281,7 @@ export default {
       return this.$store.getters.filteredResources
     },
     selectedResources() {
-      return this.$store.state.reservation.selectedResources
+      return this.$store.getters.selectedResourcesObj
     },
     selectedProvider() {
       return this.$store.state.reservation.provider

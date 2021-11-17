@@ -36,7 +36,7 @@ const actions = {
   },
   [USER_UPDATE]: async ({ commit, dispatch }) => {
     try{
-      const response = await API.putUser(state.profile)
+      await API.putUser(state.profile)
       dispatch('notify',{type:'success', text: 'Uživatel uložen' })
     } catch(e) {
       commit(USER_ERROR);
@@ -61,7 +61,10 @@ const mutations = {
   },
   [AUTH_LOGOUT]: state => {
     state.profile = {};
-  }
+  },
+  setCalendar(state,data){
+    state.profile.calendar_data = data;
+  },
 };
 
 export default {

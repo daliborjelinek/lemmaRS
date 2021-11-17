@@ -14,8 +14,8 @@ function initState(){
         selectedResources: [],
         startTime: null,
         endTime: null,
-        startDate: null,
-        endDate: null,
+        dateRange:[],
+        provider: 3,
         reservationDate: [],
         project: null,
     }
@@ -24,14 +24,13 @@ function initState(){
 const state = {
     resources: [],
     selectedResources: [],
-    startTime: '13:00',
-    endTime: '13:00',
-    startDate: null,
-    endDate: null,
+    dateRange: [],
+    startTime: null,
+    endTime: null,
     tag: 2,
     search: '',
     reservationDate: [],
-    provider: null,
+    provider: 3,
     alreadyReserved: false,
     disallowed: true,
     inactive: false,
@@ -39,9 +38,18 @@ const state = {
 }
 const getters = {
     getResField,
-    reservationRange: (state) => {
-        const startDateTime = moment(state.startDate + ' '+ state.startTime).toISOString()
-        const endDateTime = moment(state.endDate + ' ' + state.endTime).toISOString()
+    reservationRange: (state, getters) => {
+        if(!(getters.startDate && state.startTime && getters.endDate && state.endTime)){
+            return {
+                startDateTime: null,
+                endDateTime: null,
+                range: null,
+            }
+        }
+
+        const startDateTime = moment(getters.startDate + ' '+ state.startTime,'YYYY-MM-DD HH:mm').toISOString()
+        const endDateTime = moment(getters.endDate + ' ' + state.endTime,'YYYY-MM-DD HH:mm').toISOString()
+        console.log(startDateTime,endDateTime)
         return {
             startDateTime,
             endDateTime,
@@ -53,9 +61,9 @@ const getters = {
                 res.selected = state.selectedResources.includes(res.id)
                 res.allowed = rootState.user.profile.permission_level >= res.required_permission_level
                 res.providerStr = rootState.providers.find(x => x.id === res.provider)?.fullname
-                res.hasTimeConflict = !!res.blocking_reservations.find((br) =>{
+                res.hasTimeConflict = getters.reservationRange.range ? !!res.blocking_reservations.find((br) =>{
                    return  moment.range(moment(br.start),moment((br.end))).overlaps(getters.reservationRange.range)
-                })
+                }) : false
                 res.reservationIsPossible = res.active && res.allowed && !res.hasTimeConflict && res.provider === state.provider
                 return res
             }
@@ -100,8 +108,8 @@ const getters = {
     totalCost: (state, getters) => {
         return getters.selectedResourcesObj.reduce((acc,itm) => acc + itm.cost,0)
     },
-    reservationLength: (state) => {
-        if(state.startDate && state.endDate) return moment(state.endDate).diff(moment(state.startDateDate),'days')+1
+    reservationLength: (state, getters) => {
+        if(getters.startDate && getters.endDate) return moment(getters.endDate).diff(moment(getters.startDate),'days')+1
         return 0
     },
     hourCost(state,getters){
@@ -110,6 +118,20 @@ const getters = {
     approvalRequired(state,getters){
         return  getters.hourCost > 50000
     },
+    startDate(state){
+        return state.dateRange[0]
+    },
+    endDate(state){
+        return state.dateRange[1] || state.dateRange[0]
+    },
+    reservationIsFilled(state,getters){
+        return getters.hourCost > 0 &&
+            state.startTime &&
+            state.endTime &&
+            getters.startDate &&
+            getters.endDate
+    }
+
 };
 
 const actions = {
@@ -150,9 +172,8 @@ const mutations = {
         if(type==='start') state.startTime=time
         if(type==='end') state.endTime=time
     },
-    setDate(state,{start, end}) {
-        state.startDate = start
-        state.endDate = end
+    setDate(state,range) {
+        state.dateRange = range
     },
     setProject(state,project){
         state.project = project

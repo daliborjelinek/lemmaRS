@@ -29,7 +29,7 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="$router.push({name: 'User'})">
+          <v-list-item @click="$refs.userDialog.show()">
           {{$store.state.user.profile ? $store.state.user.profile.fullname : ''}}
           </v-list-item>
           <v-list-item @click="logout()" link>
@@ -58,12 +58,16 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
+    <user ref="userDialog"/>
   </div>
 </template>
 <script>
 import axios from "axios";
 import {AUTH_LOGOUT} from "@/store/actions/auth"
+import User from "@/views/User";
+
 export default {
+  components: {User},
   data: function () {
     return {
       drawer: false,
