@@ -14,6 +14,7 @@
             v-select(
               v-model="provider"
               prepend-icon="mdi-account-cog",
+              @change="clearTimeAndDate",
               :items="providers",
               label="Výdejář",
               :item-text="(itm)=> itm.fullname"
@@ -34,6 +35,7 @@
               v-autocomplete.pr-2(:items='providerAvailability.pickupTimes'
                 :value="$store.state.reservation.startTime"
                 color='white'
+                :disabled='!provider'
                 @change="t => setTime(t,'start')"
                 label='Začátek'
                 auto-select-first
@@ -82,15 +84,16 @@ import ProjectEditorModal from "@/views/Projects/ProjectEditorModal";
 import API from '@/model/httpclient'
 import {createHelpers} from "vuex-map-fields";
 import Holidays from "date-holidays";
-const { mapFields, mapMultiRowFields } = createHelpers({
+
+const {mapFields} = createHelpers({
   getterType: "getResField",
   mutationType: "updateResField",
 });
 const hd = new Holidays('CZ')
 export default {
-  components: {ApiSelect, Timepicker,ProjectEditorModal},
+  components: {ApiSelect, Timepicker, ProjectEditorModal},
   data: () => ({
-    providers:[],
+    providers: [],
     showCalendar: false
   }),
   async created() {
@@ -98,40 +101,40 @@ export default {
     this.providers = res.filter(provider => provider.calendar_data.length)
   },
   computed: {
-    date:{
-      get(){
+    date: {
+      get() {
         return this.$store.state.reservation.dateRange
 
       },
-      set(range){
-        const sorted = range.sort((a,b) => this.$moment(a) - this.$moment(b))
+      set(range) {
+        const sorted = range.sort((a, b) => this.$moment(a) - this.$moment(b))
         this.$store.commit('setDate', sorted)
       },
     },
-    providerAvailability(){
+    providerAvailability() {
       const provider = this.providers.find((provider) => provider.id === this.provider)
       const startDate = this.$store.getters.startDate
       const endDate = this.$store.getters.endDate
-      const availableDays = [... new Set(provider?.calendar_data.map(interval => interval.dow))]
+      const availableDays = [...new Set(provider?.calendar_data.map(interval => interval.dow))]
 
-      const pickupIntervals = startDate ? provider?.calendar_data.filter((rec) => rec.dow === this.$moment(startDate).day()) || [] :[]
+      const pickupIntervals = startDate ? provider?.calendar_data.filter((rec) => rec.dow === this.$moment(startDate).day()) || [] : []
       const returnIntervals = endDate ? provider?.calendar_data.filter((rec) => rec.dow === this.$moment(endDate).day()) || [] : []
 
       const pickupTimes = []
       const returnTimes = []
 
-      pickupIntervals.forEach((interval)=>{
-        let start = this.$moment(interval.start,'HH:mm');
-        let end = this.$moment(interval.end,'HH:mm');
+      pickupIntervals.forEach((interval) => {
+        let start = this.$moment(interval.start, 'HH:mm');
+        let end = this.$moment(interval.end, 'HH:mm');
         while (end.isSameOrAfter(start)) {
           pickupTimes.push(start.format('HH:mm'));
           start.add(15, 'minutes');
         }
       })
 
-      returnIntervals.forEach((interval)=>{
-        let start = this.$moment(interval.start,'HH:mm');
-        let end = this.$moment(interval.end,'HH:mm');
+      returnIntervals.forEach((interval) => {
+        let start = this.$moment(interval.start, 'HH:mm');
+        let end = this.$moment(interval.end, 'HH:mm');
         while (end.isSameOrAfter(start)) {
           returnTimes.push(start.format('HH:mm'));
           start.add(15, 'minutes');
@@ -143,7 +146,8 @@ export default {
         returnIntervals: this.$store.getters.endDate,
         availableDays,
         pickupTimes,
-        returnTimes
+        returnTimes,
+        holidays: provider?.holidays || []
       }
 
       while (start <= end) {
@@ -155,8 +159,8 @@ export default {
       'provider',
     ]),
 
-    dateRangeText(){
-      return this.$store.getters.startDate ? this.$store.getters.startDate +  " ~ " +  this.$store.getters.endDate : ''
+    dateRangeText() {
+      return this.$store.getters.startDate ? this.$store.getters.startDate + " ~ " + this.$store.getters.endDate : ''
     },
     selectedResources() {
       return this.$store.getters.selectedResourcesObj
@@ -168,7 +172,7 @@ export default {
       return this.$store.getters.reservationIsFilled
     },
 
-    reservationErrors(){
+    reservationErrors() {
       return this.$store.getters.reservationErrors
     }
 
@@ -181,20 +185,28 @@ export default {
       this.$store.commit('setTime', {time, type})
     },
     setDate(range) {
-        this.$store.commit('setDate', range)
+      this.$store.commit('setDate', range)
+      this.$store.commit('setTime', {time: null, type: 'start'})
+      this.$store.commit('setTime', {time: null, type: 'end'})
     },
-    setProject(val){
-      this.$store.commit('setProject',val.id)
+    setProject(val) {
+      this.$store.commit('setProject', val.id)
+    },
+    clearTimeAndDate() {
+      this.$store.commit('setDate', [])
+      this.$store.commit('setTime', {time: null, type: 'start'})
+      this.$store.commit('setTime', {time: null, type: 'end'})
     },
     allowedDates(val) {
-      return this.providerAvailability.availableDays.includes(this.$moment(val).day()) && !(hd.isHoliday(val))
+      const providerHoliday = this.providerAvailability.holidays.find((hd) => this.$moment.range(this.$moment(hd.from), this.$moment(hd.to)).contains(this.$moment(val)))
+      return this.providerAvailability.availableDays.includes(this.$moment(val).day()) && !(hd.isHoliday(val)) && !providerHoliday
     },
-    async sendReservation(){
-        if(!this.$refs.reservationForm.validate()) return;
-        await this.$store.dispatch('sendReservation')
-        this.$refs.reservationForm.resetValidation()
+    async sendReservation() {
+      if (!this.$refs.reservationForm.validate()) return;
+      await this.$store.dispatch('sendReservation')
+      this.$refs.reservationForm.resetValidation()
     },
-    openNewProjectDialog(){
+    openNewProjectDialog() {
       this.$refs.projectEditorModal.openCreateDialog()
     }
   }

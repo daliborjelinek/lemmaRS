@@ -46,10 +46,8 @@ const getters = {
                 range: null,
             }
         }
-
         const startDateTime = moment(getters.startDate + ' '+ state.startTime,'YYYY-MM-DD HH:mm').toISOString()
         const endDateTime = moment(getters.endDate + ' ' + state.endTime,'YYYY-MM-DD HH:mm').toISOString()
-        console.log(startDateTime,endDateTime)
         return {
             startDateTime,
             endDateTime,
@@ -144,7 +142,7 @@ const actions = {
         const resources = state.selectedResources
         const approvalRequired = getters.approvalRequired
         await API.createReservation(getters.reservationRange.startDateTime,getters.reservationRange.endDateTime,resources,approvalRequired,state.project)
-        dispatch('getResources')
+        await dispatch('getResources')
         commit('flushReservation')
     }
 };

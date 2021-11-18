@@ -2,7 +2,7 @@
   v-dialog(v-model="userDialog" scrollable max-width="900px")
     v-card( )
       v-toolbar(color="primary", dark)
-        | {{ $store.state.user.profile.fullname }}
+        | {{ user.profile.fullname }}
         v-chip.ma-2
           v-icon.mr-2(small) mdi-account-circle-outline
           | {{ currentUserRole }}
@@ -15,8 +15,8 @@
         v-container
           v-tabs(v-model="tab")
             v-tab Údaje
-            v-tab Dostupnost
-            v-tab Dovolená
+            v-tab(v-if="currentUserRole !== 'COMMON'") Dostupnost
+            v-tab(v-if="currentUserRole !== 'COMMON'") Dovolená
           v-tabs-items(v-model="tab")
             v-tab-item
               v-form.mt-2
@@ -27,9 +27,30 @@
                 v-textarea(name='Adresa' label='Adresa' v-model='address' hint='Adresa')
             v-tab-item
               v-sheet.mt-2(rounded)
-                w-h-calendar(:init='$store.state.user.profile.calendar_data' v-model="eventsParent")
+                w-h-calendar(:init='user.profile.calendar_data' v-model="eventsParent")
             v-tab-item
-              v-data-table
+              v-data-table(:headers="holidayHeaders", :items="user.profile.holidays")
+                template(v-slot:top)
+                  v-toolbar.mt-2(flat)
+                    v-spacer
+                    v-dialog( v-model='showCalendar' width='290px')
+                      template(v-slot:activator='{ on, attrs }')
+                        v-btn(
+                          color="primary"
+                          v-bind='attrs'
+                          v-on='on') Nový záznam
+                      v-date-picker(first-day-of-week='1' :min='$moment().format()' v-model='datePickerDate'  no-title range scrollable)
+                        v-spacer
+                        v-btn(text='' color='primary' @click='addHolidayRecord')
+                          | OK
+                template(v-slot:item.actions='{ item }')
+                    v-btn.mr-1( icon color="warning" @click.stop="removeHolidayRecord(item)")
+                      v-icon mdi-delete-circle
+                template(v-slot:item.from='{ item }')
+                  | {{$moment(item.from).locale("cs").format('LL')}}
+                template(v-slot:item.to='{ item }')
+                  | {{$moment(item.to).locale("cs").format('LL')}}
+
 </template>
 <script>
 import {createHelpers} from "vuex-map-fields";
@@ -44,14 +65,29 @@ export default {
   name: 'user',
   components: {WHCalendar},
   data: () => ({
-    userDialog: true,
-    tab: null,
+    datePickerDate: [],
+    userDialog: false,
+    showCalendar: false,
+    holidayHeaders: [{
+      text: 'od',
+      value: 'from'
+    }, {
+      text: 'do',
+      value: 'to'
+    }, {
+      text: 'akce',
+      value: 'actions'
+    },],
+    tab: 2,
     saveUserLoading: false,
     eventsParent: [],
   }),
   computed: {
     currentUserRole() {
       return this.$store.getters.getRole;
+    },
+    user() {
+      return this.$store.state.user
     },
     ...mapFields([
       "profile.address",
@@ -82,6 +118,26 @@ export default {
     },
     show() {
       this.userDialog = true
+    },
+    addHolidayRecord() {
+        const sorted  = this.datePickerDate.sort((a,b) => this.$moment(a) - this.$moment(b))
+        let from, to
+        if(!sorted.length) return
+        if(sorted.length === 1){
+          from = to = sorted[0]
+        }
+        else {
+          from = sorted[0]
+          to = sorted[1]
+        }
+        from = this.$moment(from).toISOString()
+        to = this.$moment(to).endOf('day').toISOString()
+        this.$store.commit('addHolidayRecord',{from, to})
+        this.showCalendar = false
+        this.datePickerDate = []
+    },
+    removeHolidayRecord(record){
+      this.$store.commit('removeHolidayRecord',record)
     }
   },
 };

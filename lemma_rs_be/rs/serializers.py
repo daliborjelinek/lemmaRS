@@ -1,7 +1,17 @@
+from django.utils import timezone
 from rest_framework import serializers
+from datetime import datetime
+from django.utils.timezone import make_aware
 
 from .models import Resource, Project, ProjectGroup, PermissionLevel, Tag, User, PermissionRequest, Reservation, \
     ReservedResource
+
+
+class UserHolidaySerializer(serializers.JSONField):
+    def to_representation(self, data):
+        data = list(
+            filter(lambda x: make_aware(datetime.strptime((x['to']), "%Y-%m-%dT%H:%M:%S.%fZ")) >= timezone.now(), data))
+        return super().to_representation(data)
 
 
 class SimpleUserSerializer(serializers.ModelSerializer):
@@ -11,16 +21,18 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 
 
 class UserReadSerializer(serializers.ModelSerializer):
+    holidays = UserHolidaySerializer()
+
     class Meta:
         model = User
         fields = ['id', 'username', 'is_active', 'fullname', 'permission_level', 'role', 'role_display', 'email',
-                  'phone', 'address', 'calendar_data', 'room']
+                  'phone', 'address', 'calendar_data', 'holidays', 'room']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room']
+        fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room', 'holidays']
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -119,7 +131,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = (
             'id', 'pickup_date_time', 'return_date_time', 'picked_up', 'applicant', 'approved', 'approved_by',
-            'resources', 'project', 'created_at','fully_returned',)
+            'resources', 'project', 'created_at', 'fully_returned',)
 
 
 class ReservationCreateSerializer(serializers.ModelSerializer):

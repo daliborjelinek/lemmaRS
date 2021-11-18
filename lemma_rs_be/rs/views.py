@@ -105,8 +105,9 @@ class ResourceViewSet(viewsets.ModelViewSet):
         'reservations',
         queryset=ReservedResource.objects.filter(
             (Q(reservation__approved=True) | Q(reservation__approved=None)) &  # exclude declined reservations
-            (Q(reservation__pickup_date_time__gt=timezone.now()) |
-            (Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True)))).select_related('reservation', ),
+            (Q(reservation__return_date_time__gt=timezone.now()) |  # include upcoming and ongoing reservations
+              (Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True))))  # include picked up reservations
+        .select_related('reservation', ),
         to_attr='blocking_reservations'
     )
                                                                         )
@@ -136,7 +137,8 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         request=PermissionRequestCreateSerializer,
         responses={204: None}
     )
-    @action(methods=['PUT'], detail=False, name='Send request for higher permissions',permission_classes=[IsAuthenticated])
+    @action(methods=['PUT'], detail=False, name='Send request for higher permissions',
+            permission_classes=[IsAuthenticated])
     def send_request(self, request):
         serializer = PermissionRequestCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -251,7 +253,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
             real_return_date__isnull=False).values_list('id', flat=True)
         print(already_returned_resources)
         if len(already_returned_resources) > 0:
-            return Response('ids ' + ', '.join(map(str, already_returned_resources)) + ' was already returned', status=status.HTTP_400_BAD_REQUEST)
+            return Response('ids ' + ', '.join(map(str, already_returned_resources)) + ' was already returned',
+                            status=status.HTTP_400_BAD_REQUEST)
         ReservedResource.objects.filter(pk__in=ids).update(real_return_date=timezone.now())
         return Response(status=status.HTTP_204_NO_CONTENT)
 
