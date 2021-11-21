@@ -13,6 +13,7 @@ import VueMomentJS from "vue-momentjs";
 import vueDebounce from "vue-debounce"
 import VueLazyImageLoading from 'vue-lazy-image-loading'
 import VueRandomColor from 'vue-randomcolor'
+import VueCurrencyFilter from 'vue-currency-filter'
 
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
@@ -30,7 +31,16 @@ Vue.use(vueDebounce)
 Vue.use(VueMomentJS, moment);
 Vue.use(VueLazyImageLoading);
 Vue.use(VueRandomColor)
-
+Vue.use(VueCurrencyFilter,
+    {
+      symbol : 'Kč',
+      thousandsSeparator: ' ',
+      fractionCount: 2,
+      fractionSeparator: ',',
+      symbolPosition: 'back',
+      symbolSpacing: true,
+      avoidEmptyDecimals: '',
+    })
 Vue.config.productionTip = false
 
 

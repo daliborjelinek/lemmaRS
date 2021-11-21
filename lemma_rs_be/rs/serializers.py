@@ -17,7 +17,7 @@ class UserHolidaySerializer(serializers.JSONField):
 class SimpleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'fullname']
+        fields = ['id', 'fullname', 'address', 'username']
 
 
 class UserReadSerializer(serializers.ModelSerializer):
@@ -62,8 +62,8 @@ class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = ('not_returned',
-            'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider',
-            'tags', 'tags_str', 'required_permission_level', 'blocking_reservations', 'inv_numbers')
+                  'id', 'active', 'name', 'description', 'internal_notes', 'cost', 'image_url', 'provider',
+                  'tags', 'tags_str', 'required_permission_level', 'blocking_reservations', 'inv_numbers')
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
@@ -114,10 +114,21 @@ class PermissionRequestFullSerializer(serializers.ModelSerializer):
 
 class ReservedResourceSerializer(serializers.ModelSerializer):
     resource_str = serializers.StringRelatedField(source='resource', read_only=True)
+    cost = serializers.SlugRelatedField(
+        source='resource',
+        read_only=True,
+        slug_field='cost'
+    )
+    inv_numbers = serializers.SlugRelatedField(
+        source='resource',
+        read_only=True,
+        slug_field='inv_numbers'
+    )
 
     class Meta:
         model = ReservedResource
-        fields = ('id', 'real_return_date', 'real_pickup_date', 'comment', 'resource_str', 'reservation')
+        fields = (
+         'id', 'real_return_date', 'real_pickup_date', 'comment', 'resource_str', 'reservation', 'cost', 'inv_numbers')
 
 
 class ReservationSerializer(serializers.ModelSerializer):

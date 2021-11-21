@@ -52,6 +52,7 @@
               v-icon mdi-check-decagram
             v-btn(icon v-if="userRole === 'ADMIN'" color="error" @click.stop="resolveReservationRequest(item, false)" :disabled="item.approved !== null || item.returnDatePassed" title="Zamítnout")
               v-icon mdi-close-octagon-outline
+      pdf-creator( ref="pdfCreator" :reservation="selectedReservation", :resources2="formatedResources")
       v-dialog(v-model="calendarDialog" max-width="900")
         v-card
           v-toolbar(color="primary", dark)
@@ -87,15 +88,20 @@
                 v-btn(color='primary' :disabled='!selectedResources.length || !selectedReservation.picked_up' @click.stop='takeUpResources')
                   v-icon(left) mdi-handshake
                   | převzít
+                v-btn.ml-2(color='primary' @click.stop='print')
+                  v-icon(left) mdi-printer
+                  | tisk
 
 
 </template>
 
 <script>
 import API from "@/model/httpclient";
+import PdfCreator from "@/components/PdfCreator";
 
 export default {
   name: "Reservations",
+  components: {PdfCreator},
   data: function () {
     return {
       calendarDialog: false,
@@ -228,6 +234,9 @@ export default {
     },
     openCalendar() {
       this.calendarDialog = true
+    },
+    print(){
+      this.$refs.pdfCreator.print()
     }
 
   }
