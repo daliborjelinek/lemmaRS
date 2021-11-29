@@ -44,7 +44,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class BlockingIntervalSerializer(serializers.ModelSerializer):
-    start = serializers.DateTimeField(source='reservation.pickup_date_time')
+    start = serializers.DateTimeField(source='blocking_start')
     end = serializers.DateTimeField(source='blocking_end')
     reservation_id = serializers.IntegerField(source='reservation.id')
     reservation_name = serializers.StringRelatedField(source='reservation.project')

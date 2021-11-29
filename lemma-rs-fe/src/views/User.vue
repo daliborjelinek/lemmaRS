@@ -80,7 +80,7 @@ export default {
       text: 'akce',
       value: 'actions'
     },],
-    tab: null,
+    tab: 0,
     saveUserLoading: false,
     eventsParent: [],
   }),

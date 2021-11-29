@@ -232,6 +232,13 @@ class ReservedResource(models.Model):
     real_pickup_date = models.DateTimeField(blank=True, null=True)
 
     @property
+    def blocking_start(self):
+        if self.real_pickup_date is not None:
+            return self.real_pickup_date
+        else:
+            return self.reservation.pickup_date_time
+
+    @property
     def blocking_end(self):
         if self.reservation.pickup_date_time > timezone.now():
             # reservation not started yet

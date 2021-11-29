@@ -243,8 +243,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
             return Response('This reservation needs to be approved first.', status=status.HTTP_400_BAD_REQUEST)
         if reservation.picked_up:
             return Response('Reservation has been already transmitted', status=status.HTTP_400_BAD_REQUEST)
-        if reservation.pickup_date_time > timezone.now():
-            return Response("Transmit before claimed pickup date not allowed", status=status.HTTP_400_BAD_REQUEST)
+        # if reservation.pickup_date_time > timezone.now():
+        #    return Response("Transmit before claimed pickup date not allowed", status=status.HTTP_400_BAD_REQUEST)
         if reservation.return_date_time < timezone.now():
             return Response("Transmit after claimed return date not allowed", status=status.HTTP_400_BAD_REQUEST)
 

@@ -157,7 +157,7 @@ export default {
           return_date_time_str: this.$moment(itm.return_date_time).locale("cs").format('LLL') + ' (' + (this.$moment(itm.return_date_time).diff(this.$moment(itm.pickup_date_time), "days")+1) + 'd)',
           created_at: this.$moment(itm.created_at).locale("cs").format('LLL'),
           isTransmittable:
-              (new Date(itm.pickup_date_time) <= new Date()) &&
+              //(new Date(itm.pickup_date_time) <= new Date()) &&
               (new Date(itm.return_date_time) > new Date()) &&
               itm.approved &&
               !itm.picked_up,
