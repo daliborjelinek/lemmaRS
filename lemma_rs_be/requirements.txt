@@ -1,4 +1,4 @@
-APScheduler==3.8.1
+django-apscheduler==0.6.0
 arrow==1.2.1
 asgiref==3.3.4
 attrs==21.1.0

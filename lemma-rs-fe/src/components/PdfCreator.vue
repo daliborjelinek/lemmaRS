@@ -74,8 +74,7 @@
 
 <script>
 import jsPDF from 'jspdf'
-import {arial} from '@/assets/jsPDF/arial-normal'
-import {arialBold} from '@/assets/jsPDF/arial-bold'
+
 import {robotoNormal} from '@/assets/jsPDF/roboto-normal'
 import {robotoBold} from '@/assets/jsPDF/roboto-bold'
 
