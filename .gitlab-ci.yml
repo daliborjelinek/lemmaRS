@@ -16,6 +16,6 @@ step-deploy-prod:
     - docker-compose -f docker-compose.prod.yml up -d --build
     - docker-compose -f docker-compose.prod.yml exec -T api python manage.py migrate --noinput
     - docker-compose -f docker-compose.prod.yml exec -T api python manage.py collectstatic --no-input --clear
-    - docker-compose -f docker-compose.prod.yml exec -T api python manage.py runapscheduler
+    - docker-compose -f docker-compose.prod.yml exec -d api python manage.py runapscheduler
   environment: production
   when: manual
