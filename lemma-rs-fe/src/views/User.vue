@@ -13,18 +13,20 @@
           v-icon mdi-close
       v-card-text.pa-0
         v-container
-          v-tabs(v-model="tab")
+          v-tabs(v-model="tab" v-if="role_display !== 'COMMON'")
             v-tab Údaje
-            v-tab(v-if="currentUserRole !== 'COMMON'") Dostupnost
-            v-tab(v-if="currentUserRole !== 'COMMON'") Dovolená
+            v-tab(v-if="role_display !== 'COMMON'") Dostupnost
+            v-tab(v-if="role_display !== 'COMMON'") Dovolená
           v-tabs-items(v-model="tab")
             v-tab-item
               v-form.mt-2
                 v-select(v-if="currentUserRole !== 'COMMON'" v-model='role_display' :items='role' label='Zobrazit GUI jako')
                 v-text-field(v-model='email' label='E-mail' required='')
                 v-text-field(label='Telefon' v-model='phone')
-                v-text-field(label='Místnost' v-model='phone')
                 v-textarea(name='Adresa' label='Adresa' v-model='address' hint='Adresa')
+                v-text-field(v-if="role_display !== 'COMMON'" label='Místnost' v-model='room')
+                v-checkbox.ml-2(v-if="role_display !== 'COMMON'" label='Zasílat upozorněni o žádostech o oprávnění' v-model='send_notification_on_permission_request')
+                v-checkbox.ml-2(v-if="role_display !== 'COMMON'" label='Zasílat upozorněni o žádostech o schválení rezervace' v-model='send_notification_on_reservation_request')
             v-tab-item
               v-sheet.mt-2(rounded)
                 w-h-calendar(:init='user.profile.calendar_data' v-model="eventsParent")
@@ -95,6 +97,9 @@ export default {
       "profile.email",
       "profile.role_display",
       "profile.role",
+      "profile.room",
+      "profile.send_notification_on_permission_request",
+      "profile.send_notification_on_reservation_request"
     ]),
     role() {
       return [

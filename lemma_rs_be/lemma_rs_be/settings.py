@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rest_framework_api_key',
     'django_crontab',
+    'django_apscheduler',
     # profiler
     # 'django_query_profiler'
 ]
@@ -235,4 +236,12 @@ SIMPLE_JWT = {
 # DJANGO_QUERY_PROFILER_REDIS_DB = 'test'
 
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'rs.lemma.fi.muni@gmail.com'
+EMAIL_HOST_PASSWORD = 'itzchljxsifkkgze'
+DEFAULT_FROM_EMAIL = 'rs.lemma.fi.muni@gmail.com'
 

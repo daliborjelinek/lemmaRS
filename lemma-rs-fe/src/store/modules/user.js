@@ -23,7 +23,10 @@ const state = {
         phone:null,
         address:null,
         calendar_data:[],
-        holidays:[]
+        holidays:[],
+        room: null,
+        send_notification_on_permission_request: null,
+        send_notification_on_reservation_request: null
     },
 };
 

@@ -205,18 +205,19 @@ export default {
 
 
 
-    async createReservation(pickUpDate, returnDate, resources,approvalRequierd, project) {
+    async createReservation(pickUpDate, returnDate, resources,approvalRequierd, project,provider) {
         const data = {
             pickup_date_time: pickUpDate,
             return_date_time: returnDate,
             resources: resources,
             approval_required: approvalRequierd,
-            project
+            project,
+            provider,
         }
-        return await (AXIOS.put('reservation/create_reservation/',data)).data
+        return (await AXIOS.put('reservation/create_reservation/',data)).data
     },
     async transmitReservation(id) {
-        return await  (AXIOS.put('reservation/'+ id + '/transmit_reservation/'))
+        return (await  AXIOS.put('reservation/'+ id + '/transmit_reservation/'))
     },
     async getProviders() {
         return (await AXIOS.get('user/?role__in=ADMIN,PROVIDER')).data

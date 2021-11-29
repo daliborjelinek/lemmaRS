@@ -110,6 +110,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     calendar_data = models.JSONField(default=list, blank=True)
     holidays = models.JSONField(default=list, blank=True)
     room = models.CharField(max_length=150, default="", blank=True)
+    send_notification_on_permission_request = models.BooleanField(default=False)
+    send_notification_on_reservation_request = models.BooleanField(default=False)
 
     objects = AccountManager()
 
@@ -208,12 +210,14 @@ class Reservation(models.Model):
     pickup_date_time = models.DateTimeField()
     return_date_time = models.DateTimeField()
     picked_up = models.BooleanField(default=False)
-    applicant = models.ForeignKey('User', on_delete=models.PROTECT)
+    applicant = models.ForeignKey('User', related_name='reservations', on_delete=models.PROTECT)
     canceled = models.BooleanField(default=False)
     approved = models.BooleanField(default=False, blank=True, null=True)
-    approved_by = models.ForeignKey('User', blank=True, null=True, related_name='reservation_approved_by',
+    approved_by = models.ForeignKey('User', blank=True, null=True, related_name='approved_reservations',
                                     on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
+    provider = models.ForeignKey('User', related_name='provided_reservations', on_delete=models.PROTECT)
+
 
     @property
     def fully_returned(self):
@@ -233,13 +237,15 @@ class ReservedResource(models.Model):
             # reservation not started yet
             return self.reservation.return_date_time
         if self.real_return_date is not None:
-            # resource was returned
+            # reservation started but resource was already returned
             return self.real_return_date
         if self.reservation.return_date_time > timezone.now():
-            # reservation in progress
+            # reservation started, resources was not returned, but its ok because reservation is still in progress
             return self.reservation.return_date_time
         if self.real_pickup_date is None:
-            # reservation ended; resource was never picked up
+            # reservation started, reservation ended,
+            # resources was not returned, but its ok because reservation was not picked up
             return self.reservation.return_date_time
-        # reservation ended resource was not returned yet
+        # reservation started, reservation started,
+        # resources was picked up and not returned yes so resource is blocked till now.
         return timezone.now()

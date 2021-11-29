@@ -1,3 +1,5 @@
+import time
+
 from django.db.models import Q, Prefetch
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
@@ -10,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_api_key.permissions import HasAPIKey
 from url_filter.integrations.drf import DjangoFilterBackend
+from lemma_rs_be.Mailer import Mailer
 
 from . import serializers
 from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation, \
@@ -104,10 +107,10 @@ class ResourceViewSet(viewsets.ModelViewSet):
     queryset = Resource.objects.order_by('name').all().prefetch_related('tags', Prefetch(
         'reservations',
         queryset=ReservedResource.objects.filter(
-            (Q(reservation__approved=True) | Q(reservation__approved=None)) &  # exclude declined reservations
+            ~Q(reservation__approved=False) &  # exclude declined reservations
             (Q(reservation__return_date_time__gt=timezone.now()) |  # include upcoming and ongoing reservations
-              (Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True))))  # include picked up reservations
-        .select_related('reservation', ),
+             (Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True))))  # include picked up reservations
+            .select_related('reservation', ),
         to_attr='blocking_reservations'
     )
                                                                         )
@@ -144,9 +147,9 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             reason = serializer.validated_data.get('reason')
             applicant = request.user
-            # requested_level = PermissionLevel.objects.get(pk=serializer.validated_data.get('requested_level'))
-            PermissionRequest.objects.create(reason=reason, applicant=applicant,
-                                             requested_level=serializer.validated_data.get('requested_level'))
+            pr = PermissionRequest.objects.create(reason=reason, applicant=applicant,
+                                                  requested_level=serializer.validated_data.get('requested_level'))
+            Mailer.send_new_permission_request_email(pr)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -163,9 +166,14 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
             approved_by = request.user
             response = serializer.validated_data.get('response')
             expiration_date = serializer.validated_data.get('expiration_date')
-            PermissionRequest.objects.filter(pk=pk).update(approved=approved, approved_by=approved_by,
-                                                           response=response,
-                                                           expiration_date=expiration_date)
+            pr = PermissionRequest.objects.get(pk=pk)
+            pr.approved = approved
+            pr.approved_by = approved_by
+            pr.response = response
+            pr.expiration_date = expiration_date
+            pr.save()
+            print(pr.applicant.email)
+            Mailer.send_permission_request_result_email(pr)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -200,15 +208,30 @@ class ReservationViewSet(viewsets.ModelViewSet):
             resources = serializer.validated_data.get('resources')
             applicant = request.user
             project = serializer.validated_data.get('project')
+            provider = serializer.validated_data.get('provider')
 
-            reservation = Reservation.objects.create(project=project, pickup_date_time=pickup_date_time,
-                                                     return_date_time=return_date_time,
-                                                     applicant=applicant, approved=None if approval_required else True)
-
+            reservation = Reservation(project=project, pickup_date_time=pickup_date_time,
+                                      return_date_time=return_date_time,
+                                      applicant=applicant, provider=provider,
+                                      approved=None if approval_required else True)
+            resources_objects = []
             for resource_id in resources:
                 resource = Resource.objects.get(pk=resource_id)
-                ReservedResource.objects.create(resource=resource, reservation=reservation)
-
+                conflict = ReservedResource.objects.filter(Q(resource_id=resource_id) & ~Q(reservation__approved=False) &
+                                                           ((Q(reservation__return_date_time__gt=timezone.now()) & Q(
+                                                               real_return_date__isnull=True)) &  # not ended and not returned
+                                                            (Q(
+                                                                reservation__pickup_date_time__lte=reservation.return_date_time) &
+                                                             Q(
+                                                                 reservation__return_date_time__gte=reservation.pickup_date_time)))).exists()
+                if conflict:
+                    return Response(f'Resource {resource.name} is already reserved in selected period.', status=status.HTTP_400_BAD_REQUEST)
+                resources_objects.append(ReservedResource(resource=resource, reservation=reservation))
+            reservation.save()
+            ReservedResource.objects.bulk_create(resources_objects)
+            Mailer.send_new_reservation_email(reservation)
+            if reservation.approved is None:
+                Mailer.send_reservation_approval_request_email(reservation)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -238,6 +261,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
             reservation.approved_by = request.user
             reservation.approved = request.data['approved']
             reservation.save()
+            Mailer.send_reservation_approval_request_result_email(reservation)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("Reservation has been already approved", status=status.HTTP_400_BAD_REQUEST)

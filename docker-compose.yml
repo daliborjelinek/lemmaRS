@@ -11,5 +11,14 @@ services:
       - POSTGRES_DB=lemmars
       - POSTGRES_USER=lemmars
       - POSTGRES_PASSWORD=lemmars
+  api:
+    build:
+      context: ./lemma_rs_be
+    volumes:
+      - ./lemma_rs_be:/code
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    ports: 
+      - 8000:8000
 volumes:
   postgres_data:

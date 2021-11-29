@@ -26,13 +26,15 @@ class UserReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'is_active', 'fullname', 'permission_level', 'role', 'role_display', 'email',
-                  'phone', 'address', 'calendar_data', 'holidays', 'room']
+                  'phone', 'address', 'calendar_data', 'holidays', 'room', 'send_notification_on_permission_request',
+                  'send_notification_on_reservation_request']
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room', 'holidays']
+        fields = ['role_display', 'email', 'phone', 'address', 'calendar_data', 'room', 'holidays',
+                  'send_notification_on_permission_request', 'send_notification_on_reservation_request' ]
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -153,4 +155,4 @@ class ReservationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ('pickup_date_time', 'return_date_time', 'resources', 'approval_required', 'project')
+        fields = ('pickup_date_time', 'return_date_time', 'resources', 'approval_required', 'project', 'provider')

@@ -26,18 +26,20 @@
           v-icon(v-if="item.approved === null") mdi-help-box
           v-icon(v-else-if="item.approved === false" color='error') mdi-close-box
           v-icon(v-else color='success') mdi-checkbox-marked
+        template(v-slot:item.applicant='{ item }')
+          | {{item.applicant.fullname}}
         template(v-slot:item.actions='{ item }')
           span(v-if="item.approved === null")
             v-btn(icon color="green")
-              v-icon( @click="openResolveDialog(item.id, true)") mdi-check-decagram
+              v-icon( @click="openResolveDialog(item, true)") mdi-check-decagram
             v-btn(icon color="red")
-              v-icon( @click="openResolveDialog(item.id, false)") mdi-close-octagon-outline
+              v-icon( @click="openResolveDialog(item, false)") mdi-close-octagon-outline
 
         template(v-slot:item.expiration_date='{ item }')
           span( v-if="item.expiration_date" :style="{ color: $moment(item.expiration_date) > new Date() ?'#36a436' : '#c74848'}") {{$moment(item.expiration_date).locale("cs").format('LLL') }}
 
     v-dialog(v-model='createDialog' max-width='500')
-      v-card
+      v-card(v-if="userHasFilledRequiredDetails")
         v-card-title.headline Žádost o přidělení oprávnění
         v-card-text
           v-form(ref='createPermissionRequestForm' lazy-validation)
@@ -59,6 +61,9 @@
           v-spacer
           v-btn(text='' @click='createDialog = false')  zavřít
           v-btn(text='' @click='create')  Odeslat
+      v-card(v-else)
+        v-card-title.headline Chyba
+        v-card-text Pro podání žádosti je nutné vyplnit v uživatelském profilu e-mail, tel. číslo a adresu
 
     v-dialog(v-model='resolveDialog' max-width='500')
       v-card
@@ -132,7 +137,7 @@ export default {
       }).map(itm => {
         return {
           approved: itm.approved,
-          applicant: itm.applicant.fullname,
+          applicant: itm.applicant,
           requested_level: itm.requested_level.name,
           created_at: this.$moment(itm.created_at).locale("cs").format('LLL'),
           expiration_date: itm.expiration_date,
@@ -145,6 +150,10 @@ export default {
     },
     userRole() {
       return this.$store.getters.getDisplayRole
+    },
+    userHasFilledRequiredDetails(){
+      const profile = this.$store.state.user.profile
+      return profile.address !== '' && profile.phone !== '' && profile.email !== ''
     },
     headers(){
      const headers = [
@@ -169,9 +178,9 @@ export default {
       this.newRequest = emptyRequest()
       this.createDialog = true
     },
-    openResolveDialog(id, approved) {
+    openResolveDialog(itm, approved) {
       if (this.$refs.resolvePermissionRequestForm) this.$refs.resolvePermissionRequestForm.resetValidation()
-      this.newResolve = emptyResolve(id, approved)
+      this.newResolve = emptyResolve(itm.id, approved)
       this.resolveDialog = true
     },
     async resolve() {

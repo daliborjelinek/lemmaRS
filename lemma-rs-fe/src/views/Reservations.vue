@@ -153,8 +153,8 @@ export default {
       return this.reservations.map(itm => {
         return {
           ...itm,
-          pickup_date_time: this.$moment(itm.pickup_date_time).locale("cs").format('LLL'),
-          return_date_time: this.$moment(itm.return_date_time).locale("cs").format('LLL') + ' (' + (this.$moment(itm.return_date_time).diff(this.$moment(itm.pickup_date_time), "days")+1) + 'd)',
+          pickup_date_time_str: this.$moment(itm.pickup_date_time).locale("cs").format('LLL'),
+          return_date_time_str: this.$moment(itm.return_date_time).locale("cs").format('LLL') + ' (' + (this.$moment(itm.return_date_time).diff(this.$moment(itm.pickup_date_time), "days")+1) + 'd)',
           created_at: this.$moment(itm.created_at).locale("cs").format('LLL'),
           isTransmittable:
               (new Date(itm.pickup_date_time) <= new Date()) &&
@@ -171,7 +171,7 @@ export default {
         if (this.tab === 'my') return itm.applicant.id === this.$store.getters.getProfile.id
         if (this.tab === 'pending_approval') return itm.approved === null  && !itm.returnDatePassed
         if (this.tab === 'toTransmit') return itm.isTransmittable
-        if (this.tab === 'planned') return !itm.picked_up
+        if (this.tab === 'planned') return !itm.picked_up && (new Date(itm.return_date_time) > new Date())
         if (this.tab === 'toTakeUp') return (itm.picked_up && !itm.fully_returned)
         return true
       })
@@ -194,8 +194,8 @@ export default {
         {text: "Žadatel", value: "applicant"},
         {text: "Projekt", value: "project"},
         {text: "Vytvořeno", value: "created_at"},
-        {text: "Od", value: "pickup_date_time"},
-        {text: "Do", value: "return_date_time"},
+        {text: "Od", value: "pickup_date_time_str"},
+        {text: "Do", value: "return_date_time_str"},
         {text: "Schváleno", value: "approved"},
         {text: "Vyzvednuto", value: "picked_up"},
         {text: "Vráceno", value: "fully_returned"},
