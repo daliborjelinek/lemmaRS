@@ -13,13 +13,13 @@ services:
       - 8000
     environment:
       SECRET_KEY: ${SECRET_KEY}
-      SOCIAL_AUTH_MUNI_SECRET: ${SOCIAL_AUTH_MUNI_SECRET}    
+      SOCIAL_AUTH_MUNI_SECRET: ${SOCIAL_AUTH_MUNI_SECRET}
     depends_on:
       - db
-    restart: always  
+    restart: always
   db:
     image: postgres:13-alpine
-    ports: 
+    ports:
       - 5433:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -27,11 +27,11 @@ services:
       - POSTGRES_DB=lemmars
       - POSTGRES_USER=lemmars
       - POSTGRES_PASSWORD=lemmars
-    restart: always  
+    restart: always
   fe:
     build:
       context: ./lemma-rs-fe
-    networks: 
+    networks:
       backbone:
         aliases:
           - rs-fe
@@ -44,16 +44,16 @@ services:
       - media_volume:/home/lemma_rs_be/api/mediafiles
     depends_on:
       - api
-    networks: 
+    networks:
       backbone:
         aliases:
           - rs-api
       default:
-    restart: always  
+    restart: always
 volumes:
   postgres_data:
   static_volume:
   media_volume:
 networks:
     backbone:
-      external: true    
+      external: true
