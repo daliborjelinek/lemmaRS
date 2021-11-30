@@ -179,7 +179,7 @@
                         label="Zdroj je k dispozici")
                 v-col(cols="12" order="1" order-sm="2" sm="6")
                   v-card.d-flex.align-center.justify-center.pa-2(style="position: relative; height:100%")
-                    input(id="image-upload" accept="image/x-png,image/jpeg" :disabled="!resourceDialogEditing" @change="(evt) =>loadImage(evt.target.files)" type="file" style="display: none")
+                    input(id="image-upload" ref="fileInput" accept="image/x-png,image/jpeg" :disabled="!resourceDialogEditing" @change="(evt) =>loadImage(evt.target.files)" type="file" style="display: none")
                     label(for="image-upload")
                       img.rounded.w-100(v-if="activeResource.image_url" :style="resourceDialogEditing? 'cursor: pointer' : ''" :src="apiUrl + activeResource.image_url")
                       img.rounded.w-100( v-else :style="resourceDialogEditing? 'cursor: pointer' : ''" src='@/assets/placeholder.jpg' )
@@ -311,6 +311,10 @@ export default {
     openResource(resource) {
       this.activeResource = JSON.parse(JSON.stringify(resource))
       this.resourceDialog = true
+      this.$nextTick(function () {
+        this.$refs.fileInput.value=null
+      })
+
     },
     editResource() {
       this.resourceDialogEditing = true;
