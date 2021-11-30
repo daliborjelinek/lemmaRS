@@ -75,13 +75,13 @@ const getters = {
             let activity = true;
             let permission = true;
             if (state.search) {
-                search = res.name.toLowerCase().includes(state.search.toLowerCase()) ||
+                return res.name.toLowerCase().includes(state.search.toLowerCase()) ||
                     res.tags_str.join(' ').toLowerCase().includes(state.search.toLowerCase())
             }
             if (!state.inactive) activity =  res.active
             if (!state.disallowed) permission = res.allowed
             if (!state.alreadyReserved) notReserved = !res.hasTimeConflict
-            return tag && search && activity && permission && notReserved
+            return tag && activity && permission && notReserved
         });
     },
     selectedResourcesObj: (state,getters) => {
