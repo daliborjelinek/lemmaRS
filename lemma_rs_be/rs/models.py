@@ -42,12 +42,13 @@ class Resource(models.Model):
     internal_notes = models.CharField(max_length=105000, default='', blank=True)
     cost = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
-    image_url = models.CharField(max_length=160, default='', blank=True)
+    image_url = models.CharField(max_length=160, default=None, null=True, blank=True)
     provider = models.ForeignKey('User', on_delete=models.RESTRICT)
     tags = models.ManyToManyField('Tag', related_name='tags', blank=True)
     required_permission_level = models.ForeignKey('PermissionLevel', on_delete=models.RESTRICT)
     inv_numbers = models.JSONField(default=list)
 
+    @property
     def not_returned(self):
         for res in self.blocking_reservations:
             if res.resource.name and res.reservation.return_date_time < timezone.now() and res.real_return_date is None and res.real_pickup_date is not None:

@@ -81,7 +81,7 @@ import Resources from "./reservation/Resources"
 export default {
   data: () => ({
     drawer: false,
-    drawerContent: null,
+    drawerContent: 'reservation',
     filtersData: {
           displayStyle: 'cards',
           searchString: '',

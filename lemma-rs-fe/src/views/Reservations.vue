@@ -30,12 +30,16 @@
             v-btn(color='primary' @click.stop='openCalendar')
               | Kalendář
         template(v-slot:item.applicant='{ item }') {{item.applicant.fullname}}
+        template(v-slot:item.created_at='{ item }') {{$moment(item.created_at).locale("cs").format('LLL')}}
+        template(v-slot:item.pickup_date_time='{ item }') {{$moment(item.pickup_date_time).locale("cs").format('LLL')}}
+        template(v-slot:item.return_date_time='{ item }') {{$moment(item.return_date_time).locale("cs").format('LLL')  + ' (' + ($moment(item.return_date_time).diff($moment(item.pickup_date_time), "days")+1) + 'd)'}}
         template(v-slot:item.approved='{ item }')
           v-icon(v-if="item.approved === null") mdi-help-box
           v-icon(v-else-if="item.approved === false" color='error') mdi-close-box
           v-icon(v-else color='success') mdi-checkbox-marked
         template(v-slot:item.picked_up='{ item }')
-          v-icon {{ item.picked_up ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline" }}
+          v-icon(v-if="!item.picked_up") mdi-checkbox-blank-outline
+          v-icon(v-else color='success') mdi-checkbox-marked
         template(v-slot:item.fully_returned='{ item }')
           v-icon(v-if="item.fully_returned" color="success") mdi-checkbox-marked
           v-icon(v-else-if="item.picked_up && !item.fully_returned && item.returnDatePassed" color='error') mdi-close-box
@@ -70,9 +74,11 @@
           v-sheet.pa-2()
             v-calendar(
               v-model="calendarModel",
+              :weekdays=[1, 2, 3, 4, 5, 6, 0],
               ref="calendar",
               color="primary",
               :events="calendarEvents",
+              @click:event="evt => openReservationDialog(evt.event.reservation)"
               type="month"
             )
       v-dialog(max-width="900px" v-model="reservationDialog")
@@ -122,7 +128,7 @@ export default {
         {text: 'Vyzvednuto', value: 'real_pickup_date'},
         {text: 'Vráceno', value: 'real_return_date'},
         {text: 'Komentář', value: 'comment'},
-       // {text: 'Akce', value: 'actions'}
+        // {text: 'Akce', value: 'actions'}
 
       ]
 
@@ -142,7 +148,8 @@ export default {
           end: new Date(res.return_date_time),
           name: res.applicant.fullname + ' - ' + res.project,
           timed: true,
-          color: this.$randomColor({seed: res.project, luminosity: 'dark'})
+          color: this.$randomColor({seed: res.project, luminosity: 'dark'}),
+          reservation: res
         }
       })
     },
@@ -153,23 +160,20 @@ export default {
       return this.reservations.map(itm => {
         return {
           ...itm,
-          pickup_date_time_str: this.$moment(itm.pickup_date_time).locale("cs").format('LLL'),
-          return_date_time_str: this.$moment(itm.return_date_time).locale("cs").format('LLL') + ' (' + (this.$moment(itm.return_date_time).diff(this.$moment(itm.pickup_date_time), "days")+1) + 'd)',
-          created_at: this.$moment(itm.created_at).locale("cs").format('LLL'),
           isTransmittable:
-              //(new Date(itm.pickup_date_time) <= new Date()) &&
+          //(new Date(itm.pickup_date_time) <= new Date()) &&
               (new Date(itm.return_date_time) > new Date()) &&
               itm.approved &&
               !itm.picked_up,
           returnDatePassed: new Date(itm.return_date_time) < new Date(),
-          isTransmittableString: "rezarevace začala " + (new Date(itm.pickup_date_time) <= new Date()) + '\n'+
+          isTransmittableString: "rezarevace začala " + (new Date(itm.pickup_date_time) <= new Date()) + '\n' +
               " rezarvace neskončila: " + (new Date(itm.return_date_time) > new Date()) +
-              ' rezervace je schvalena:  ' + itm.approved +  '\n'+
+              ' rezervace je schvalena:  ' + itm.approved + '\n' +
               ' rezervace není vyzvednuta ' + !itm.picked_up
         }
       }).filter(itm => {
         if (this.tab === 'my') return itm.applicant.id === this.$store.getters.getProfile.id
-        if (this.tab === 'pending_approval') return itm.approved === null  && !itm.returnDatePassed
+        if (this.tab === 'pending_approval') return itm.approved === null && !itm.returnDatePassed
         if (this.tab === 'toTransmit') return itm.isTransmittable
         if (this.tab === 'planned') return !itm.picked_up && (new Date(itm.return_date_time) > new Date())
         if (this.tab === 'toTakeUp') return (itm.picked_up && !itm.fully_returned)
@@ -194,15 +198,15 @@ export default {
         {text: "Žadatel", value: "applicant"},
         {text: "Projekt", value: "project"},
         {text: "Vytvořeno", value: "created_at"},
-        {text: "Od", value: "pickup_date_time_str"},
-        {text: "Do", value: "return_date_time_str"},
+        {text: "Od", value: "pickup_date_time"},
+        {text: "Do", value: "return_date_time"},
         {text: "Schváleno", value: "approved"},
         {text: "Vyzvednuto", value: "picked_up"},
         {text: "Vráceno", value: "fully_returned"},
         {text: "Akce", value: "actions", sortable: false},
       ]
       if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers.pop()
-      if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers = headers.filter(h =>h.value !== 'applicant')
+      if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers = headers.filter(h => h.value !== 'applicant')
       return headers
     },
   },
@@ -235,7 +239,7 @@ export default {
     openCalendar() {
       this.calendarDialog = true
     },
-    print(){
+    print() {
       this.$refs.pdfCreator.print()
     }
 

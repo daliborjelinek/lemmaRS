@@ -37,7 +37,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon :class="{'d-none': $vuetify.breakpoint.mdAndUp  }" @click="drawer = !drawer"></v-app-bar-nav-icon>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" right temporary app>
       <v-list>
@@ -77,12 +77,12 @@ export default {
           action: () => this.$router.push({name: 'Resources'})
         },
         {
-          text: "Projekty",
-          action: () => this.$router.push({name: 'Projects'})
-        },
-        {
           text: "Rezervace",
           action: () => this.$router.push({name: 'Reservations'})
+        },
+        {
+          text: "Projekty",
+          action: () => this.$router.push({name: 'Projects'})
         },
         {
           text: "Oprávnění",

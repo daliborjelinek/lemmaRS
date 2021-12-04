@@ -22,7 +22,7 @@
                   v-icon() mdi-lock-clock
                 v-chip(v-if="!resource.active" class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
                   v-icon() mdi-heart-broken
-                v-chip(v-if="resource.not_returned" class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
+                v-chip(v-if="resource.not_returned" class="ma-2" label color="#fb8c00c2" title="Zdroj nebyl vrácen")
                   v-icon() mdi-selection-ellipse
                 v-chip(v-if="resource.hasTimeConflict" class="ma-2" label color="#4c0000c2" title="Zdroj je již v daném termínu rezervován")
                   v-icon() mdi-clock-alert
@@ -76,7 +76,7 @@
               v-icon(small) mdi-lock-clock
             v-chip(v-if="!item.active" small class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
               v-icon(small) mdi-heart-broken
-            v-chip(v-if="item.not_returned" small class="ma-2" label color="#4c0000c2" title="Zdroj nebyl vrácen")
+            v-chip(v-if="item.not_returned" small class="ma-2" label color="#fb8c00c2" title="Zdroj nebyl vrácen")
               v-icon(small) mdi-selection-ellipse
             v-chip(v-if="item.hasTimeConflict" class="ma-2" label color="#4c0000c2" title="Zdroj je již v daném termínu rezervován")
               v-icon() mdi-clock-alert
@@ -248,7 +248,7 @@ const emptyResource = () => {
     tags: [],
     provider: null,
     required_permission_level: 1,
-    invNumbers: []
+    inv_numbers: []
   };
 };
 
