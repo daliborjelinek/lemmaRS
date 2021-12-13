@@ -74,7 +74,7 @@ const routes = [
       console.log(code,to)
       window.opener.postMessage({ code }, window.location.origin)
       console.log(code)
-      //window.close();
+      window.close();
     }
   },
   {

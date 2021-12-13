@@ -1,124 +1,149 @@
 version: '3'
 services:
-    oidc-server-mock:
-      container_name: oidc-server-mock
-      image: soluto/oidc-server-mock
-      ports:
-        - 4011:80
-      environment:
-        SERVER_CORS_ALLOWED_ORIGINS_INLINE: '["http://localhost:8080"]'
-        ASPNETCORE_ENVIRONMENT: Development
-        SERVER_OPTIONS_INLINE: |
-          {
-            "AccessTokenJwtType": "JWT",
-            "Discovery": {
-              "ShowKeySet": true
-            },
-            "Authentication": {
-              "CookieSameSiteMode": "Lax",
-              "CheckSessionCookieSameSiteMode": "Lax"
-            }
+  oidc-server-mock:
+    container_name: oidc-server-mock
+    image: soluto/oidc-server-mock
+    ports:
+      - 4011:80
+    environment:
+      SERVER_CORS_ALLOWED_ORIGINS_INLINE: '["http://localhost:8080"]'
+      ASPNETCORE_ENVIRONMENT: Development
+      SERVER_OPTIONS_INLINE: |
+        {
+          "AccessTokenJwtType": "JWT",
+          "Discovery": {
+            "ShowKeySet": true
+          },
+          "Authentication": {
+            "CookieSameSiteMode": "Lax",
+            "CheckSessionCookieSameSiteMode": "Lax"
           }
-        IDENTITY_RESOURCES_INLINE: |
-         [ { "Name": "uco", "ClaimTypes": ["uco"] } ]  
-        ACCOUNT_OPTIONS_INLINE: |
+        }
+      IDENTITY_RESOURCES_INLINE: |
+        [ { "Name": "uco", "ClaimTypes": ["uco"] } ]  
+      ACCOUNT_OPTIONS_INLINE: |
+        {
+          "AutomaticRedirectAfterSignOut": true
+        }
+      API_SCOPES_INLINE: |
+        [
           {
-            "AutomaticRedirectAfterSignOut": true
+            "Name": "some-app-scope-1"
+          },
+          {
+            "Name": "some-app-scope-2"
           }
-        API_SCOPES_INLINE: |
-          [
-            {
-              "Name": "some-app-scope-1"
-            },
-            {
-              "Name": "some-app-scope-2"
-            }
-          ]
-        API_RESOURCES_INLINE: |
-          [
-            {
-              "Name": "some-app",
-              "Scopes": ["some-app-scope-1", "some-app-scope-2"]
-            }
-          ]
-        USERS_CONFIGURATION_INLINE: |
-          [
-            {
-              "SubjectId":"000000",
-              "Username":"000000",
-              "Password":"pwd",
+        ]
+      API_RESOURCES_INLINE: |
+        [
+          {
+            "Name": "some-app",
+            "Scopes": ["some-app-scope-1", "some-app-scope-2"]
+          }
+        ]
+      USERS_CONFIGURATION_INLINE: |
+        [
+          {
+            "SubjectId":"000000",
+            "Username":"000000",
+            "Password":"pwd",
+            "Claims": [
+              {
+                "Type": "name",
+                "Value": "Admin Admin"
+              },
+              {
+                "Type": "email",
+                "Value": "admin@mail.muni.cz"
+              }
+            ]
+          },
+          {
+            "SubjectId":"111111",
+            "Username":"111111",
+            "Password":"pwd",
+            "Claims": [
+              {
+                "Type": "name",
+                "Value": "Výdejář Výdejář"
+              },
+              {
+                "Type": "email",
+                "Value": "vydejar@mail.muni.cz"
+              }
+            ]
+          },
+          {
+            "SubjectId":"100000",
+            "Username":"100000",
+            "Password":"pwd",
+            "Claims": [
+              {
+                "Type": "name",
+                "Value": "John První"
+              },
+              {
+                "Type": "email",
+                "Value": "john1@mail.muni.cz"
+              }
+            ]
+          },
+          {
+            "SubjectId":"200000",
+            "Username":"200000",
+            "Password":"pwd",
+            "Claims": [
+              {
+                "Type": "name",
+                "Value": "James Druhý"
+              },
+              {
+                "Type": "email",
+                "Value": "james2@mail.muni.cz"
+              }
+            ]
+          },
+          {
+            "SubjectId":"3000000",
+            "Username":"3000000",
+            "Password":"pwd",
+            "Claims": [
+              {
+                "Type": "name",
+                "Value": "Jim Třetí Zodpovědný"
+              },
+              {
+                "Type": "email",
+                "Value": "jim3@mail.muni.cz"
+              }
+            ]
+          }
+        ]
+      CLIENTS_CONFIGURATION_INLINE: |
+        [
+          {
+              "ClientId": "client-credentials-mock-client",
+              "ClientSecrets": [
+                "client-credentials-mock-client-secret"
+              ],
+              "RequirePkce" : "false",
+              "Description": "Client for client credentials flow",
+              "AllowedGrantTypes": [
+                  "authorization_code"
+              ],
+              "RedirectUris": [
+                  "http://localhost:8080/auth/signinwin/main",
+                  "http://192.168.0.101:8080/auth/signinwin/main",
+                  "https://oidcdebugger.com/debug"
+                  
+              ],
+              "AllowedScopes": [
+                  "openid",
+                  "profile",
+                  "email"
+              ],
+              "ClientClaimsPrefix": "",
               "Claims": [
-                {
-                  "Type": "name",
-                  "Value": "Petr Sojka"
-                },
-                {
-                  "Type": "email",
-                  "Value": "sojka@mail.muni.cz"
-                }
-              ]
-            },
-            {
-              "SubjectId":"000001",
-              "Username":"000001",
-              "Password":"pwd",
-              "Claims": [
-                {
-                  "Type": "name",
-                  "Value": "Hana Lysáková"
-                },
-                {
-                  "Type": "email",
-                  "Value": "lysakova@mail.muni.cz"
-                }
-              ]
-            },
-            {
-              "SubjectId":"100000",
-              "Username":"100000",
-              "Password":"pwd",
-              "Claims": [
-                {
-                  "Type": "name",
-                  "Value": "John První"
-                },
-                {
-                  "Type": "email",
-                  "Value": "john1@mail.muni.cz"
-                }
-              ]
-            },
-            {
-              "SubjectId":"200000",
-              "Username":"200000",
-              "Password":"pwd",
-              "Claims": [
-                {
-                  "Type": "name",
-                  "Value": "James Druhý"
-                },
-                {
-                  "Type": "email",
-                  "Value": "james2@mail.muni.cz"
-                }
-              ]
-            },
-            {
-              "SubjectId":"300000",
-              "Username":"300000",
-              "Password":"pwd",
-              "Claims": [
-                {
-                  "Type": "name",
-                  "Value": "Jim Třetí Zodpovědný"
-                },
-                {
-                  "Type": "email",
-                  "Value": "jim3@mail.muni.cz"
-                }
-              ]
-            }
-          ]
-        CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
-      volumes:
-       - .:/tmp/config:ro
+              ] 
+          }
+        ]

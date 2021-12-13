@@ -1,0 +1,64 @@
+version: '3.7'
+
+services:
+  api:
+    build:
+      context: ./lemma_rs_be
+      dockerfile: Dockerfile.prod
+    command: gunicorn lemma_rs_be.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/lemma_rs_be/api/staticfiles
+      - media_volume:/home/lemma_rs_be/api/mediafiles
+    expose:
+      - 8000
+    environment:
+      ENV_PATH: .env.dev
+    depends_on:
+      - db
+    restart: always
+  db:
+    image: postgres:13-alpine
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=lemmars
+      - POSTGRES_USER=lemmars
+      - POSTGRES_PASSWORD=lemmars
+    restart: always
+  fe:
+    build:
+      context: ./lemma-rs-fe
+    environment:
+      -  NODE_ENV=development
+    ports: 
+      - 8080:80
+    networks:
+      backbone:
+        aliases:
+          - rs-fe
+      default:
+    restart: always
+  apisrv:
+    build: ./lemma_rs_be/apiserver
+    volumes:
+      - static_volume:/home/lemma_rs_be/api/staticfiles
+      - media_volume:/home/lemma_rs_be/api/mediafiles
+    depends_on:
+      - api
+    ports: 
+      - 8000:80    
+    networks:
+      backbone:
+        aliases:
+          - rs-api
+      default:
+    restart: always
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+networks:
+    backbone:
+      external: true

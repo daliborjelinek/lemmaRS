@@ -5,10 +5,10 @@
     "fields": {
       "last_login": null,
       "is_superuser": false,
-      "email": "sojka@mail.muni.cz",
-      "username": "2378",
+      "email": "admin@mail.muni.cz",
+      "username": "000000",
       "password": "",
-      "fullname": "Petr Sojka",
+      "fullname": "Admin Admin",
       "phone": "",
       "is_active": true,
       "is_staff": true,
@@ -27,17 +27,63 @@
     "fields": {
       "last_login": null,
       "is_superuser": false,
-      "email": "lysakova@fi.muni.cz",
-      "username": "133066",
+      "email": "vydejar@fi.muni.cz",
+      "username": "111111",
       "password": "",
-      "fullname": "Hana Lysáková",
+      "fullname": "Výdejář Výdejář",
       "phone": "",
       "is_active": true,
       "is_staff": false,
       "role": "PROVIDER",
       "role_display": "PROVIDER",
       "address": "",
-      "calendar_data": {},
+      "calendar_data": [
+        {
+          "dow": 1,
+          "end": "10:30",
+          "start": "08:00"
+        },
+        {
+          "dow": 4,
+          "end": "10:30",
+          "start": "08:00"
+        },
+        {
+          "dow": 3,
+          "end": "10:30",
+          "start": "08:00"
+        },
+        {
+          "dow": 2,
+          "end": "10:30",
+          "start": "08:00"
+        },
+        {
+          "dow": 5,
+          "end": "13:00",
+          "start": "07:30"
+        },
+        {
+          "dow": 1,
+          "end": "15:00",
+          "start": "13:00"
+        },
+        {
+          "dow": 2,
+          "end": "15:00",
+          "start": "13:00"
+        },
+        {
+          "dow": 3,
+          "end": "15:00",
+          "start": "13:00"
+        },
+        {
+          "dow": 4,
+          "end": "15:00",
+          "start": "13:00"
+        }
+      ],
       "room": "",
       "groups": [],
       "user_permissions": []
