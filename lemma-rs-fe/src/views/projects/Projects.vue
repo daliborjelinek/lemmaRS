@@ -29,8 +29,8 @@
 
 <script>
 import API from "@/model/httpclient";
-import ProjectGroups from "@/views/Projects/ProjectGroupsTable"
-import ProjectsTable from "@/views/Projects/ProjectsTable";
+import ProjectGroups from "@/views/projects/ProjectGroupsTable"
+import ProjectsTable from "@/views/projects/ProjectsTable";
 
 
 export default {

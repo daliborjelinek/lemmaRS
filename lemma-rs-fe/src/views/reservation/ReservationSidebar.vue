@@ -80,7 +80,7 @@
 <script>
 import Timepicker from "@/components/Timepicker";
 import ApiSelect from "@/components/ApiSelect";
-import ProjectEditorModal from "@/views/Projects/ProjectEditorModal";
+import ProjectEditorModal from "@/views/projects/ProjectEditorModal";
 import API from '@/model/httpclient'
 import {createHelpers} from "vuex-map-fields";
 import Holidays from "date-holidays";

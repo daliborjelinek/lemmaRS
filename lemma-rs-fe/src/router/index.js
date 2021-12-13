@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Resources from '../views/Reservation.vue'
-import Projects from '../views/Projects/Projects.vue'
+import Projects from '../views/projects/Projects.vue'
 import User from '../views/User.vue'
 import Login from '@/views/Login.vue'
 import Test from '@/views/Test.vue'
@@ -74,12 +74,12 @@ const routes = [
       console.log(code,to)
       window.opener.postMessage({ code }, window.location.origin)
       console.log(code)
-      window.close();
+      //window.close();
     }
   },
   {
     path: '/auth/callback/',
-    name: 'Auth1',
+    name: 'AuthMock',
     async beforeEnter(to,from,next) {
       const token = qs.parse(to.hash.slice(1)).access_token
       window.opener.postMessage({ token }, window.location.origin)

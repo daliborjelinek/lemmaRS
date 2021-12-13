@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import ProjectEditorModal from "@/views/Projects/ProjectEditorModal";
+import ProjectEditorModal from "@/views/projects/ProjectEditorModal";
 const emptyProject = () => {
   return {
     name: "",

@@ -117,26 +117,6 @@ export default {
     async updateResource(resource) {
         return await AXIOS.put('resource/' + resource.id + '/', resource)
     },
-    async convertToken(token, backend) {
-        try {
-            const response = await AXIOS.post("auth/convert-token", {
-                grant_type: 'convert_token',
-                token,
-                backend,
-                client_id: 'Ke7ZcPRrR6n0EMJ9r0cScpLCmxzFgU9IFWOi1FSk',
-                client_secret: '9mxyEy1dRxNN4RnhySpCULusSZpEY0EFeuwVMrzFgoTz3e34rr4ew5dyijLyOAQc6E778GIBU8pHpixwk0AmrZnJnlRtf6jY04pQ5dhd7SfLqo82SMnVxv9jSdUHGpSA'
-            })
-
-            return {
-                accessToken: response.data.access_token,
-                refreshToken: response.data.refresh_token
-            }
-        } catch (e) {
-            console.log("Token conversion FAILED")
-            console.log(e)
-        }
-
-    },
     async uploadImage(formData, filename) {
         return (await AXIOS.post("image/", formData, {
             headers: {

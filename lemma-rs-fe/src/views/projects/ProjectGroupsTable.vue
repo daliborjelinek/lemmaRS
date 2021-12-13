@@ -73,7 +73,7 @@
 
 <script>
 import API from "@/model/httpclient";
-import ProjectGroups from "@/views/Projects/ProjectGroupsTable"
+import ProjectGroups from "@/views/projects/ProjectGroupsTable"
 
 const emptyGroup = () => {
   return {

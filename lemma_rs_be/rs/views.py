@@ -1,5 +1,3 @@
-import time
-
 from django.db.models import Q, Prefetch
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
@@ -59,10 +57,6 @@ class ProjectViewSet(mixins.CreateModelMixin,
     queryset = Project.objects.order_by('-created_at').all()
 
     def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
         queryset = Project.objects.all()
         username = self.request.query_params.get('username')
         if username is not None:
