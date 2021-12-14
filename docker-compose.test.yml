@@ -12,7 +12,7 @@ services:
     expose:
       - 8000
     environment:
-      ENV_PATH: .env.dev
+      ENV_PATH: .env.test
     depends_on:
       - db
     restart: always
@@ -30,8 +30,6 @@ services:
   fe:
     build:
       context: ./lemma-rs-fe
-    environment:
-      -  NODE_ENV=development
     ports: 
       - 8080:80
     networks:

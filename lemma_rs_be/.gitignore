@@ -2,7 +2,7 @@
 
 # dotenv
 .env.dev
-
+.env.test
 # virtualenv
 .venv
 venv/

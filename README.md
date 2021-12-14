@@ -32,11 +32,13 @@ docker-compose -f docker-compose.dbonly.yml up
 ## 2. Spuštění dev serveru backendu
 Prerekvizitou tohoto kroku je spuštěná databáze.
 
-Pro spuštění devserveru je potřeba nastavit systémovou proměnnou ENV_PATH která specifikuje cestu k  `.env` souboru pro vývoj. Ten není součástí repozítáře, jelikož obsahuje citlivá data (API klíče, hesla...) a tudíž by se ani nikdy neměl do repozitáře dostat. Soubor je nutné vytvořit na základě souboru `.env.example` a doplnit do něj poptřebné tokeny.
+Pro spuštění devserveru je potřeba nastavit systémovou proměnnou ENV_PATH která specifikuje cestu k  `.env.dev` souboru pro vývoj. Ten není součástí repozítáře, jelikož obsahuje citlivá data (API klíče, hesla...) a tudíž by se ani nikdy neměl do repozitáře dostat. Soubor je nutné vytvořit na základě souboru `.env.example` a doplnit do něj potřebné tokeny.
+
+Do `ENV_PATH` je možné nastavit přímo `.env.example`, který je součástí repozitáře. V takovém případě ale nebude funogvat univerzitní login a odesílání emailů.
 
 Potřebné údaje poskytne na vyžádání Dalibor Jelínek (487606@mail.muni.cz).
 
-Před spuštěním serveru je ještě potřeba nainstalovat knihovny definované v requirements.txt a spustit migrace databáze.
+Před spuštěním serveru je potřeba nainstalovat knihovny definované v requirements.txt a spustit migrace databáze.
 
 
 ```
@@ -61,6 +63,8 @@ Následující příkazy vytvoří v databázi přibližně 200 zdrojů a od ka�
 ```
 cd lemma_rs_be
 SET ENV_PATH=.env.dev
+
+python manage.py loaddata sources
 ```
 
 Užitečná je též možnost přihlásit se do administrace backendu. K tomu je potřeba vytvořit superuživatele pomocí následujícího příkazu.
@@ -69,6 +73,7 @@ Užitečná je též možnost přihlásit se do administrace backendu. K tomu je
 python manage.py createsuperuser
 ```
 Po vytvoření je možné se příhlásit d administrace na http://localhost:8000/admin
+
 ## 4. Spuštění dev serveru frontendu
 
 ```
@@ -78,7 +83,7 @@ npm install
 npm run serve
 ```
 
-Po instalaci je frontend alikace k dispozici na adrese http://localhost:8080/
+Po instalaci je frontend aplikace k dispozici na adrese http://localhost:8080/
 
 
 ## 5 Spuštění simulátoru jednotného příhlášení
@@ -107,15 +112,20 @@ uživatele je možné upravovat v souboru `mock-oidc/docker-compose.yml`
 Odhlásit se z autentizačního serveru je možné na http://localhost:4011/
 
 
-# Lokální deployment
-Pro deployment na lokálním stoji je monžé použít tyto příkazy. Po úspěšném nasazení bude frontend k dispozici na http://localhost:8080 a api na http://localhost:8000
+# Lokální build & deploy
+Pro otestování produkčního buildu na lokálním stoji je monžé použít následující postup:
+
+K deploymentu na lokální stroj slouží soubor `docker-compose.test.yml`. Jedná se o mírně upravený produkční
+`docker-compose.prod.yml`. Ke spuštění je potřeba vytvořit soubor `.env.test` na základě souboru `.env.example` a doplnit do něj potřebné tokeny.
+
+Po úspěšném nasazení bude frontend k dispozici na http://localhost:8080 a api na http://localhost:8000
 
 poslední příkaz spustí proces plánovače zasílání automatických mailových upozornění.
 
 ```
 docker network create backbone
 docker-compose -f docker-compose.test.yml up
-docker-compose -f docker-compose.prod.yml exec api python manage.py migrate
-docker-compose -f docker-compose.prod.yml exec api python manage.py collectstatic
-docker-compose -f docker-compose.prod.yml exec api python manage.py runapscheduler
+docker-compose -f docker-compose.test.yml exec api python manage.py migrate
+docker-compose -f docker-compose.test.yml exec api python manage.py collectstatic
+docker-compose -f docker-compose.test.yml exec api python manage.py runapscheduler
 ```
