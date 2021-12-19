@@ -33,7 +33,7 @@ services:
     build:
       context: ./lemma-rs-fe
     environment:
-      VUE_APP_API_URL: https://rs.lemma.fi.muni.cz/api
+      VUE_APP_API_URL: https://rs.lemmma.fi.muni.cz/api/
     networks:
       backbone:
         aliases:
