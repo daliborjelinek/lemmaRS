@@ -19,6 +19,7 @@
           ></v-text-field>
           <v-spacer></v-spacer>
           <v-btn
+              v-if="$store.getters.getDisplayRole === 'ADMIN'"
               color="primary"
               @click.stop="openCreateDialog"
           >

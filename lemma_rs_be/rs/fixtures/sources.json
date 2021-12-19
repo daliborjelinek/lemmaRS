@@ -4786,5 +4786,15 @@
         "TODO"
       ]
     }
+  },
+  {
+    "model": "rs.projectgroup",
+    "pk": 1,
+    "fields": {
+      "name": "Testovací skupina",
+      "description": "Skupina pro testování",
+      "active": true,
+      "created_at": "2021-12-19T22:47:58.604Z"
+    }
   }
 ]

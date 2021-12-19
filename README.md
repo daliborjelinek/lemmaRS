@@ -41,7 +41,7 @@ Potřebné údaje poskytne na vyžádání Dalibor Jelínek (487606@mail.muni.cz
 Před spuštěním serveru je potřeba nainstalovat knihovny definované v requirements.txt a spustit migrace databáze.
 
 
-```
+```bash
 cd lemma_rs_be
 SET ENV_PATH=.env.dev
 
@@ -60,7 +60,7 @@ Pro účely testování je výhodné naplnit databázi testavacími daty.
 
 Následující příkazy vytvoří v databázi přibližně 200 zdrojů a od každé role jednoho uživatele. Za tyto uživatele je možné se přihlasit pomocí simulace jednotného přihlašení viz sekce 5.
 
-```
+```bash
 cd lemma_rs_be
 SET ENV_PATH=.env.dev
 
@@ -69,15 +69,16 @@ python manage.py loaddata sources
 
 Užitečná je též možnost přihlásit se do administrace backendu. K tomu je potřeba vytvořit superuživatele pomocí následujícího příkazu.
 
-```
+```bash
 python manage.py createsuperuser
 ```
 Po vytvoření je možné se příhlásit d administrace na http://localhost:8000/admin
 
 ## 4. Spuštění dev serveru frontendu
 
-```
+```bash
 cd lemma-rs-fe
+SET VUE_APP_API_URL=http://localhost:8000
 
 npm install
 npm run serve
@@ -88,7 +89,7 @@ Po instalaci je frontend aplikace k dispozici na adrese http://localhost:8080/
 
 ## 5 Spuštění simulátoru jednotného příhlášení
 
-```
+```bash
 cd mock-oidc
 
 docker-compose up
@@ -120,12 +121,19 @@ K deploymentu na lokální stroj slouží soubor `docker-compose.test.yml`. Jedn
 
 Po úspěšném nasazení bude frontend k dispozici na http://localhost:8080 a api na http://localhost:8000
 
-poslední příkaz spustí proces plánovače zasílání automatických mailových upozornění.
 
-```
+```bash
+# vytvoření sítě pro vzájemnou komunikaci kontejnerů
 docker network create backbone
+# build & spuštění kontejnerů
 docker-compose -f docker-compose.test.yml up
+# inicializace databáze
 docker-compose -f docker-compose.test.yml exec api python manage.py migrate
+# generování statických souborů (obrázky a css pro django admin site)
 docker-compose -f docker-compose.test.yml exec api python manage.py collectstatic
+# spuštění plánovače zasílání automatických mailů (samostatný proces který musí zustat běžet)
 docker-compose -f docker-compose.test.yml exec api python manage.py runapscheduler
+# načtení testovacích dat viz sekce 3 (volitenlé)
+docker-compose -f docker-compose.test.yml exec api python manage.py loaddata sources
+
 ```
