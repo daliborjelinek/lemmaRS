@@ -30,10 +30,10 @@ services:
   fe:
     build:
       context: ./lemma-rs-fe
+      args:
+        VUE_APP_API_URL: http://localhost:8000
     ports: 
       - 8080:80
-    environment:
-      VUE_APP_API_URL: http://localhost:8000
     networks:
       backbone:
         aliases:
