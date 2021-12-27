@@ -89,6 +89,10 @@
             v-icon mdi-close
         v-sheet.pa-2(v-if="reservationDialog===true")
           v-data-table(v-model='selectedResources' :items='formatedResources', :headers='resourcesHeaders' :show-select="userRole !== 'COMMON'")
+            template(v-slot:item.comment='{ item }')
+              v-text-field.my-1(v-model="item.comment" v-if="selectedResources.indexOf(item)!==-1 && userRole !== 'COMMON' && selectedReservation.picked_up" solo hide-details label="Popis defektů...")
+              span(v-else)
+                | {{item.comment}}
             template(v-slot:top)
               v-toolbar(flat v-if="userRole !== 'COMMON'")
                 v-btn(color='primary' :disabled='!selectedResources.length || !selectedReservation.picked_up' @click.stop='takeUpResources')
@@ -212,8 +216,8 @@ export default {
   },
   methods: {
     openReservationDialog(reservation) {
-      console.log(reservation)
       this.selectedReservation = reservation
+      this.selectedResources = []
       this.reservationDialog = true
     },
     async transmitReservation(item) {
@@ -230,7 +234,8 @@ export default {
       this.reservations = await API.getReservations()
     },
     async takeUpResources() {
-      const resources = this.selectedResources.map(res => res.id)
+      let resources = {}
+      this.selectedResources.forEach(res => resources[res.id] = res.comment)
       await API.takeUpResources(this.selectedReservation.id, resources)
       this.selectedResources = []
       this.reservations = await API.getReservations();

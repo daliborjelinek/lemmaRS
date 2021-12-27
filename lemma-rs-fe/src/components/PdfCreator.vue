@@ -129,7 +129,7 @@ export default {
     },
     save(doc) {
       this.pdf = doc.output('datauristring')
-      doc.autoPrint();
+      //doc.autoPrint();
       doc.output('dataurlnewwindow');
     },
     async print() {

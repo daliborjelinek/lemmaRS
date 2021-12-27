@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models import Q, Prefetch
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
@@ -211,15 +212,17 @@ class ReservationViewSet(viewsets.ModelViewSet):
             resources_objects = []
             for resource_id in resources:
                 resource = Resource.objects.get(pk=resource_id)
-                conflict = ReservedResource.objects.filter(Q(resource_id=resource_id) & ~Q(reservation__approved=False) &
-                                                           ((Q(reservation__return_date_time__gt=timezone.now()) & Q(
-                                                               real_return_date__isnull=True)) &  # not ended and not returned
-                                                            (Q(
-                                                                reservation__pickup_date_time__lte=reservation.return_date_time) &
-                                                             Q(
-                                                                 reservation__return_date_time__gte=reservation.pickup_date_time)))).exists()
+                conflict = ReservedResource.objects.filter(
+                    Q(resource_id=resource_id) & ~Q(reservation__approved=False) &
+                    ((Q(reservation__return_date_time__gt=timezone.now()) & Q(
+                        real_return_date__isnull=True)) &  # not ended and not returned
+                     (Q(
+                         reservation__pickup_date_time__lte=reservation.return_date_time) &
+                      Q(
+                          reservation__return_date_time__gte=reservation.pickup_date_time)))).exists()
                 if conflict:
-                    return Response(f'Resource {resource.name} is already reserved in selected period.', status=status.HTTP_400_BAD_REQUEST)
+                    return Response(f'Resource {resource.name} is already reserved in selected period.',
+                                    status=status.HTTP_400_BAD_REQUEST)
                 resources_objects.append(ReservedResource(resource=resource, reservation=reservation))
             reservation.save()
             ReservedResource.objects.bulk_create(resources_objects)
@@ -261,19 +264,20 @@ class ReservationViewSet(viewsets.ModelViewSet):
             return Response("Reservation has been already approved", status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['PUT'], detail=True, name='')
-    def take_up_resources(self, request, pk):
+    def take_up_resources(self, request, pk ):
         reservation = self.get_object()
         if not reservation.picked_up:
             return Response("Cant take up reservation which was not picked up", status=status.HTTP_400_BAD_REQUEST)
-        ids = request.data['resources']
-        print(ids)
-        already_returned_resources = ReservedResource.objects.filter(pk__in=ids).filter(
+        selected_resources = request.data['resources']
+        already_returned_resources = ReservedResource.objects.filter(pk__in=selected_resources.keys()).filter(
             real_return_date__isnull=False).values_list('id', flat=True)
-        print(already_returned_resources)
         if len(already_returned_resources) > 0:
             return Response('ids ' + ', '.join(map(str, already_returned_resources)) + ' was already returned',
                             status=status.HTTP_400_BAD_REQUEST)
-        ReservedResource.objects.filter(pk__in=ids).update(real_return_date=timezone.now())
+        with transaction.atomic():
+            for res_id, comment in selected_resources.items():
+                ReservedResource.objects.filter(pk=res_id).update(real_return_date=timezone.now(), comment=comment)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
