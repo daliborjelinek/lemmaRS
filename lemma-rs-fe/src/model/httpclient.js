@@ -62,7 +62,7 @@ export default {
     },
     // USER
     async getCurentUser() {
-        return (await AXIOS.get('user/current')).data
+        return (await AXIOS.get('user/current/')).data
     },
     async putUser(user) {
         return AXIOS.put('user/' + user.id + '/', user)
