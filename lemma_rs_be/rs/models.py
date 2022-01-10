@@ -241,12 +241,12 @@ class ReservedResource(models.Model):
 
     @property
     def blocking_end(self):
+        if self.real_return_date is not None:
+            # resource was already returned
+            return self.real_return_date
         if self.reservation.pickup_date_time > timezone.now():
             # reservation not started yet
             return self.reservation.return_date_time
-        if self.real_return_date is not None:
-            # reservation started but resource was already returned
-            return self.real_return_date
         if self.reservation.return_date_time > timezone.now():
             # reservation started, resources was not returned, but its ok because reservation is still in progress
             return self.reservation.return_date_time

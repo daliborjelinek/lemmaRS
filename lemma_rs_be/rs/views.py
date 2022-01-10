@@ -102,9 +102,10 @@ class ResourceViewSet(viewsets.ModelViewSet):
     queryset = Resource.objects.order_by('name').all().prefetch_related('tags', Prefetch(
         'reservations',
         queryset=ReservedResource.objects.filter(
+            ~Q(real_return_date__isnull=False) &  # exclude already returned resources
             ~Q(reservation__approved=False) &  # exclude declined reservations
             (Q(reservation__return_date_time__gt=timezone.now()) |  # include upcoming and ongoing reservations
-             (Q(real_pickup_date__isnull=False) & Q(real_return_date__isnull=True))))  # include picked up reservations
+             Q(real_pickup_date__isnull=False)))  # include picked up reservations before declared pickup date
             .select_related('reservation', ),
         to_attr='blocking_reservations'
     )

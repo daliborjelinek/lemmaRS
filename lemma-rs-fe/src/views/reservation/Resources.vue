@@ -1,6 +1,14 @@
 <template lang="pug">
   .flex-grow-1.pa-3(style="height: 0; overflow-y: auto")
     v-progress-circular(v-if="loading" class="d-block mx-auto mt-4" :size="70", :width="4", color="primary" indeterminate)
+    div.d-flex.justify-center.mt-4(v-else-if="filteredResources.length === 0")
+      v-alert( border="right" max-width="400px" prominent='' type="info"  color="secondary" )
+        v-row(align='center')
+          v-col.grow.text-center
+            p
+              b Tomuto filtru neodpovídá žádný zdroj.
+            p Pokud zatím nemáte oprávnění k rezervaci, můžete vypnout filtr zdrojů bez oprávnění v pravém panelu.
+
     div(v-else)
       transition( mode="out-in", name="fade")
         #grid(key="1", v-if="displayStyle === 'cards'")
@@ -18,8 +26,6 @@
               div.ma-2(style="position:absolute; z-index: 1")
                 v-chip(v-if="!resource.allowed" class="ma-2" label color="#4c0000c2" title="nemáte dostatečné oprávnění")
                   v-icon() mdi-shield-lock
-                v-chip(v-if="false" class="ma-2" label color="#4c0000c2" title="Zdroj je ve zvoleném termínu rezervován")
-                  v-icon() mdi-lock-clock
                 v-chip(v-if="!resource.active" class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
                   v-icon() mdi-heart-broken
                 v-chip(v-if="resource.not_returned" class="ma-2" label color="#fb8c00c2" title="Zdroj nebyl vrácen")
@@ -72,14 +78,14 @@
           template(v-slot:item.attributes="{ item }")
             v-chip(v-if="!item.allowed" small class="ma-2" label color="#4c0000c2" title="nemáte dostatečné oprávnění")
               v-icon(small) mdi-shield-lock
-            v-chip(v-if="false" small class="ma-2" label color="#4c0000c2" title="Zdroj je ve zvoleném termínu rezervován")
-              v-icon(small) mdi-lock-clock
             v-chip(v-if="!item.active" small class="ma-2" label color="#4c0000c2" title="Zdroj není k dispozici")
               v-icon(small) mdi-heart-broken
             v-chip(v-if="item.not_returned" small class="ma-2" label color="#fb8c00c2" title="Zdroj nebyl vrácen")
               v-icon(small) mdi-selection-ellipse
             v-chip(v-if="item.hasTimeConflict" class="ma-2" label color="#4c0000c2" title="Zdroj je již v daném termínu rezervován")
               v-icon() mdi-clock-alert
+            v-chip(v-if="item.provider !== selectedProvider" class="ma-2" label color="#4c0000c2" :title="'Pro rezervování tohoto zdroje je potřeba vybrat výdejáře:' + item.providerStr")
+              v-icon() mdi-account-cog
 
     v-dialog(v-model="calendarDialog" max-width="900")
       v-card

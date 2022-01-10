@@ -32,7 +32,7 @@ const state = {
     reservationDate: [],
     provider: 3,
     alreadyReserved: false,
-    disallowed: true,
+    disallowed: false,
     inactive: false,
     project: null,
 }

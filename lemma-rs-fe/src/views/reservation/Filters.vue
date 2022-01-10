@@ -18,18 +18,28 @@
       .d-flex.align-center.mt-2
         v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="alreadyReserved" label='Rezervované v termínu')
         v-spacer
-        v-btn(small='' icon='')
-          v-icon(small='') mdi-information-outline
+        v-tooltip(left)
+          template(v-slot:activator='{ on, attrs }')
+            v-btn(small='' icon='' v-bind='attrs' v-on='on')
+              v-icon(small='') mdi-information-outline
+          span Zobrajit i zdroje, které jsou ve zvoleném termínu již rezervovány.
+
       .d-flex.align-center.mt-2
         v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="disallowed" label='Bez oprávnění')
         v-spacer
-        v-btn(small='' icon='')
-          v-icon(small='') mdi-information-outline
+        v-tooltip(left)
+          template(v-slot:activator='{ on, attrs }')
+            v-btn(small='' icon='' v-bind='attrs' v-on='on')
+              v-icon(small='') mdi-information-outline
+          span Zobrazit i zdroje, k jejiž rezervaci zatím nemáte oprávnění.
       .d-flex.align-center.mt-2
         v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="inactive" label='Neodstupné')
         v-spacer
-        v-btn(small='' icon='')
-          v-icon(small='') mdi-information-outline
+        v-tooltip(left)
+          template(v-slot:activator='{ on, attrs }')
+            v-btn(small='' icon='' v-bind='attrs' v-on='on')
+              v-icon(small='') mdi-information-outline
+          span Zobrazit i zdroje, které jsou nyní vyřazené.
       v-divider.mt-2
     v-list-item-group.flex-grow-1(@change='filterTagChanged' :value='activeTag' style='height: 200px; overflow-y: auto')
       template(v-for='(item, i) in items')
@@ -37,7 +47,7 @@
           dense
           :key='`item-${i}`'
           :value='item.value'
-          )
+        )
           v-list-item-icon
             v-icon {{ item.icon }}
           v-list-item-content
@@ -48,36 +58,36 @@
 <script>
 import {createHelpers} from "vuex-map-fields";
 
-const { mapFields } = createHelpers({
+const {mapFields} = createHelpers({
   getterType: "getResField",
   mutationType: "updateResField",
 });
 export default {
   props: ['filtersData'],
-  computed:{
+  computed: {
     ...mapFields([
-        'inactive',
-        'disallowed',
-        'alreadyReserved'
+      'inactive',
+      'disallowed',
+      'alreadyReserved'
 
     ]),
-    filters(){
+    filters() {
       return this.$store.state.reservation.search
     },
-    activeTag(){
+    activeTag() {
       return this.$store.state.reservation.tag
     },
     userRole() {
       return this.$store.getters.getDisplayRole
     },
   },
-  methods:{
-    search(e){
-      this.$store.commit('setSearch',e)
+  methods: {
+    search(e) {
+      this.$store.commit('setSearch', e)
     },
-    filterTagChanged(tag){
+    filterTagChanged(tag) {
 
-      this.$store.commit('setTagFilter',tag)
+      this.$store.commit('setTagFilter', tag)
     }
   },
   data: function () {

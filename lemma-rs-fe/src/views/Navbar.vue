@@ -19,7 +19,7 @@
 
 
       </div>
-      <v-btn icon>
+      <v-btn @click="$refs.helpDialog.show()" icon>
         <v-icon>mdi-help-circle-outline</v-icon>
       </v-btn>
       <v-menu offset-y>
@@ -59,15 +59,16 @@
       </v-list>
     </v-navigation-drawer>
     <user ref="userDialog"/>
+    <help ref="helpDialog"/>
   </div>
 </template>
 <script>
-import axios from "axios";
 import {AUTH_LOGOUT} from "@/store/actions/auth"
 import User from "@/views/User";
+import Help from "@/views/Help";
 
 export default {
-  components: {User},
+  components: {Help, User},
   data: function () {
     return {
       drawer: false,
