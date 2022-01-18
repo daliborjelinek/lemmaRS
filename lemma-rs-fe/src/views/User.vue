@@ -29,7 +29,7 @@
                 v-checkbox.ml-2(v-if="role_display !== 'COMMON'" label='Zasílat upozorněni o žádostech o schválení rezervace' v-model='send_notification_on_reservation_request')
             v-tab-item
               v-sheet.mt-2(rounded)
-                w-h-calendar(:init='user.profile.calendar_data' v-model="eventsParent")
+                w-h-calendar(:init='user.profile.calendar_data' @change="save" v-model="eventsParent")
             v-tab-item
               v-data-table(:headers="holidayHeaders", :items="user.profile.holidays")
                 template(v-slot:top)
@@ -140,9 +140,11 @@ export default {
         this.$store.commit('addHolidayRecord',{from, to})
         this.showCalendar = false
         this.datePickerDate = []
+        this.save()
     },
     removeHolidayRecord(record){
       this.$store.commit('removeHolidayRecord',record)
+      this.save()
     }
   },
 };

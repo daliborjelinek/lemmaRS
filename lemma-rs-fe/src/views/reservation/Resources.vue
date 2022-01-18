@@ -142,7 +142,6 @@
                         prepend-icon="mdi-account-cog",
                         :disabled="!resourceDialogEditing",
                         query="user/?role__in=ADMIN,PROVIDER"
-                        :default-index="1",
                         label="Výdejář",
                         :item-value="(itm)=> itm.id" ,
                         :item-text="(itm)=> itm.fullname")

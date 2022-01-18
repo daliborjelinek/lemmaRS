@@ -16,7 +16,7 @@ from lemma_rs_be.Mailer import Mailer
 from . import serializers
 from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation, \
     ReservedResource
-from .permissions import UserPermission, ProjectPermission, CommonReadAdminAndProviderAll, IsAdmin
+from .permissions import UserPermission, ProjectPermission, CommonReadAdminAndProviderAll, IsAdmin, IsProvider
 from .serializers import ProjectSerializer, ProjectGroupSerializer, ResourceSerializer, PermissionLevelSerializer, \
     TagSerializer, PermissionRequestFullSerializer, PermissionRequestCreateSerializer, \
     PermissionRequestResolveSerializer, ReservationSerializer, ReservationCreateSerializer
@@ -154,7 +154,7 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         request=PermissionRequestResolveSerializer,
         responses={204: None}
     )
-    @action(methods=['PUT'], detail=True, name='Send result of permission request', permission_classes=[IsAdmin])
+    @action(methods=['PUT'], detail=True, name='Send result of permission request', permission_classes=[IsAdmin | IsProvider])
     def resolve_request(self, request, pk):
         serializer = PermissionRequestResolveSerializer(data=request.data)
         if serializer.is_valid():

@@ -88,7 +88,7 @@
           v-btn(icon, @click="reservationDialog = false")
             v-icon mdi-close
         v-sheet.pa-2(v-if="reservationDialog===true")
-          v-data-table(v-model='selectedResources' :items='formatedResources', :headers='resourcesHeaders' :show-select="userRole !== 'COMMON'")
+          v-data-table(v-model='selectedResources' :items='formatedResources',  fixed-header style="height:calc(90vh - 132px)" height="calc(100% - 64px)" disable-pagination :hide-default-footer="true" :headers='resourcesHeaders' :show-select="userRole !== 'COMMON'")
             template(v-slot:item.comment='{ item }')
               v-text-field.my-1(v-model="item.comment" v-if="selectedResources.indexOf(item)!==-1 && userRole !== 'COMMON' && selectedReservation.picked_up" solo hide-details label="Popis defektů...")
               span(v-else)

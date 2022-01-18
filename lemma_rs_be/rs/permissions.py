@@ -47,3 +47,8 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_authenticated and (request.user.role == Role.ADMIN)
 
 
+class IsProvider(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and (request.user.role == Role.PROVIDER)
+
+

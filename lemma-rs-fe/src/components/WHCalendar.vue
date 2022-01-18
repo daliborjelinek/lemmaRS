@@ -140,12 +140,17 @@ export default {
       }
     },
     endDrag (clickedEvent) {
-      if(this.dragStartHash === this.dragEvent?.start + this.dragEvent?.end) this.events = this.events.filter(e => e.start !== clickedEvent.event.start)
+      if(this.dragStartHash === this.dragEvent?.start + this.dragEvent?.end){
+        this.events = this.events.filter(e => e.start !== clickedEvent.event.start)
+      }
       this.dragTime = null
       this.dragEvent = null
       this.createEvent = null
       this.createStart = null
       this.extendOriginal = null
+      this.$nextTick(function () {
+        this.$emit('change')
+      })
     },
     cancelDrag () {
       if (this.createEvent) {

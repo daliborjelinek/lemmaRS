@@ -14,9 +14,9 @@
         </v-btn>
     v-card-text
       portal-target(v-if="userRole !== 'COMMON'" name='add-resource-btn')
-      v-text-field.ma-0.pa-0(v-debounce:300ms='search' placeholder='Hledat' persistent-hint='' :hint="'Zobrazeno '+ $store.getters.filteredResourcesCount + ' výsledků'" append-icon='mdi-magnify')
+      v-text-field.ma-0.pa-0(v-debounce:300ms='search' v-model="searchText" placeholder='Hledat' persistent-hint='' :hint="'Zobrazeno '+ $store.getters.filteredResourcesCount + ' výsledků'" append-icon='mdi-magnify')
       .d-flex.align-center.mt-2
-        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="alreadyReserved" label='Rezervované v termínu')
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' :disabled="!!searchText" v-model="alreadyReserved" label='Rezervované v termínu')
         v-spacer
         v-tooltip(left)
           template(v-slot:activator='{ on, attrs }')
@@ -25,7 +25,7 @@
           span Zobrajit i zdroje, které jsou ve zvoleném termínu již rezervovány.
 
       .d-flex.align-center.mt-2
-        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="disallowed" label='Bez oprávnění')
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' :disabled="!!searchText" v-model="disallowed" label='Bez oprávnění')
         v-spacer
         v-tooltip(left)
           template(v-slot:activator='{ on, attrs }')
@@ -33,7 +33,7 @@
               v-icon(small='') mdi-information-outline
           span Zobrazit i zdroje, k jejiž rezervaci zatím nemáte oprávnění.
       .d-flex.align-center.mt-2
-        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' v-model="inactive" label='Neodstupné')
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' :disabled="!!searchText" v-model="inactive" label='Neodstupné')
         v-spacer
         v-tooltip(left)
           template(v-slot:activator='{ on, attrs }')
@@ -93,6 +93,7 @@ export default {
   data: function () {
     return {
       toggl: 'cards',
+      searchText:'',
       items: [
         {
           value: 2,
