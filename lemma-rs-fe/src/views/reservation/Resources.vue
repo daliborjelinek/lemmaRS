@@ -136,13 +136,13 @@
                         :rules="[(v) => !!v || 'Vyplňte jméno zdroje']"
                         prepend-icon="mdi-form-textbox",
                         :disabled="!resourceDialogEditing")
-                      api-select(
+                      v-select(
                         v-model="activeResource.provider"
                         hide-details,
                         prepend-icon="mdi-account-cog",
                         :disabled="!resourceDialogEditing",
-                        query="user/?role__in=ADMIN,PROVIDER"
                         label="Výdejář",
+                        :items="providers"
                         :item-value="(itm)=> itm.id" ,
                         :item-text="(itm)=> itm.fullname")
                       v-select.mt-2(prepend-icon="mdi-shield-lock",
@@ -339,10 +339,6 @@ export default {
     },
     async loadTags() {
       this.tags = await API.getTags()
-    },
-    async loadProviders() {
-      this.providers = await API.getUsers('PROVIDER,ADMIN')
-
     },
 
     async loadPermissionLevels() {
