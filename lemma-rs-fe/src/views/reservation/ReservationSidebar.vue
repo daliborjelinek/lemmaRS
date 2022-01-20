@@ -35,7 +35,7 @@
               v-autocomplete.pr-2(:items='providerAvailability.pickupTimes'
                 :value="$store.state.reservation.startTime"
                 color='white'
-                :disabled='!provider'
+                no-data-text="Nejprve zvolte datum"
                 @change="t => setTime(t,'start')"
                 label='Začátek'
                 auto-select-first
@@ -45,6 +45,7 @@
                 :value="$store.state.reservation.endTime"
                 color='white'
                 @change="t => setTime(t,'end')"
+                no-data-text="Nejprve zvolte datum"
                 auto-select-first
                 label='Konec')
             v-autocomplete(:items='myProjects'
@@ -78,7 +79,6 @@
 </template>
 
 <script>
-import Timepicker from "@/components/Timepicker";
 import ApiSelect from "@/components/ApiSelect";
 import ProjectEditorModal from "@/views/projects/ProjectEditorModal";
 import API from '@/model/httpclient'
@@ -91,7 +91,7 @@ const {mapFields} = createHelpers({
 });
 const hd = new Holidays('CZ')
 export default {
-  components: {ApiSelect, Timepicker, ProjectEditorModal},
+  components: {ApiSelect, ProjectEditorModal},
   data: () => ({
     providers: [],
     showCalendar: false

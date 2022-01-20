@@ -50,7 +50,7 @@
             v-btn.mr-1(small color="primary" @click.stop="transmitReservation(item)" :disabled='!item.isTransmittable')
               v-icon(left) mdi-handshake
               | vydat
-            v-btn.mr-1( icon color="warning" @click.stop="deleteReservation(item)" :disabled="item.picked_up === true")
+            v-btn.mr-1( icon color="warning" @click.stop="deleteReservation(item)" :disabled="item.picked_up === true || item.returnDatePassed")
               v-icon mdi-delete-circle
             v-btn(icon v-if="userRole === 'ADMIN'" @click.stop="resolveReservationRequest(item,true)" color="success" :disabled="item.approved !== null || item.returnDatePassed" title="Schválit")
               v-icon mdi-check-decagram
