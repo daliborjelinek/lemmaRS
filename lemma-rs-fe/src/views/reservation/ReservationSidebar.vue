@@ -3,7 +3,7 @@
     v-card.fill-height.d-flex.flex-column(elevation='5' color='#1e1e1ee6' rounded='0')
       v-card-title Rezervace
         v-spacer
-        v-btn( @click="sendReservation" :disabled='!reservationIsFilled || !reservationErrors.reservationIsValid' color='primary') odeslat
+        v-btn( @click="sendReservation" :disabled='!reservationIsFilled || !reservationErrors.reservationIsValid' :loading="creatingReservation" color='primary') odeslat
       v-card-text.flex-grow-1.d-flex.flex-column
         div
           //| {{$store.getters.hourCost}}
@@ -94,7 +94,8 @@ export default {
   components: {ApiSelect, ProjectEditorModal},
   data: () => ({
     providers: [],
-    showCalendar: false
+    showCalendar: false,
+    creatingReservation: false,
   }),
   async created() {
     const res = await API.getProviders()
@@ -203,8 +204,10 @@ export default {
     },
     async sendReservation() {
       if (!this.$refs.reservationForm.validate()) return;
+      this.creatingReservation = true;
       await this.$store.dispatch('sendReservation')
       this.$refs.reservationForm.resetValidation()
+      this.creatingReservation = false;
     },
     openNewProjectDialog() {
       this.$refs.projectEditorModal.openCreateDialog()

@@ -16,7 +16,8 @@ from lemma_rs_be.Mailer import Mailer
 from . import serializers
 from .models import User, Project, ProjectGroup, Resource, PermissionLevel, Tag, Image, PermissionRequest, Reservation, \
     ReservedResource
-from .permissions import UserPermission, ProjectPermission, CommonReadAdminAndProviderAll, IsAdmin, IsProvider
+from .permissions import UserPermission, ProjectPermission, CommonReadAdminAndProviderAll, IsAdmin, IsProvider, \
+    IsReservationOwner
 from .serializers import ProjectSerializer, ProjectGroupSerializer, ResourceSerializer, PermissionLevelSerializer, \
     TagSerializer, PermissionRequestFullSerializer, PermissionRequestCreateSerializer, \
     PermissionRequestResolveSerializer, ReservationSerializer, ReservationCreateSerializer
@@ -178,7 +179,7 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(viewsets.ModelViewSet):
     # todo: exlude porvider from
     queryset = Reservation.objects.all().order_by('-created_at')
-    permission_classes = [CommonReadAdminAndProviderAll]
+    permission_classes = [CommonReadAdminAndProviderAll | IsReservationOwner]
     serializer_class = ReservationSerializer
 
     def destroy(self, request, *args, **kwargs):
@@ -194,7 +195,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         request=ReservationCreateSerializer,
         responses={204: None}
     )
-    @action(methods=['PUT'], detail=False, name='CreateReservation')
+    @action(methods=['PUT'], detail=False, name='CreateReservation', permission_classes=[IsAuthenticated])
     def create_reservation(self, request):
         serializer = ReservationCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -234,7 +235,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['PUT'], detail=True, name='TransmitReservation')
+    @action(methods=['PUT'], detail=True, name='TransmitReservation', permission_classes=[IsAdmin | IsProvider])
     def transmit_reservation(self, request, pk):
         reservation = self.get_object()
         if not reservation.approved:
@@ -251,7 +252,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         reservation.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=['PUT'], detail=True, name='resolve_reservation_request')
+    @action(methods=['PUT'], detail=True, name='resolve_reservation_request', permission_classes=[IsAdmin | IsProvider])
     def resolve_reservation_request(self, request, pk):
         reservation = self.get_object()
         print(reservation.approved_by)
@@ -264,7 +265,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         else:
             return Response("Reservation has been already approved", status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['PUT'], detail=True, name='')
+    @action(methods=['PUT'], detail=True, name='take_up_resources', permission_classes=[IsAdmin | IsProvider])
     def take_up_resources(self, request, pk ):
         reservation = self.get_object()
         if not reservation.picked_up:

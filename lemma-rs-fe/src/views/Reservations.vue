@@ -47,7 +47,7 @@
 
         template(v-slot:item.actions='{ item }')
           span(style="white-space: nowrap")
-            v-btn.mr-1(small color="primary" @click.stop="transmitReservation(item)" :disabled='!item.isTransmittable')
+            v-btn.mr-1(v-if="userRole !== 'COMMON'" small color="primary" @click.stop="transmitReservation(item)" :disabled='!item.isTransmittable')
               v-icon(left) mdi-handshake
               | vydat
             v-btn.mr-1( icon color="warning" @click.stop="deleteReservation(item)" :disabled="item.picked_up === true || item.returnDatePassed")
@@ -209,7 +209,6 @@ export default {
         {text: "Vráceno", value: "fully_returned"},
         {text: "Akce", value: "actions", sortable: false},
       ]
-      if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers.pop()
       if (this.$store.getters.getDisplayRole === 'COMMON' || this.tab === 'my') headers = headers.filter(h => h.value !== 'applicant')
       return headers
     },

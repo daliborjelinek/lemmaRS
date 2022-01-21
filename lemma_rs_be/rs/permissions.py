@@ -42,6 +42,11 @@ class CommonReadAdminAndProviderAll(permissions.BasePermission):
                                                   request.method in SAFE_METHODS)
 
 
+class IsReservationOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.applicant == request.user
+
+
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and (request.user.role == Role.ADMIN)
