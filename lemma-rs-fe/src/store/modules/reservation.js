@@ -171,6 +171,9 @@ const mutations = {
                 state.selectedResources = state.selectedResources.filter(itm => resource.id !== itm)
             } else state.selectedResources.push(resource.id)
         },
+        setSelectedResources(state, resources){
+          state.selectedResources = resources
+        },
         removeSelectedItem(state, resource) {
             state.selectedResources = state.selectedResources.filter(itm => itm !== resource.id)
         },

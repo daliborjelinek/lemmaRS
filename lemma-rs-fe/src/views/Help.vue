@@ -11,6 +11,7 @@
           v-tabs(v-model="tab" background-color="#272727")
             v-tab Nápověda
             v-tab FAQ
+            v-tab Hlášení chyb
           v-tabs-items.inner-scroll(v-model="tab")
             v-tab-item.mt-4.help
               .display-4.mb-0
@@ -109,6 +110,10 @@
                     v-chip(class="ma-2" label color="#fb8c00c2" title="Zdroj nebyl vrácen")
                       v-icon() mdi-selection-ellipse
                   td Takto označený zdroj je možné rezervovat, ale je možné, že při vyzvednutí nebude k dispozici, protože předchozí rezevace tohoto zdroje již skončila, ale navzdory tomu zdroj stále nebyl vrácen.
+            v-tab-item.mt-4.help
+              h2.py-4 Narazili jste na chybu, nebo máte návrh na zlepšení systému?
+              p Popis ideálně včetně snímků obrazovky zašlete na email&nbsp;
+                a(href="mailto:git+lemma-lemmars-16040-issue-@gitlab.fi.muni.cz") git+lemma-lemmars-16040-issue-@gitlab.fi.muni.cz
 
 
 </template>

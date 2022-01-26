@@ -90,13 +90,13 @@
     v-dialog(v-model="calendarDialog" max-width="900")
       v-card
         v-toolbar(color="primary", dark)
-          v-btn.ma-2(icon, @click="$refs.calendar.prev()")
-            v-icon mdi-chevron-left
-          span {{ month }}
-          v-btn.ma-2(icon, @click="$refs.calendar.next()")
-            v-icon mdi-chevron-right
           | {{activeResource.name}}
           v-spacer
+          v-btn.ma-2(icon, @click="$refs.calendar.prev()")
+            v-icon mdi-chevron-left
+          span.text-center.text-button(style='width:100px') {{ month }}
+          v-btn.ma-2(icon, @click="$refs.calendar.next()")
+            v-icon mdi-chevron-right
           v-btn(icon, @click="calendarDialog = false")
             v-icon mdi-close
         v-sheet.pa-2(height=600)

@@ -60,15 +60,17 @@
       v-dialog(v-model="calendarDialog" max-width="900")
         v-card
           v-toolbar(color="primary", dark)
+            | Rezervace
+            v-spacer
             v-btn.ma-2(
               icon,
               @click="$refs.calendar.prev() "
             )
               v-icon mdi-chevron-left
-            span.text-center(style='width:110px') {{ calendarMonth }}
+            span.text-center(style='width:125px')
+              span.text-button {{ calendarMonth }}
             v-btn.ma-2(icon, @click="$refs.calendar.next()")
               v-icon mdi-chevron-right
-            v-spacer
             v-btn(icon, @click="calendarDialog = false")
               v-icon mdi-close
           v-sheet.pa-2()
@@ -101,6 +103,9 @@
                 v-btn.ml-2(color='primary' @click.stop='print')
                   v-icon(left) mdi-printer
                   | tisk
+                v-btn.ml-2(color='primary' @click.stop='copy')
+                  v-icon(left) mdi-content-copy
+                  | rezervovat znovu
 
 
 </template>
@@ -220,6 +225,7 @@ export default {
       this.reservationDialog = true
     },
     async transmitReservation(item) {
+      if(!confirm("Potvrďte prosím předání " + item.resources.length + " zdrojů uživateli " + item.applicant.fullname )) return
       await API.transmitReservation(item.id)
       this.reservations = await API.getReservations()
     },
@@ -233,6 +239,7 @@ export default {
       this.reservations = await API.getReservations()
     },
     async takeUpResources() {
+      if(!confirm("Potvrďte prosím převzetí " + this.selectedResources.length + " zdrojů  od uživatele " + this.selectedReservation.applicant.fullname )) return
       let resources = {}
       this.selectedResources.forEach(res => resources[res.id] = res.comment)
       await API.takeUpResources(this.selectedReservation.id, resources)
@@ -245,6 +252,11 @@ export default {
     },
     print() {
       this.$refs.pdfCreator.print()
+    },
+    copy(){
+      const resourcesIds = this.selectedReservation.resources.map(res => res.id)
+      this.$store.commit('setSelectedResources', resourcesIds)
+      this.$router.push({name:'Resources'})
     }
 
   }
