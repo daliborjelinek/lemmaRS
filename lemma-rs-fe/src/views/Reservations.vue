@@ -27,7 +27,8 @@
               single-line
               hide-details)
             v-spacer
-            v-btn(color='primary' @click.stop='openCalendar')
+            v-btn(color='primary' @click.stop='openCalendar' text)
+              v-icon(left) mdi-calendar
               | Kalendář
         template(v-slot:item.applicant='{ item }') {{item.applicant.fullname}}
         template(v-slot:item.created_at='{ item }') {{$moment(item.created_at).locale("cs").format('LLL')}}

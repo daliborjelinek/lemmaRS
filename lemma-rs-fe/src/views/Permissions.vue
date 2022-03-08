@@ -43,7 +43,7 @@
         v-card-title.headline Žádost o přidělení oprávnění
         v-card-text
           v-form(ref='createPermissionRequestForm' lazy-validation)
-            v-text-field(v-model='newRequest.reason' :rules="[(v) => !!v || 'Vyplňte důvod žádosti']" label='Důvod')
+            v-text-field( placeholder="Natáčení filmu Sharknado 6 na FFIMU..." v-model='newRequest.reason' :rules="[(v) => !!v || 'Vyplňte důvod žádosti']" label='Důvod')
             v-select(
               v-model="newRequest.requestedLevel"
               label="Požadovaná úroveň oprávnění"

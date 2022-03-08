@@ -147,7 +147,7 @@ const actions = {
             await API.createReservation(getters.reservationRange.startDateTime, getters.reservationRange.endDateTime, resources, approvalRequired, state.project, state.provider)
             dispatch('notify', {type: 'success', text: 'Rezervace byla vytvořena'})
         } catch (e) {
-            dispatch('notify', {type: 'success', text: 'Vytvoření rezervace se nezdařilo'})
+            dispatch('notify', {type: 'error', text: 'Vytvoření rezervace se nezdařilo'})
             console.log(e)
         }
         await dispatch('getResources')

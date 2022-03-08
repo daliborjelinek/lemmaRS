@@ -155,7 +155,8 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
         request=PermissionRequestResolveSerializer,
         responses={204: None}
     )
-    @action(methods=['PUT'], detail=True, name='Send result of permission request', permission_classes=[IsAdmin | IsProvider])
+    @action(methods=['PUT'], detail=True, name='Send result of permission request',
+            permission_classes=[IsAdmin | IsProvider])
     def resolve_request(self, request, pk):
         serializer = PermissionRequestResolveSerializer(data=request.data)
         if serializer.is_valid():
@@ -215,13 +216,24 @@ class ReservationViewSet(viewsets.ModelViewSet):
             for resource_id in resources:
                 resource = Resource.objects.get(pk=resource_id)
                 conflict = ReservedResource.objects.filter(
-                    Q(resource_id=resource_id) & ~Q(reservation__approved=False) &
-                    ((Q(reservation__return_date_time__gt=timezone.now()) & Q(
-                        real_return_date__isnull=True)) &  # not ended and not returned
-                     (Q(
-                         reservation__pickup_date_time__lte=reservation.return_date_time) &
-                      Q(
-                          reservation__return_date_time__gte=reservation.pickup_date_time)))).exists()
+                    Q(resource_id=resource_id) &  # same id
+                    ~Q(reservation__approved=False) &  # approved
+                    (
+                            (
+                                    Q(
+                                        reservation__return_date_time__gt=timezone.now()) &  # reservation end is in future
+                                    Q(real_return_date__isnull=True)  # not returned yet
+                            ) &  # exclude reservation which already ended or being returned
+                            (
+                                #  https://www.mssqltips.com/sqlservertip/5854/using-tsql-to-find-events-that-overlap-or-dont-in-sql-server/
+                                    Q(reservation__pickup_date_time__lt=reservation.return_date_time)
+                                    #  res. which started before end of this reservation
+                                    &
+                                    Q(reservation__return_date_time__gt=reservation.pickup_date_time)
+                                    #  res. which ending after start of this reservation
+                            )  # time overlaps (pickup and return at the same time is allowed)
+                    )
+                ).exists()
                 if conflict:
                     return Response(f'Resource {resource.name} is already reserved in selected period.',
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -266,7 +278,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
             return Response("Reservation has been already approved", status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['PUT'], detail=True, name='take_up_resources', permission_classes=[IsAdmin | IsProvider])
-    def take_up_resources(self, request, pk ):
+    def take_up_resources(self, request, pk):
         reservation = self.get_object()
         if not reservation.picked_up:
             return Response("Cant take up reservation which was not picked up", status=status.HTTP_400_BAD_REQUEST)

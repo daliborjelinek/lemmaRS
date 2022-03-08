@@ -33,7 +33,7 @@
               v-icon(small='') mdi-information-outline
           span Zobrazit i zdroje, k jejiž rezervaci zatím nemáte oprávnění.
       .d-flex.align-center.mt-2
-        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' :disabled="!!searchText" v-model="inactive" label='Neodstupné')
+        v-switch.mt-0.py-0.d-flex.align-center(hide-details='' :disabled="!!searchText" v-model="inactive" label='Nedostupné')
         v-spacer
         v-tooltip(left)
           template(v-slot:activator='{ on, attrs }')
