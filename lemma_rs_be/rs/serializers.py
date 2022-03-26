@@ -116,6 +116,7 @@ class PermissionRequestFullSerializer(serializers.ModelSerializer):
 
 class ReservedResourceSerializer(serializers.ModelSerializer):
     resource_str = serializers.StringRelatedField(source='resource', read_only=True)
+    resource_id = serializers.IntegerField(source='resource.id')
     cost = serializers.SlugRelatedField(
         source='resource',
         read_only=True,
@@ -130,7 +131,7 @@ class ReservedResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReservedResource
         fields = (
-         'id', 'real_return_date', 'real_pickup_date', 'comment', 'resource_str', 'reservation', 'cost', 'inv_numbers')
+         'id', 'real_return_date', 'real_pickup_date', 'comment', 'resource_str', 'resource_id', 'reservation', 'cost', 'inv_numbers')
 
 
 class ReservationSerializer(serializers.ModelSerializer):

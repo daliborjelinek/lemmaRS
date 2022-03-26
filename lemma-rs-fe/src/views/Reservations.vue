@@ -97,8 +97,8 @@
               span(v-else)
                 | {{item.comment}}
             template(v-slot:top)
-              v-toolbar(flat v-if="userRole !== 'COMMON'")
-                v-btn(color='primary' :disabled='!selectedResources.length || !selectedReservation.picked_up' @click.stop='takeUpResources')
+              v-toolbar(flat)
+                v-btn( v-if="userRole !== 'COMMON'" color='primary' :disabled='!selectedResources.length || !selectedReservation.picked_up' @click.stop='takeUpResources')
                   v-icon(left) mdi-handshake
                   | převzít
                 v-btn.ml-2(color='primary' @click.stop='print')
@@ -255,7 +255,7 @@ export default {
       this.$refs.pdfCreator.print()
     },
     copy(){
-      const resourcesIds = this.selectedReservation.resources.map(res => res.id)
+      const resourcesIds = this.selectedReservation.resources.map(res => res.resource_id)
       this.$store.commit('setSelectedResources', resourcesIds)
       this.$router.push({name:'Resources'})
     }
