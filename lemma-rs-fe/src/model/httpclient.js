@@ -172,7 +172,15 @@ export default {
     },
 
     async deleteReservation(id) {
-        return (await AXIOS.delete('reservation/'+ id + '/'))
+        try {
+            const res = await AXIOS.delete('reservation/'+ id + '/')
+            store.dispatch('notify', {type: 'success', text: 'Rezervace byla smazána'})
+            return res
+        } catch (e) {
+            store.dispatch('notify', {type: 'error', text: 'Odstranění rezervace se nezdařilo'})
+            console.log(e)
+        }
+
     },
 
     async resolveReservationRequest(id, approved) {

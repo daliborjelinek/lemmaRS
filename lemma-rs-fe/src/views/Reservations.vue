@@ -51,7 +51,7 @@
             v-btn.mr-1(v-if="userRole !== 'COMMON'" small color="primary" @click.stop="transmitReservation(item)" :disabled='!item.isTransmittable')
               v-icon(left) mdi-handshake
               | vydat
-            v-btn.mr-1( icon color="warning" @click.stop="deleteReservation(item)" :disabled="item.picked_up === true || item.returnDatePassed")
+            v-btn.mr-1( icon color="warning" @click.stop="deleteReservation(item)" :disabled="item.picked_up === true || item.returnDatePassed || (!item.ownedByLoggedUser && userRole === 'COMMON')")
               v-icon mdi-delete-circle
             v-btn(icon v-if="userRole === 'ADMIN'" @click.stop="resolveReservationRequest(item,true)" color="success" :disabled="item.approved !== null || item.returnDatePassed" title="Schválit")
               v-icon mdi-check-decagram
@@ -176,13 +176,14 @@ export default {
               itm.approved &&
               !itm.picked_up,
           returnDatePassed: new Date(itm.return_date_time) < new Date(),
+          ownedByLoggedUser: itm.applicant.id === this.$store.getters.getProfile.id,
           isTransmittableString: "rezarevace začala " + (new Date(itm.pickup_date_time) <= new Date()) + '\n' +
               " rezarvace neskončila: " + (new Date(itm.return_date_time) > new Date()) +
               ' rezervace je schvalena:  ' + itm.approved + '\n' +
               ' rezervace není vyzvednuta ' + !itm.picked_up
         }
       }).filter(itm => {
-        if (this.tab === 'my') return itm.applicant.id === this.$store.getters.getProfile.id
+        if (this.tab === 'my') return itm.ownedByLoggedUser
         if (this.tab === 'pending_approval') return itm.approved === null && !itm.returnDatePassed
         if (this.tab === 'toTransmit') return itm.isTransmittable
         if (this.tab === 'planned') return !itm.picked_up && (new Date(itm.return_date_time) > new Date())

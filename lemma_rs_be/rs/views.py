@@ -180,7 +180,7 @@ class PermissionRequestViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(viewsets.ModelViewSet):
     # todo: exlude porvider from
     queryset = Reservation.objects.all().order_by('-created_at')
-    permission_classes = [CommonReadAdminAndProviderAll | IsReservationOwner]
+    permission_classes = [IsReservationOwner | CommonReadAdminAndProviderAll]
     serializer_class = ReservationSerializer
 
     def destroy(self, request, *args, **kwargs):

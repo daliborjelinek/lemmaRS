@@ -36,6 +36,10 @@ class ProjectPermission(permissions.BasePermission):
 
 
 class CommonReadAdminAndProviderAll(permissions.BasePermission):
+    # TODO: this can be deleted after https://github.com/encode/django-rest-framework/issues/7117 will be fixed
+    def has_object_permission(self, request, view, obj):
+        return self.has_permission(request, view)
+
     def has_permission(self, request, view):
         return request.user.is_authenticated and (request.user.role == Role.ADMIN or
                                                   request.user.role == Role.PROVIDER or
